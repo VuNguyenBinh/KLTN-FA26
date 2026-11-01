@@ -1,0 +1,7 @@
+benchmark_id,difficulty,vuln_category,arm,variant,run_id,solved,flag_found,time_minutes,num_steps,tokens_used,manual_interventions,llm_refused,notes
+XBEN-001-24,medium,idor,A_manual,original,1,,,,,,,,
+XBEN-001-24,medium,idor,B_auto,original,1,,,,,,,,
+XBEN-001-24,medium,idor,C_ai_local,original,1,,,,,,,,
+XBEN-001-24,medium,idor,C_ai_local,hintfree,1,,,,,,,,
+XBEN-001-24,medium,idor,C_ai_api,original,1,,,,,,,,
+XBEN-001-24,medium,idor,C_ai_api,hintfree,1,,,,,,,,

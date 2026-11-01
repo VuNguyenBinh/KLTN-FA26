@@ -1,0 +1,25 @@
+# === Third-party clones (re-clone theo docs/SETUP.md) ===
+/project/benchmarks/validation-benchmarks/
+/project/benchmarks/xbow-hint-free/
+/project/harness/PentestGPT/
+
+# === Tool binaries nhanh B (re-download theo docs/ARM_B.md) ===
+/project/harness/toolsB/
+
+# === File sinh ra khi chay / runtime ===
+/project/logs/
+/project/benchmarks/targets.csv
+/project/harness/patches.log
+/project/results/results.csv
+/paper/figures/
+
+# === Python / misc ===
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.env
+.env
+*.log
+.DS_Store
+Thumbs.db
