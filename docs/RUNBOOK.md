@@ -91,12 +91,17 @@ Cần **2 terminal** (một cho PentestGPT tương tác, một để chạy lệ
 
 **Terminal #1 — PentestGPT** 🖥️ **PS [D:\Bình\KLTN new\project\harness\PentestGPT]**
 1. Bật target ở terminal khác trước (Bước 1), lấy URL.
-2. Khởi động PentestGPT với model local:
+2. Khởi động PentestGPT với model local (lệnh ĐÃ KIỂM CHỨNG 2026-11-02, dùng python trong .venv):
    ```powershell
-   python -m uv run pentestgpt-legacy --reasoning-model "ollama:qwen2.5:7b" --parsing-model "ollama:qwen2.5:7b" --base-url "http://localhost:11434/v1"
+   $env:PYTHONIOENCODING="utf-8"   # tránh lỗi encode ký tự ✗ khi ghi log trên Windows
+   .\.venv\Scripts\python.exe -m pentestgpt_legacy.main --reasoning-model "ollama:qwen2.5:7b" --parsing-model "ollama:qwen2.5:7b" --base-url "http://localhost:11434/v1"
    ```
    ⚠️ Terminal này bị PentestGPT chiếm (giao diện hỏi-đáp). Nhập mô tả mục tiêu + URL khi nó hỏi.
-   > Nếu báo lỗi model: kiểm tra `ollama list` có `qwen2.5:7b` và Ollama đang chạy. Chạy `... --list-models` để xem danh sách.
+   ⚠️ **PHẢI chạy trong PowerShell hoặc cmd** (terminal VS Code mặc định là PowerShell — OK). KHÔNG chạy trong Git Bash: giao diện cần console Windows thật, Git Bash báo lỗi `Found xterm-256color, while expecting a Windows console`.
+   > Nếu báo lỗi model: kiểm tra `ollama list` có `qwen2.5:7b` và Ollama đang chạy (`curl http://localhost:11434/api/tags`). Xem model hỗ trợ: thêm `--list-models` (model local nhập dạng `ollama:<tên>`).
+   > Lưu ý: `python -m pentestgpt_legacy.test_connection` CHỈ kiểm 4 nhà cung cấp cloud (Gemini/Grok/Qwen-API/Kimi) — sẽ "✗ no key", đó là BÌNH THƯỜNG vì C2-API đã hoãn; nó KHÔNG kiểm Ollama local.
+
+   **Đã validate đường C1-local (2026-11-02):** gọi thử model qua endpoint OpenAI của Ollama → trả lời mạch lạc ~16 giây/lượt, có đếm token (prompt/completion, dùng cho cột `tokens_used`), KHÔNG từ chối tác vụ ở mức phương pháp (`llm_refused=0`). Banner PentestGPT nạp đúng 3 model `ollama:qwen2.5:7b` và "Sessions initialized".
 
 **Terminal #2 — chạy lệnh PentestGPT đề xuất** 🖥️ **PS (thư mục bất kỳ)**
 3. PentestGPT (trợ lý) sẽ đề xuất lệnh (curl, sqlmap…). **Người 3 chạy lệnh ở Terminal #2**, rồi dán kết quả trở lại Terminal #1. → Mỗi lần người can thiệp như vậy, **đếm vào `manual_interventions`**.
