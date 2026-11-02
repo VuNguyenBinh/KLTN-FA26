@@ -39,15 +39,17 @@ Dòng công cụ quét tự động — scanner lỗ hổng (nuclei), fuzzer th�
 Nhiều hệ/benchmark gần đây mở rộng hướng này nhưng đồng thuận ở một kết luận: tác nhân LLM **mạnh ở CVE đã biết, yếu ở tác vụ mở, đầu-cuối**:
 - **AutoPenBench** (2024) — khung đánh giá gồm 33 tác vụ (in-vitro và thực tế). Agent **tự trị** chỉ đạt **21%** tỷ lệ thành công, trong khi agent **có người hỗ trợ** đạt **64%** — một bằng chứng trực tiếp cho giá trị của con người trong vòng lặp.
 - **HackSynth** (2024) — agent tự trị (mô-đun Planner + Summarizer) kèm hai bộ CTF mới gồm ~200 thử thách rút từ PicoCTF và OverTheWire; đạt tốt nhất với GPT-4o.
-- **CVE-Bench** (ICML 2025, arXiv 2503.17332) — 40 CVE ứng dụng web thực (mức critical); khung agent tốt nhất chỉ giải được **tối đa ~13%**.
-- Một công trình "Towards Automated Penetration Testing" (bản ACM 2024/2025) báo cáo rằng **không có trợ giúp của con người, các tác nhân hiện tại không hoàn tất nổi một bài pentest đầu-cuối nào**.
+- **CVE-Bench** (ICML 2025, arXiv 2503.17332) — 40 CVE ứng dụng web thực (mức critical); khung agent tốt nhất chỉ giải được **tối đa 12,5%** trong kịch bản one-day.
+- **PentestEval** (2025) — phân rã một engagement thành 346 tác vụ theo giai đoạn; tỷ lệ thành công đầu-cuối của tác nhân *tự trị hoàn toàn* vẫn **dưới 6%**, cho thấy năng lực ở từng bước không tự ghép thành chuỗi tấn công hoàn chỉnh.
 
 Các kết quả này — nhất là chênh lệch 21%→64% của AutoPenBench — củng cố thiết kế *trợ lý có-người-trong-vòng-lặp* (chứ không phải agent tự trị thuần) của nhánh C, và lý do đo `manual_interventions`.
 
 ### 2.3 Benchmark và vấn đề bão hòa
 **XBOW validation-benchmarks** — 104 bài CTF web đóng gói Docker, phát hành công khai tháng 11/2024, phủ nhiều lớp lỗ hổng (XSS, SSTI, SQLi, IDOR, SSRF, crypto…). XBOW báo cáo tỷ lệ giải ~85% (tương đương một pentester kinh nghiệm trong một tuần). Benchmark này được chọn làm bộ mục tiêu vì tính tất định (flag exact-match), cô lập Docker và độ phủ lỗ hổng.
 
-Chính độ phổ biến đó đặt ra vấn đề **bão hòa / rò rỉ huấn luyện**: khi một benchmark được công bố rộng, điểm số của mô hình trên nó có thể phản ánh *ghi nhớ* hơn là *năng lực tìm lỗ hổng*. Các khảo sát và nghiên cứu về *thực hành benchmark trong offensive security dùng LLM* (2025–2026) cũng cảnh báo về testbed không nhất quán, chỉ số đo thiếu chuẩn, và số lượng tác vụ web thực sự ít trong nhiều bộ dữ liệu phổ biến. Để đối phó, ta dùng **bản hint-free** (fork KeygraphHQ của XBOW, đã xóa gợi ý lời giải) song song với bản gốc và báo cáo *delta memorization* — biến hạn chế của benchmark thành một phép đo có ý nghĩa.
+Chính độ phổ biến đó đặt ra vấn đề **bão hòa / rò rỉ huấn luyện**: khi một benchmark được công bố rộng, điểm số của mô hình trên nó có thể phản ánh *ghi nhớ* hơn là *năng lực tìm lỗ hổng*. Khảo sát hệ thống của He và cộng sự (2026, 81 bài 2023–2026) xác nhận đây là một trong ba thách thức cốt lõi của lĩnh vực, và chỉ ra rằng *chỉ số nhị phân (giải/không giải) không phân biệt được năng lực thật với việc khớp benchmark*. Bằng chứng định lượng trực tiếp đến từ **CTFusion** (2026): khi so cùng một tác nhân trên benchmark tĩnh và trên thi đấu live, nghiên cứu phát hiện **71 "sự kiện học thuộc" (memorization events); sau khi loại bỏ chúng, tỷ lệ giải trung bình giảm 29 điểm phần trăm**. Để đối phó, ta dùng **bản hint-free** (fork KeygraphHQ của XBOW, đã xóa gợi ý lời giải) song song với bản gốc và báo cáo *delta memorization* — cùng tinh thần với CTFusion nhưng áp cho so sánh có kiểm soát ba nhánh, biến hạn chế của benchmark thành một phép đo có ý nghĩa.
+
+Đáng lưu ý, **AWE** (NDSS Workshop 2026) — một hệ AI đa-tác-nhân chuyên web — chạy *ngay trên bộ XBOW mà nghiên cứu này dùng*, báo cáo **87% thành công XSS và 66,7% blind SQLi**. Con số cao này trên đúng benchmark của ta vừa cho một mốc đối chiếu cho nhánh C, vừa làm nổi bật lý do cần đo học thuộc: phần nào trong mức điểm đó là năng lực, phần nào là benchmark đã bão hòa?
 
 ### 2.4 Khác biệt của nghiên cứu này
 So với các công trình trên, đóng góp phân biệt là **tính so sánh có kiểm soát**: thay vì đánh giá *một* hệ AI trên *một* benchmark, ta đặt ba cách tiếp cận (thủ công / tự động-không-AI / có-AI) **cạnh nhau trên cùng mục tiêu và cùng giao thức**, tách riêng hiệu ứng *tự động hóa* khỏi hiệu ứng *AI*, và định lượng trực tiếp *học thuộc* lẫn *rào cản triển khai* — những khía cạnh mà các công bố điểm-số đơn lẻ thường bỏ qua.
@@ -62,9 +64,12 @@ So với các công trình trên, đóng góp phân biệt là **tính so sánh 
 - **Fang, Bindu, Gupta, Kang (2024)** — "LLM Agents can Autonomously Exploit One-day Vulnerabilities", arXiv **2404.08144**. 15 CVE one-day: GPT-4 87% có mô tả → 7% không mô tả. https://arxiv.org/abs/2404.08144
 - **AutoPenBench (2024)** — arXiv **2410.03225**. 33 tác vụ; tự trị 21% SR, có hỗ trợ 64%. https://arxiv.org/abs/2410.03225
 - **HackSynth (2024)** — arXiv **2412.01778**. ~200 thử thách (PicoCTF + OverTheWire). https://arxiv.org/abs/2412.01778
-- **CVE-Bench (ICML 2025)** — arXiv **2503.17332**. 40 CVE web thực; tốt nhất ~13%. https://arxiv.org/abs/2503.17332 — poster: https://icml.cc/virtual/2025/poster/46522
+- **CVE-Bench (ICML 2025)** — Zhu et al., arXiv **2503.17332**; PMLR vol. 267, tr. 79850–79867. 40 CVE web thực; tốt nhất 12,5% one-day. https://arxiv.org/abs/2503.17332 — poster: https://icml.cc/virtual/2025/poster/46522
+- **Survey "LLM-Driven Penetration Testing"** — He, Dong, Z. Li, Chen, **G. Deng**, F. Luo, Ji, Cao, X. Luo. arXiv **2607.02605v1** [cs.SE], 1/7/2026. 81 bài (2023–2026), taxonomy 6 nhóm "Agent4Pentest". **Đã xác minh từ PDF đầy đủ.** https://arxiv.org/abs/2607.02605
+- **CTFusion** — Lee, Bae, Yun. arXiv **2605.11504**, 2026. 71 memorization events; loại bỏ → tỷ lệ giải TB giảm 29 điểm %. (trích gián tiếp qua survey 2607.02605 §IV-C; nên xác minh bản gốc nếu trích số trực tiếp)
+- **AWE** (Adaptive agents for dynamic Web penetration testing) — Jaswal, Baghel. NDSS Workshop (LAST-X) 2026. 87% XSS, 66,7% blind SQLi **trên XBOW**. (trích gián tiếp qua survey §VII-A)
 
-**Chưa xác minh kỹ — kiểm lại trước khi trích:**
-- Towards Automated Penetration Testing (ACM 2024/2025): https://dl.acm.org/doi/10.1145/3708319.3733804
-- Benchmarking Practices in LLM-driven Offensive Security (2025): https://arxiv.org/abs/2504.10112
-- Survey of LLM-Driven Penetration Testing (2026): mã arXiv 2607.02605 **chưa kiểm chứng được** — tra lại tiêu đề đầy đủ trước khi dùng.
+- **Benchmarking Practices in LLM-driven Offensive Security** — Happe & Cito, arXiv **2504.10112**, 2025 (survey ref [37]: audit testbed/metrics trên 19 bài). https://arxiv.org/abs/2504.10112
+- **PentestEval** — Yang et al., arXiv **2512.14233**, 2025. 346 tác vụ theo giai đoạn; end-to-end tự trị <6% (trích gián tiếp qua survey §IV).
+
+**Ghi chú:** mọi nguồn trích "gián tiếp qua survey" nên mở bản gốc để xác nhận số nếu đưa vào bản nộp chính thức; các mục còn lại đã xác minh trực tiếp.
