@@ -44,8 +44,13 @@ Vấn đề → khoảng trống (thiếu so sánh có kiểm soát giữa pente
 - AI mạnh ở đâu (thường: nhận diện nhanh lớp lỗ hổng phổ biến), yếu ở đâu (ví dụ blind/đa bước).
 - Ý nghĩa thực tế: AI là *trợ lý tăng tốc* hay *thay thế*? Rào cản triển khai (bộ lọc an toàn, chi phí token).
 
-## 6. Threats to Validity
-- Mẫu nhỏ, chỉ CTF-style (không hẳn giống web thật), chủ quan người chấm nhánh A, chọn model cụ thể.
+## 6. Threats to Validity (cụ thể — hội đồng/phản biện sẽ hỏi)
+- **Mẫu & bối cảnh:** 40 bài CTF-style (không hẳn giống web thật), 1 bộ model cụ thể; chủ quan người chấm nhánh A.
+- **Benchmark bão hòa / memorization:** XBOW đã bị huấn luyện vào model → solve-rate nhánh AI trên bản gốc bị thổi phồng. Ta xử lý bằng cặp gốc/hint-free và báo cáo *delta memorization*; nhưng bản hint-free vẫn cùng lớp lỗ hổng nên chỉ giảm chứ không loại hết hiệu ứng.
+- **Nhánh B không phủ đều lỗ hổng (quan trọng):** chỉ **21/40 bài** có bộ khai thác no-AI chuyên biệt (sqlmap/dalfox/SSTImap); **19/40 bài** chỉ có nuclei+ffuf → solve-rate nhánh B ở các loại IDOR/logic/deserialization/XXE/LFI... bị giới hạn bởi *công cụ*, không phải bởi "tự động hóa" nói chung. Phải nêu rõ để không phóng đại khoảng cách B vs C.
+- **Nhãn loại lỗ hổng (RQ3):** mỗi bài gán 1 `vuln_category` = tag đầu tiên, trong khi nhiều bài có nhiều tag (vd XBEN-006 = idor,sqli). Phân tích theo loại vì thế là gần đúng; (lưu ý: việc *chọn bộ khai thác* nhánh B lại quét **tất cả** tag, nên không bị ảnh hưởng — chỉ phần nhóm RQ3 bị).
+- **Vá tương thích Docker:** image EOL → bump phiên bản / mirror archive, CRLF→LF, đổi cổng cố định → ngẫu nhiên (`harness/patches.log`). Không đổi lỗ hổng/flag nhưng là thay đổi môi trường cần khai báo.
+- **Giới hạn thời gian 30′/bài** có thể cắt ngắn các bài khó (ảnh hưởng mọi nhánh như nhau).
 
 ## 7. Conclusion & Future Work
 - Tóm tắt phát hiện, hướng mở rộng (mẫu lớn hơn, web thật có phép, nhiều model).

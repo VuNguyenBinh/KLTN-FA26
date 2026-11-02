@@ -87,33 +87,43 @@ def main():
     t0 = time.time()
     all_out = ""
 
+    def budget_run(cmd, step_timeout, logf):
+        """Chay 1 buoc nhung GIOI HAN boi tong ngan sach con lai (args.budget).
+        Neu het gio -> bo qua. Dam bao tong thoi gian khong vuot --budget."""
+        remaining = args.budget - (time.time() - t0)
+        if remaining <= 5:
+            logf.write(f"\n[budget] het ngan sach {args.budget}s -> BO QUA: {os.path.basename(str(cmd[0]))}\n")
+            logf.flush()
+            return ""
+        return run(cmd, logf, int(min(step_timeout, remaining)))
+
     with open(logpath, "w", encoding="utf-8") as logf:
-        logf.write(f"ARM B | {args.benchmark} | cat={category} | url={args.url}\n")
+        logf.write(f"ARM B | {args.benchmark} | cat={category} | url={args.url} | budget={args.budget}s\n")
         logf.write(f"ground_truth_flag={gt_flag}\n")
 
         # B1 nuclei (moi bai)
-        all_out += run([NUCLEI, "-u", args.url, "-rl", "50", "-timeout", "10",
-                        "-nc", "-silent"], logf, 600)
+        all_out += budget_run([NUCLEI, "-u", args.url, "-rl", "50", "-timeout", "10",
+                               "-nc", "-silent"], 600, logf)
 
         # B2 ffuf fuzz path (moi bai)
         if os.path.isfile(WORDLIST):
-            all_out += run([FFUF, "-u", args.url.rstrip("/") + "/FUZZ", "-w", WORDLIST,
-                            "-mc", "200,204,301,302,307,401,403", "-t", "40",
-                            "-s"], logf, 300)
+            all_out += budget_run([FFUF, "-u", args.url.rstrip("/") + "/FUZZ", "-w", WORDLIST,
+                                   "-mc", "200,204,301,302,307,401,403", "-t", "40",
+                                   "-s"], 300, logf)
 
         # B3 exploiter theo loai - QUET TAT CA tag, chay moi bo phu hop (co the nhieu)
         ran_exploiter = False
         if tagset & {"sqli", "blind_sqli", "nosqli"}:
-            all_out += run([sys.executable, SQLMAP, "-u", args.url, "--batch",
-                            "--crawl=3", "--forms", "--level=2", "--risk=2",
-                            "--dump-all", "--threads=4"], logf, 900)
+            all_out += budget_run([sys.executable, SQLMAP, "-u", args.url, "--batch",
+                                   "--crawl=3", "--forms", "--level=2", "--risk=2",
+                                   "--dump-all", "--threads=4"], 900, logf)
             ran_exploiter = True
         if "xss" in tagset:
-            all_out += run([DALFOX, "url", args.url, "--no-spinner"], logf, 600)
+            all_out += budget_run([DALFOX, "url", args.url, "--no-spinner"], 600, logf)
             ran_exploiter = True
         if "ssti" in tagset:
-            all_out += run([sys.executable, SSTIMAP, "-u", args.url, "--crawl", "5",
-                            "-B"], logf, 600)
+            all_out += budget_run([sys.executable, SSTIMAP, "-u", args.url, "--crawl", "5",
+                                   "-B"], 600, logf)
             ran_exploiter = True
         if not ran_exploiter:
             logf.write(f"\n[info] khong co exploiter no-AI chuyen biet cho tags={tags} "

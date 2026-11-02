@@ -161,9 +161,42 @@ def normalize_sh(bench, bench_dir):
                 log_patch(bench, f"{os.path.relpath(f, DEFAULT_REPO)}: CRLF -> LF")
 
 
+def dedup_compose_keys(bench, bench_dir):
+    """Bo key TRUNG trong 1 service (vd depends_on 2 lan) - parser cua Docker Compose
+    tu choi duplicate key du PyYAML cho qua. Giu lan dau, bo block lap sau."""
+    path = os.path.join(bench_dir, "docker-compose.yml")
+    if not os.path.isfile(path):
+        path = os.path.join(bench_dir, "docker-compose.yaml")
+        if not os.path.isfile(path):
+            return
+    lines = open(path, encoding="utf-8").read().splitlines(keepends=True)
+    out, cur_service, seen, skipping = [], None, {}, False
+    for ln in lines:
+        if skipping:
+            if ln.startswith("     ") and ln.strip():  # >4 space -> van trong block lap
+                continue
+            skipping = False  # gap key 4-space hoac dong trong -> het block
+        ms = re.match(r"^  ([\w-]+):\s*$", ln)
+        mk = re.match(r"^    ([\w-]+):", ln)
+        if ms:
+            cur_service = ms.group(1); seen[cur_service] = set(); out.append(ln); continue
+        if mk and cur_service is not None:
+            k = mk.group(1)
+            if k in seen[cur_service]:
+                skipping = True
+                log_patch(bench, f"docker-compose.yml: bo key trung '{k}' trong service '{cur_service}'")
+                continue
+            seen[cur_service].add(k)
+        out.append(ln)
+    if len(out) != len(lines):
+        with open(path, "w", encoding="utf-8") as f:
+            f.writelines(out)
+
+
 def apply_fixes(bench, bench_dir):
     for df in glob.glob(os.path.join(bench_dir, "**", "Dockerfile"), recursive=True):
         patch_dockerfile(bench, df)
+    dedup_compose_keys(bench, bench_dir)
     patch_compose(bench, bench_dir)
     normalize_sh(bench, bench_dir)
 
@@ -175,11 +208,11 @@ def run(cmd, cwd, timeout=1800):
 DB_PORTS = {3306, 5432, 6379, 27017, 1433, 11211}
 
 
-def detect_url(bench_dir):
+def detect_url(bench_dir, project):
     """Tra ve http://localhost:<host_port> cua service web (bo cong DB, uu tien cong HTTP phan hoi)."""
     import json as _json
     import urllib.request
-    r = run(["docker", "compose", "ps", "--format", "json"], bench_dir, 120)
+    r = run(["docker", "compose", "-p", project, "ps", "--format", "json"], bench_dir, 120)
     candidates = []  # (svc, published_port, target_port)
     for line in r.stdout.splitlines():
         line = line.strip().lstrip("﻿")
@@ -242,13 +275,17 @@ def main():
         print(f"KHONG tim thay {bench_dir}"); sys.exit(2)
 
     flag = flag_for(args.benchmark)
-    print(f"[{args.benchmark}] variant={args.variant} flag={flag[:20]}...")
+    # Project name RIENG cho moi (benchmark, variant): tranh 2 ban (goc/hint-free) cung
+    # basename thu muc -> cung project -> DE NHAU container VA image. Vd: xben-001-24-original
+    project = f"{args.benchmark.lower()}-{args.variant}"
+    print(f"[{args.benchmark}] variant={args.variant} project={project} flag={flag[:20]}...")
 
     print("Ap ban va tuong thich...")
     apply_fixes(args.benchmark, bench_dir)
 
     print("Building...")
-    build = ["docker", "compose", "build", "--build-arg", f"FLAG={flag}", "--build-arg", f"flag={flag}"]
+    build = ["docker", "compose", "-p", project, "build",
+             "--build-arg", f"FLAG={flag}", "--build-arg", f"flag={flag}"]
     if args.no_cache:
         build.append("--no-cache")
     b = run(build, bench_dir, 2400)
@@ -261,7 +298,7 @@ def main():
     print("Starting...")
     # KHONG dung --wait: nhieu benchmark cu cau hinh healthcheck sai (mongosh, haproxy,
     # Flask debug) -> bao unhealthy du web van phuc vu. Ta tin HTTP-probe that su.
-    u = run(["docker", "compose", "up", "-d"], bench_dir, 600)
+    u = run(["docker", "compose", "-p", project, "up", "-d"], bench_dir, 600)
     if u.returncode != 0:
         print("UP FAILED:\n", (u.stderr or u.stdout)[-600:])
         write_target(args.benchmark, "up_failed", None, flag, args.variant)
@@ -271,7 +308,7 @@ def main():
     url, svc, status = None, None, "up_failed"
     deadline = time.time() + 120
     while time.time() < deadline:
-        url, svc = detect_url(bench_dir)
+        url, svc = detect_url(bench_dir, project)
         if url:
             try:
                 code = urllib.request.urlopen(url, timeout=8).getcode()
@@ -288,14 +325,14 @@ def main():
         print(f"  khong co web port phan hoi HTTP sau 120s (url cuoi={url})")
         write_target(args.benchmark, "up_failed", url, flag, args.variant)
         if args.down:
-            run(["docker", "compose", "down"], bench_dir, 300)
+            run(["docker", "compose", "-p", project, "down"], bench_dir, 300)
         sys.exit(1)
 
     write_target(args.benchmark, status, url, flag, args.variant)
     print(f"  -> ghi targets.csv: {status} {url}")
 
     if args.down:
-        run(["docker", "compose", "down"], bench_dir, 300)
+        run(["docker", "compose", "-p", project, "down"], bench_dir, 300)
         print("  da ha container.")
 
 

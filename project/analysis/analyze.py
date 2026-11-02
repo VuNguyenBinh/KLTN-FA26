@@ -25,24 +25,41 @@ ARM_LABEL = {
 
 def load(path):
     df = pd.read_csv(path)
-    # chuan hoa cot boolean
-    for col in ["solved", "llm_refused"]:
-        if col in df.columns:
-            df[col] = (
-                df[col].astype(str).str.strip().str.lower()
-                .map({"1": 1, "y": 1, "yes": 1, "true": 1,
-                      "0": 0, "n": 0, "no": 0, "false": 0, "": 0})
-                .fillna(0).astype(int)
-            )
+    if "variant" not in df.columns:
+        df["variant"] = "original"
+    df["variant"] = (df["variant"].astype(str).str.strip().str.lower()
+                     .replace({"": "original", "nan": "original"}))
+    truth = {"1": 1, "y": 1, "yes": 1, "true": 1,
+             "0": 0, "n": 0, "no": 0, "false": 0}
+
+    def to_bool(v):
+        # Tra 1/0 neu dien, None neu trong/khong ro. Xu ly ca "1.0" (khi pandas doc thanh float).
+        if pd.isna(v):
+            return None
+        sv = str(v).strip().lower()
+        if sv in ("", "nan", "none"):
+            return None
+        if sv.endswith(".0"):
+            sv = sv[:-2]
+        return truth.get(sv)  # None neu gia tri la
+
+    # QUAN TRONG: dong CHUA chay (solved trong) -> None -> bi loai, KHONG tinh la fail.
+    df["solved"] = df["solved"].map(to_bool)
+    if "llm_refused" in df.columns:
+        df["llm_refused"] = df["llm_refused"].map(to_bool).fillna(0).astype(int)
     for col in ["time_minutes", "num_steps", "tokens_used", "manual_interventions"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-    # chi giu cac dong da chay (co ghi solved)
-    return df[df["solved"].notna()]
+    # chi giu cac dong DA CHAY (cot solved da dien 0/1); dong trong bi loai that su
+    df = df[df["solved"].notna()].copy()
+    df["solved"] = df["solved"].astype(int)
+    return df
 
 
 def summary_table(df):
-    g = df.groupby("arm")
+    # So sanh 3 nhanh tren CUNG dieu kien: variant=original (A/B chi co original)
+    d = df[df["variant"] == "original"]
+    g = d.groupby("arm")
     out = pd.DataFrame({
         "n_runs": g.size(),
         "solve_rate_%": (g["solved"].mean() * 100).round(1),
@@ -57,15 +74,31 @@ def summary_table(df):
 
 
 def solve_rate_by_difficulty(df):
-    t = (df.groupby(["difficulty", "arm"])["solved"].mean() * 100).round(1).unstack("arm")
+    d = df[df["variant"] == "original"]
+    t = (d.groupby(["difficulty", "arm"])["solved"].mean() * 100).round(1).unstack("arm")
     cols = [a for a in ARM_ORDER if a in t.columns]
     return t[cols]
 
 
 def solve_rate_by_category(df):
-    t = (df.groupby(["vuln_category", "arm"])["solved"].mean() * 100).round(1).unstack("arm")
+    d = df[df["variant"] == "original"]
+    t = (d.groupby(["vuln_category", "arm"])["solved"].mean() * 100).round(1).unstack("arm")
     cols = [a for a in ARM_ORDER if a in t.columns]
     return t[cols]
+
+
+def memorization_table(df):
+    """Dong gop chinh: nhanh AI tren ban goc vs hint-free. Delta = muc 'hoc thuoc'."""
+    ai = df[df["arm"].isin(["C_ai_local", "C_ai_api"])]
+    if ai.empty:
+        return None
+    t = (ai.groupby(["arm", "variant"])["solved"].mean() * 100).round(1).unstack("variant")
+    for col in ["original", "hintfree"]:
+        if col not in t.columns:
+            t[col] = float("nan")
+    t = t[["original", "hintfree"]]
+    t["delta_hoc_thuoc"] = (t["original"] - t["hintfree"]).round(1)
+    return t.reindex([a for a in ARM_ORDER if a in t.index])
 
 
 def bar_solve_rate(summary):
@@ -96,6 +129,25 @@ def grouped_by_difficulty(diff_table):
     print(f"[fig] {p}")
 
 
+def bar_memorization(mem):
+    fig, ax = plt.subplots(figsize=(6, 4))
+    arms = list(mem.index)
+    x = range(len(arms))
+    w = 0.38
+    ax.bar([i - w / 2 for i in x], mem["original"], w, label="Ban goc")
+    ax.bar([i + w / 2 for i in x], mem["hintfree"], w, label="Hint-free")
+    ax.set_xticks(list(x))
+    ax.set_xticklabels([ARM_LABEL.get(a, a) for a in arms])
+    ax.set_ylabel("Solve rate (%)")
+    ax.set_title("Hieu ung 'AI hoc thuoc': goc vs hint-free")
+    ax.set_ylim(0, 100)
+    ax.legend()
+    fig.tight_layout()
+    p = os.path.join(FIG_DIR, "fig_memorization.png")
+    fig.savefig(p, dpi=150)
+    print(f"[fig] {p}")
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python analyze.py <results.csv>")
@@ -105,16 +157,28 @@ def main():
         print("Chua co du lieu (chua ghi cot 'solved').")
         return
 
-    print("\n=== BANG 1: Tong hop theo nhanh ===")
+    n_orig = (df["variant"] == "original").sum()
+    print(f"[info] {len(df)} luot da chay | original={n_orig} | hintfree={len(df) - n_orig}")
+
+    print("\n=== BANG 1: Tong hop theo nhanh (variant=original) ===")
     summary = summary_table(df)
     print(summary.to_string())
 
-    print("\n=== BANG 2: Solve rate theo do kho (%) ===")
+    print("\n=== BANG 2: Solve rate theo do kho (%, original) ===")
     diff = solve_rate_by_difficulty(df)
     print(diff.to_string())
 
-    print("\n=== BANG 3: Solve rate theo loai lo hong (%) ===")
+    print("\n=== BANG 3: Solve rate theo loai lo hong (%, original) ===")
     print(solve_rate_by_category(df).to_string())
+
+    print("\n=== BANG 4: Hieu ung 'AI hoc thuoc' (nhanh C: goc vs hint-free) ===")
+    mem = memorization_table(df)
+    if mem is not None:
+        print(mem.to_string())
+        mem.to_csv(os.path.join(FIG_DIR, "table_memorization.csv"))
+        bar_memorization(mem)
+    else:
+        print("(chua co du lieu nhanh C)")
 
     bar_solve_rate(summary)
     grouped_by_difficulty(diff)

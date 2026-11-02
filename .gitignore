@@ -9,6 +9,7 @@
 # === File sinh ra khi chay / runtime ===
 /project/logs/
 /project/benchmarks/targets.csv
+/project/benchmarks/*.bak*
 /project/harness/patches.log
 /project/results/results.csv
 /paper/figures/
