@@ -9,8 +9,9 @@
 - **CẢ 80 target build + chạy được** (40 gốc + 40 hint-free, HTTP 200, flag khớp). ✓
 - Script phân tích + vẽ biểu đồ (`analysis/analyze.py`): bảng solve-rate theo nhánh/độ khó/loại + bảng hiệu ứng memorization (gốc vs hint-free) + **Bảng 3b detection vs capture tự động cho nhánh B** (bóc `detected=` từ cột notes). Đã test. ✓
 - **NHÁNH B (auto, không AI) — HOÀN TẤT 40/40 bài gốc.** ✓ (xem kết quả bên dưới)
-- Tài liệu hướng dẫn: PLAN, SETUP, WORKFLOW, ARM_B, RUNBOOK, OUTLINE. ✓
+- Tài liệu hướng dẫn: PLAN, SETUP, WORKFLOW, ARM_B, RUNBOOK, STATUS, report_C (nhật ký nhánh C). ✓
 - **Nháp bài báo** (trong `paper/draft_*.md`): Methodology (mục 3), Results/Discussion nhánh B (mục 4–5, chừa số A/C), Introduction + Related Work (mục 1–2, nguồn đã xác minh), Abstract + Conclusion (khung, chừa số A/C). ✓
+- **NHÁNH C (AI) — tooling đã validate + chạy xong 1 phiên thật.** ✓ PentestGPT legacy + Ollama `qwen2.5:7b` khởi động OK; phiên đầu XBEN-061-24 (LFI) có nhật ký đầy đủ ở `docs/report_C.md`, 1 dòng dữ liệu `C_ai_local` trong `results.csv`.
 - Đã commit + push lên GitHub (`VuNguyenBinh/KLTN-FA26`), `results.csv` version-controlled. ✓
 
 ## NHÁP BÀI BÁO — trạng thái từng mục
@@ -46,7 +47,7 @@ Theo loại (phát hiện nổi bật): SSTI 6/6=100% phát hiện nhưng 0 bắ
 
 ## CẦN NHÓM LÀM / QUYẾT (không tự động được)
 1. **Nhánh A (manual):** cài **Burp Suite Community**, kiểm thử tay 40 bài gốc, bấm giờ, ghi `results.csv` (`arm=A_manual`). Xem `docs/RUNBOOK.md` Bước 2.
-2. **Nhánh C (AI):** chạy PentestGPT legacy + Ollama (`qwen2.5:7b`), **mỗi bài trên bản gốc VÀ hint-free**, ghi tokens/manual_interventions/llm_refused. Xem RUNBOOK Bước 4. (C2 API đã hoãn — chốt C1 local trước.)
+2. **Nhánh C (AI) — NHÂN RỘNG:** tooling đã chạy được (1 phiên mẫu xong, xem `docs/report_C.md`). Việc còn lại: chạy nốt các bài còn lại bằng PentestGPT legacy + Ollama (`qwen2.5:7b`), **mỗi bài trên bản gốc VÀ hint-free**, ghi tokens/manual_interventions/llm_refused. Theo mẫu `report_C.md` + RUNBOOK Bước 4. Kết quả phiên đầu: XBEN-061 LFI → `solved=0` (xác nhận khai thác LFI nhưng không bắt được flag; vượt nhánh B). (C2 API đã hoãn — chốt C1 local trước.)
 3. **(tùy chọn)** API key cho C2 nếu muốn chạy nhánh API: khuyến nghị **DeepSeek** hoặc **Qwen/DashScope** (rẻ, ít từ chối hơn). Đặt vào `PentestGPT/.env`.
 
 > Lưu ý: Claude KHÔNG thể đóng vai nhánh A (sẽ biến nó thành "có AI"). Nhánh A/C cần người thật.
