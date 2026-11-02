@@ -1,33 +1,48 @@
-# STATUS — Chốt ngày 2026-11-01
+# STATUS — Chốt ngày 2026-11-02
 
 ## ĐÃ XONG (Claude dựng & kiểm chứng trên máy)
 - Hạ tầng: Docker (engine 29.8.1 chạy), Git, Ollama + model `qwen2.5:7b`. ✓
 - 2 bộ benchmark: gốc (104 bài) + **hint-free** (104 bài, đã xóa gợi ý). ✓
 - Metadata 104 bài (độ khó + loại lỗ hổng) + **mẫu 40 bài phân tầng** (seed=42). ✓
 - Công thức flag = `FLAG{sha256(TEN_BAI)}`, **đã xác minh khớp pipeline gốc**. ✓
-- **Harness build tự động** (`harness/build_target.py`, `build_all.py`): tự vá tương thích, build, chạy, dò port, health-check, ghi `targets.csv`. ✓
-- 2 bài đã chạy thật (XBEN-001, XBEN-002), web HTTP 200, flag khớp. ✓
-- Script phân tích + vẽ biểu đồ (`analysis/analyze.py`), đã test. ✓
-- Tài liệu: PLAN, SETUP, WORKFLOW, OUTLINE (bài báo). ✓
+- **Harness build tự động** (`harness/build_target.py`): tự vá tương thích Docker 2026, build, chạy, dò port, health-check (HTTP-probe, không tin healthcheck cũ), ghi `targets.csv`. Cô lập mỗi variant bằng `-p <bench>-<variant>`. ✓
+- **CẢ 80 target build + chạy được** (40 gốc + 40 hint-free, HTTP 200, flag khớp). ✓
+- Script phân tích + vẽ biểu đồ (`analysis/analyze.py`): có bảng solve-rate theo nhánh/độ khó/loại + bảng hiệu ứng memorization (gốc vs hint-free). Đã test. ✓
+- **NHÁNH B (auto, không AI) — HOÀN TẤT 40/40 bài gốc.** ✓ (xem kết quả bên dưới)
+- Tài liệu: PLAN, SETUP, WORKFLOW, ARM_B, RUNBOOK, OUTLINE (bài báo). ✓
+- Đã commit + push lên GitHub (`VuNguyenBinh/KLTN-FA26`), `results.csv` version-controlled. ✓
+
+## KẾT QUẢ NHÁNH B (baseline tự-động-không-AI, 40 bài gốc, budget 30′/bài)
+Hai chỉ số (quan trọng — phân biệt *phát hiện* với *bắt flag*):
+
+| Chỉ số | Kết quả |
+|---|---|
+| **Bắt được flag** (tiêu chí giải) | **2/40 = 5%** — XBEN-071, XBEN-083, đều SQLi (sqlmap dump DB) |
+| **Phát hiện lỗ hổng** (tool có báo vuln) | **22/40 = 55%** |
+
+Theo độ khó (bắt flag / phát hiện): easy 14.3% / 64%; medium 0% / 56%; hard 0% / 37.5%.
+Theo loại (phát hiện nổi bật): SSTI 6/6=100% phát hiện nhưng 0 bắt; XSS 8/10 phát hiện, 0 bắt; IDOR 0/6 phát hiện; SQLi 2/2 bắt flag.
+
+**Phát hiện cốt lõi:** khoảng cách lớn *phát hiện (55%) ≫ bắt flag (5%)* — scanner nhận ra **lớp** lỗ hổng nhưng gần như không tự xâu chuỗi nhiều bước để lấy đúng flag (trừ SQLi nhờ sqlmap tự dump DB). Đây là lập luận để chỉ ra giá trị tiềm năng của nhánh C (AI): lấp khoảng trống *phát hiện → khai thác*.
+
+> Ghi chú tái lập: lần chạy đầu cho 2/40 nhưng có **lỗi đo** (nuclei coi `localhost` là chết, dalfox crash cờ `--no-spinner`, exploiter chỉ quét URL gốc). Đã sửa (dùng `127.0.0.1`, `dalfox -S`, nạp path từ ffuf cho exploiter, giới hạn ngân sách mỗi bước, thêm chỉ số detection) và chạy lại — 2/40 là **con số thật** sau khi sửa. Chi tiết: `docs/ARM_B.md` mục "Kết quả".
 
 ## ĐANG CHẠY NỀN
-- `uv sync` cài PentestGPT (nhánh C) với Python 3.12.
+- (không có) — `uv sync` cài PentestGPT (nhánh C) đã xong trước đó.
 
 ## CẦN NHÓM LÀM / QUYẾT (không tự động được)
-1. **API key cho nhánh C2** — mua/đăng ký 1 key (khuyến nghị **DeepSeek** hoặc **Qwen/DashScope**: rẻ, ít từ chối tác vụ pentest hơn OpenAI/Anthropic). Đặt vào `PentestGPT/.env`.
-2. **Chốt chế độ PentestGPT:** legacy (trợ lý, người chạy lệnh — khuyến nghị, đo được manual_interventions) hay agent (tự động). Mặc định dùng **legacy**.
-3. **Chạy build cả mẫu** (qua đêm, ~vài giờ): `python build_all.py` và `python build_all.py --variant hintfree --repo "..\benchmarks\xbow-hint-free\benchmarks"`.
+1. **Nhánh A (manual):** cài **Burp Suite Community**, kiểm thử tay 40 bài gốc, bấm giờ, ghi `results.csv` (`arm=A_manual`). Xem `docs/RUNBOOK.md` Bước 2.
+2. **Nhánh C (AI):** chạy PentestGPT legacy + Ollama (`qwen2.5:7b`), **mỗi bài trên bản gốc VÀ hint-free**, ghi tokens/manual_interventions/llm_refused. Xem RUNBOOK Bước 4. (C2 API đã hoãn — chốt C1 local trước.)
+3. **(tùy chọn)** API key cho C2 nếu muốn chạy nhánh API: khuyến nghị **DeepSeek** hoặc **Qwen/DashScope** (rẻ, ít từ chối hơn). Đặt vào `PentestGPT/.env`.
 
-## PHÂN CÔNG TUẦN 2 (chạy thí nghiệm)
-- **Người 1 — Nhánh A (manual):** Burp + tay, 40 bài gốc. Bấm giờ, ghi `results.csv`.
-- **Người 2 — Nhánh B (auto no-AI):** cài nuclei/ffuf/sqlmap, pipeline cố định, 40 bài gốc.
-- **Người 3 — Nhánh C (AI):** PentestGPT legacy. Chạy C1 (Ollama) + C2 (API), **mỗi cái trên bản gốc VÀ hint-free**. Ghi tokens, manual_interventions, llm_refused.
+> Lưu ý: Claude KHÔNG thể đóng vai nhánh A (sẽ biến nó thành "có AI"). Nhánh A/C cần người thật.
 
 ## PHÂN CÔNG TUẦN 3 (viết)
 - Chạy `analyze.py` → bảng/biểu đồ. Viết theo `paper/OUTLINE.md`. Dựng slide. Tập bảo vệ.
+- Có thể nhờ Claude viết nháp phần Results/Discussion cho nhánh B từ số liệu trên.
 
 ## GHI CHÚ QUAN TRỌNG
-- Benchmark XBOW **đã bão hòa** (AI ~100% vì học thuộc). Ta xử lý bằng **so sánh gốc vs hint-free** → biến thành đóng góp "đo hiệu ứng memorization". Phải nêu trong *Threats to Validity*.
+- Benchmark XBOW **đã bão hòa** (AI ~100% vì học thuộc). Ta xử lý bằng **so sánh gốc vs hint-free** → đóng góp "đo hiệu ứng memorization". Phải nêu trong *Threats to Validity*.
 - Mọi bản vá tương thích Docker ghi ở `harness/patches.log` — **không đổi lỗ hổng/flag**, chỉ để build được trên Docker 2026. Khai báo trong bài báo.
+- Chỉ **21/40 bài** có bộ khai thác no-AI chuyên biệt (sqlmap/dalfox/SSTImap); 19/40 chỉ nuclei+ffuf → solve-rate nhánh B ở IDOR/logic/deserialization bị giới hạn bởi *công cụ*, không phải bởi "tự động hóa" nói chung. Đã nêu trong *Threats to Validity*.
 - "SCI 2027": bài hội nghị index ở **CPCI (Web of Science)** hoặc **Scopus**, không phải SCIE/SCI. Kiểm tra proceedings hội nghị đã thực sự index ở kỳ trước.
-- Trước khi chạy batch thật: `git checkout -- benchmarks/` ở mỗi repo để về pristine, xóa `harness/patches.log` cũ → log sạch cho tái lập.

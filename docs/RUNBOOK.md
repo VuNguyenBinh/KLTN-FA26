@@ -65,6 +65,10 @@ python build_target.py XBEN-023-24 --variant hintfree --repo "..\benchmarks\xbow
 
 ## BƯỚC 3 — NHÁNH B (Automated, không AI) — Người 2
 
+> ✅ **ĐÃ CHẠY XONG 40/40 bài gốc (2026-11-02)** — kết quả đã ghi `results.csv` và push GitHub. Bắt flag 2/40 (5%), phát hiện lỗ hổng 22/40 (55%). Chi tiết + diễn giải: `docs/ARM_B.md`. Mục dưới giữ lại để tái lập / chạy lại.
+>
+> Chạy lại cả mẻ một lượt (khuyến nghị): `python run_arm_B_all.py --budget 1800` (xem `docs/ARM_B.md` mục 2b). Chạy từng bài theo các bước dưới nếu chỉ cần 1 bài.
+
 🖥️ **PS [D:\Bình\KLTN new\project\harness]** (dùng terminal riêng của Người 2)
 
 1. Bật target (Bước 1), lấy URL (ví dụ http://localhost:8000).
