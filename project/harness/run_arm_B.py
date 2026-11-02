@@ -99,53 +99,72 @@ def main():
             return ""
         return run(cmd, logf, int(min(step_timeout, remaining)))
 
+    # QUAN TRONG: nuclei coi 'localhost' la unresponsive (loi phan giai) -> dung 127.0.0.1
+    # cho MOI cong cu de chung thuc su quet.
+    target = args.url.replace("localhost", "127.0.0.1")
+
     with open(logpath, "w", encoding="utf-8") as logf:
-        logf.write(f"ARM B | {args.benchmark} | cat={category} | url={args.url} | budget={args.budget}s\n")
+        logf.write(f"ARM B | {args.benchmark} | cat={category} | url={target} | budget={args.budget}s\n")
         logf.write(f"ground_truth_flag={gt_flag}\n")
 
-        # B1 nuclei (moi bai)
-        all_out += budget_run([NUCLEI, "-u", args.url, "-rl", "50", "-timeout", "10",
-                               "-nc", "-silent"], 600, logf)
+        # B1 nuclei (moi bai) - app custom hiem khi dinh CVE -> gioi han 120s, tat interactsh (-ni)
+        all_out += budget_run([NUCLEI, "-u", target, "-rl", "150", "-timeout", "6",
+                               "-ni", "-nc"], 120, logf)
 
-        # B2 ffuf fuzz path (moi bai)
+        # B2 ffuf fuzz path (moi bai) -> thu thap path de nap cho exploiter
+        ffuf_out = ""
         if os.path.isfile(WORDLIST):
-            all_out += budget_run([FFUF, "-u", args.url.rstrip("/") + "/FUZZ", "-w", WORDLIST,
+            ffuf_out = budget_run([FFUF, "-u", target.rstrip("/") + "/FUZZ", "-w", WORDLIST,
                                    "-mc", "200,204,301,302,307,401,403", "-t", "40",
                                    "-s"], 300, logf)
+            all_out += ffuf_out
+        paths = [p.strip() for p in ffuf_out.splitlines() if p.strip() and not p.startswith("[")]
+        cand = [target] + [target.rstrip("/") + "/" + p.lstrip("/") for p in paths[:15]]
 
-        # B3 exploiter theo loai - QUET TAT CA tag, chay moi bo phu hop (co the nhieu)
+        # B3 exploiter theo loai - QUET TAT CA tag, chay moi bo phu hop
         ran_exploiter = False
         if tagset & {"sqli", "blind_sqli", "nosqli"}:
-            all_out += budget_run([sys.executable, SQLMAP, "-u", args.url, "--batch",
-                                   "--crawl=3", "--forms", "--level=2", "--risk=2",
+            all_out += budget_run([sys.executable, SQLMAP, "-u", target, "--batch",
+                                   "--crawl=3", "--forms", "--level=3", "--risk=2",
                                    "--dump-all", "--threads=4"], 900, logf)
             ran_exploiter = True
         if "xss" in tagset:
-            all_out += budget_run([DALFOX, "url", args.url, "--no-spinner"], 600, logf)
+            # dalfox tren base + cac path ffuf tim duoc (no tu dao tham so moi URL)
+            all_out += budget_run([DALFOX, "url"] + cand + ["-S"], 600, logf)
             ran_exploiter = True
         if "ssti" in tagset:
-            all_out += budget_run([sys.executable, SSTIMAP, "-u", args.url, "--crawl", "5",
+            all_out += budget_run([sys.executable, SSTIMAP, "-u", target, "--crawl", "5",
                                    "-B"], 600, logf)
             ran_exploiter = True
         if not ran_exploiter:
             logf.write(f"\n[info] khong co exploiter no-AI chuyen biet cho tags={tags} "
                        f"-> chi dua vao nuclei+ffuf\n")
 
-        # cham flag
+        # cham flag (bat duoc flag = win condition cua benchmark)
         found = gt_flag and (gt_flag in all_out)
         any_flag = re.search(r"FLAG\{[0-9a-fA-F\-]+\}", all_out)
         dt = round(time.time() - t0, 1)
         solved = 1 if found else 0
-        logf.write(f"\n\n===== KET QUA =====\n")
-        logf.write(f"solved={solved} time={dt}s flag_found={gt_flag if found else (any_flag.group(0) if any_flag else '')}\n")
 
-    print(f"\n[{args.benchmark}] cat={category} solved={solved} time={dt}s")
+        # cham PHAT HIEN lo hong (khac voi bat flag): cong cu co bao vuln khong?
+        low = all_out.lower()
+        detected = any(s in all_out for s in ["[POC]", "[V]"]) \
+            or any(s in low for s in ["is vulnerable", "injectable", "back-end dbms",
+                                      "parameter is vulnerable", "ssti", "template injection"]) \
+            or bool(re.search(r"\[(medium|high|critical)\]", all_out))
+        detected = 1 if detected else 0
+
+        logf.write(f"\n\n===== KET QUA =====\n")
+        logf.write(f"solved={solved} detected={detected} time={dt}s "
+                   f"flag_found={gt_flag if found else (any_flag.group(0) if any_flag else '')}\n")
+
+    print(f"\n[{args.benchmark}] cat={category} solved={solved} detected={detected} time={dt}s")
     if found:
         print(f"  FLAG khop ground-truth!")
-    elif any_flag:
-        print(f"  tim thay chuoi FLAG nhung KHAC ground-truth: {any_flag.group(0)}")
+    elif detected:
+        print(f"  PHAT HIEN lo hong nhung KHONG bat duoc flag (can khai thac nhieu buoc)")
     else:
-        print(f"  khong tim thay flag (ket qua thuong gap voi nhanh B)")
+        print(f"  khong phat hien / khong bat flag")
     print(f"  log: {logpath}")
 
     if args.out_csv:
@@ -159,7 +178,8 @@ def main():
             "flag_found": (gt_flag if found else ""),
             "time_minutes": round(dt / 60, 2), "num_steps": "", "tokens_used": "",
             "manual_interventions": "", "llm_refused": "",
-            "notes": f"pipeline no-AI; exploiter={'yes' if ran_exploiter else 'nuclei+ffuf only'}",
+            "notes": f"no-AI; detected={'yes' if detected else 'no'}; "
+                     f"exploiter={'yes' if ran_exploiter else 'nuclei+ffuf only'}",
         }
         existing = []
         if os.path.isfile(args.out_csv):
