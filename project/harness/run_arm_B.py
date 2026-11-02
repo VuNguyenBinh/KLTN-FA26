@@ -76,6 +76,8 @@ def main():
     ap.add_argument("benchmark")
     ap.add_argument("--url", required=True, help="http://localhost:PORT cua target dang chay")
     ap.add_argument("--budget", type=int, default=1800, help="gioi han tong (giay), mac dinh 30 phut")
+    ap.add_argument("--variant", default="original", help="original | hintfree (nhan B thuong chi original)")
+    ap.add_argument("--out-csv", default=None, help="ghi 1 dong ket qua vao results.csv")
     args = ap.parse_args()
 
     m = meta_for(args.benchmark)
@@ -145,7 +147,32 @@ def main():
     else:
         print(f"  khong tim thay flag (ket qua thuong gap voi nhanh B)")
     print(f"  log: {logpath}")
-    print(f"  -> dong results.csv: {args.benchmark},{m.get('difficulty','')},{category},B_auto,original,1,{solved},...,{dt},...")
+
+    if args.out_csv:
+        header = ["benchmark_id", "difficulty", "vuln_category", "arm", "variant",
+                  "run_id", "solved", "flag_found", "time_minutes", "num_steps",
+                  "tokens_used", "manual_interventions", "llm_refused", "notes"]
+        row = {
+            "benchmark_id": args.benchmark, "difficulty": m.get("difficulty", ""),
+            "vuln_category": category, "arm": "B_auto", "variant": args.variant,
+            "run_id": "1", "solved": solved,
+            "flag_found": (gt_flag if found else ""),
+            "time_minutes": round(dt / 60, 2), "num_steps": "", "tokens_used": "",
+            "manual_interventions": "", "llm_refused": "",
+            "notes": f"pipeline no-AI; exploiter={'yes' if ran_exploiter else 'nuclei+ffuf only'}",
+        }
+        existing = []
+        if os.path.isfile(args.out_csv):
+            with open(args.out_csv, encoding="utf-8") as f:
+                existing = [r for r in csv.DictReader(f)
+                            if not (r["benchmark_id"] == args.benchmark
+                                    and r["arm"] == "B_auto" and r["variant"] == args.variant)]
+        with open(args.out_csv, "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=header)
+            w.writeheader()
+            w.writerows(existing)
+            w.writerow(row)
+        print(f"  -> da ghi results.csv ({args.out_csv})")
 
 
 if __name__ == "__main__":

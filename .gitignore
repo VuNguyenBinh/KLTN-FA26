@@ -11,8 +11,8 @@
 /project/benchmarks/targets.csv
 /project/benchmarks/*.bak*
 /project/harness/patches.log
-/project/results/results.csv
 /paper/figures/
+# results.csv ĐƯỢC version-control (dữ liệu thí nghiệm, cả nhóm đồng bộ)
 
 # === Python / misc ===
 __pycache__/
