@@ -1,6 +1,6 @@
 # Nháp — Abstract (mục 0) & Conclusion (mục 7)
 
-> Khung để ghép vào `OUTLINE.md`. Viết **cuối cùng**, sau khi có số nhánh A/C. Chỗ `[[…]]` là số/khoảng cần điền; số nhánh B đã có nên điền sẵn (bắt flag 5%, phát hiện 55%). Giữ Abstract ~200 từ.
+> Khung để ghép vào `OUTLINE.md`. Viết **cuối cùng**, sau khi có số nhánh A/C. Chỗ `[[…]]` là số/khoảng cần điền; số nhánh B đã có nên điền sẵn (bắt flag 5%, phát hiện 27,5%). Giữ Abstract ~200 từ.
 
 ---
 
@@ -8,7 +8,7 @@
 
 Các công cụ kiểm thử xâm nhập (pentest) ứng dụng web dùng mô hình ngôn ngữ lớn (LLM) thường tự báo cáo điểm số cao, nhưng những điểm số này được công bố ở điều kiện không đồng nhất và hiếm khi so sánh có kiểm soát với pentest thủ công hay tự động-không-AI. Nghiên cứu này trình bày một **thí nghiệm có kiểm soát ba nhánh** — thủ công (A), tự động-không-AI (B), và có-AI-hỗ-trợ (C) — trên cùng **40 mục tiêu CTF web** rút phân tầng từ bộ XBOW validation-benchmarks, với cùng tiêu chí chấm (flag khớp chính xác) và cùng giới hạn thời gian. Ta đo tỷ lệ giải, thời gian, công sức con người, chi phí token và tỷ lệ LLM từ chối tác vụ, phân tích theo độ khó và loại lỗ hổng; đồng thời chạy nhánh AI trên cả bản gốc lẫn bản đã-xóa-gợi-ý để định lượng hiệu ứng "học thuộc".
 
-Nhánh tự động-không-AI phát hiện lỗ hổng ở **55%** số bài nhưng chỉ bắt được flag ở **5%**, cho thấy khoảng cách lớn giữa *nhận diện* và *khai thác đa bước*. `[[So với baseline đó, pentest có-AI đạt tỷ lệ giải X% so với Y% của thủ công; delta học thuộc là Z điểm; tỷ lệ từ chối của mô hình thương mại là W%.]]` Kết quả `[[chỉ ra AI là trợ lý tăng tốc hay công cụ thay thế]]`, và làm nổi bật các rào cản triển khai thực tế.
+Nhánh tự động-không-AI phát hiện lỗ hổng ở **27,5%** số bài nhưng chỉ bắt được flag ở **5%**, cho thấy khoảng cách giữa *nhận diện* và *khai thác đa bước* (và nhiều lớp còn không được nhận diện). `[[So với baseline đó, pentest có-AI đạt tỷ lệ giải X% so với Y% của thủ công; delta học thuộc là Z điểm; tỷ lệ từ chối của mô hình thương mại là W%.]]` Kết quả `[[chỉ ra AI là trợ lý tăng tốc hay công cụ thay thế]]`, và làm nổi bật các rào cản triển khai thực tế.
 
 **Từ khóa:** penetration testing, large language models, web security, controlled benchmark, memorization.
 
@@ -17,7 +17,7 @@ Nhánh tự động-không-AI phát hiện lỗ hổng ở **55%** số bài nh�
 ## 7. Conclusion & Future Work
 
 ### 7.1 Kết luận
-Nghiên cứu đặt ba cách tiếp cận pentest web cạnh nhau trong cùng điều kiện, tách riêng đóng góp của *tự động hóa* khỏi đóng góp của *AI*. Phát hiện đã vững ở nhánh tự động-không-AI: công cụ truyền thống **nhận ra lớp lỗ hổng (55%) nhưng gần như không tự khai thác tới flag (5%)**, ngoại lệ là SQLi nhờ bộ khai thác chuyên biệt đóng gói sẵn chuỗi nhiều bước. `[[Khi so với nhánh thủ công và có-AI: nêu kết luận chính — AI thu hẹp khoảng cách nhận-diện→khai-thác ở đâu, còn bế tắc ở lớp phụ-thuộc-ngữ-nghĩa nào.]]`
+Nghiên cứu đặt ba cách tiếp cận pentest web cạnh nhau trong cùng điều kiện, tách riêng đóng góp của *tự động hóa* khỏi đóng góp của *AI*. Phát hiện đã vững ở nhánh tự động-không-AI: công cụ truyền thống **nhận ra lớp lỗ hổng (27,5%) nhưng gần như không tự khai thác tới flag (5%)**, ngoại lệ là SQLi nhờ bộ khai thác chuyên biệt đóng gói sẵn chuỗi nhiều bước. `[[Khi so với nhánh thủ công và có-AI: nêu kết luận chính — AI thu hẹp khoảng cách nhận-diện→khai-thác ở đâu, còn bế tắc ở lớp phụ-thuộc-ngữ-nghĩa nào.]]`
 
 `[[Về học thuộc: delta gốc–hintfree cho thấy mức điểm nhánh AI phụ thuộc ghi nhớ đến đâu.]]` `[[Về triển khai: bộ lọc an toàn thương mại từ chối W% tác vụ, cho thấy rào cản thực tế ngoài năng lực kỹ thuật.]]` Tổng hợp lại, dữ liệu `[[ủng hộ/bác bỏ]]` quan điểm xem AI như *trợ lý tăng tốc có-người-trong-vòng-lặp* hơn là công cụ thay thế chuyên gia, ít nhất ở các lớp lỗ hổng cần suy luận ngữ cảnh.
 

@@ -164,8 +164,12 @@ def main():
             r"default.?page|missing|outdated|self-signed|\btls\b|\bssl\b|waf-detect|robots",
             re.I)
         dalfox_hit = "[POC]" in all_out
-        sqlmap_hit = bool(re.search(r"is vulnerable|injectable|back-end DBMS is",
-                                    all_out, re.I))
+        # SUA LOI (lan 2): token tran 'injectable' khop ca "not injectable"
+        # (SSTImap in "Tested parameters appear to be not injectable") -> 6 SSTI gia.
+        # Chi giu tin hieu DUONG ro rang cua sqlmap.
+        sqlmap_hit = bool(re.search(
+            r"is vulnerable|back-end DBMS is|the following injection point",
+            all_out, re.I))
         sstimap_hit = bool(re.search(
             r"injection point|\bEngine:|is exploitable|identified the following injection",
             all_out, re.I))

@@ -33,14 +33,14 @@ Hai chỉ số (quan trọng — phân biệt *phát hiện* với *bắt flag*)
 | Chỉ số | Kết quả |
 |---|---|
 | **Bắt được flag** (tiêu chí giải) | **2/40 = 5%** — XBEN-071, XBEN-083, đều SQLi (sqlmap dump DB) |
-| **Phát hiện lỗ hổng** (tool có báo vuln) | **22/40 = 55%** |
+| **Phát hiện lỗ hổng** (tool có báo vuln) | **11/40 = 27,5%** |
 
-Theo độ khó (bắt flag / phát hiện): easy 14.3% / 64%; medium 0% / 56%; hard 0% / 37.5%.
-Theo loại (phát hiện nổi bật): SSTI 6/6=100% phát hiện nhưng 0 bắt; XSS 8/10 phát hiện, 0 bắt; IDOR 0/6 phát hiện; SQLi 2/2 bắt flag.
+Theo độ khó (bắt flag / phát hiện): easy 14,3% / 50,0%; medium 0% / 11,1%; hard 0% / 25,0%.
+Theo loại (phát hiện): XSS 8/10=80% phát hiện (dalfox POC), 0 bắt; SQLi 2/2 phát hiện VÀ bắt flag; CVE 1/1; còn lại 0 phát hiện (SSTI 0/6, IDOR 0/6, …).
 
-**Phát hiện cốt lõi:** khoảng cách lớn *phát hiện (55%) ≫ bắt flag (5%)* — scanner nhận ra **lớp** lỗ hổng nhưng gần như không tự xâu chuỗi nhiều bước để lấy đúng flag (trừ SQLi nhờ sqlmap tự dump DB). Đây là lập luận để chỉ ra giá trị tiềm năng của nhánh C (AI): lấp khoảng trống *phát hiện → khai thác*.
+**Phát hiện cốt lõi:** khoảng cách *phát hiện (27,5%) ≫ bắt flag (5%)* (gấp ~5,5×) — scanner cố định chỉ *thấy* XSS phản chiếu (dalfox) và SQLi (sqlmap, cũng bắt được flag); các lớp cần suy luận ngữ cảnh/đa bước (SSTI, IDOR, logic) thì **không phát hiện nổi**. Đây là lập luận cho giá trị tiềm năng của nhánh C (AI): lấp khoảng trống *phát hiện → khai thác* — và cả khâu phát hiện.
 
-> Ghi chú tái lập: lần chạy đầu cho 2/40 nhưng có **lỗi đo** (nuclei coi `localhost` là chết, dalfox crash cờ `--no-spinner`, exploiter chỉ quét URL gốc). Đã sửa (dùng `127.0.0.1`, `dalfox -S`, nạp path từ ffuf cho exploiter, giới hạn ngân sách mỗi bước, thêm chỉ số detection) và chạy lại — 2/40 là **con số thật** sau khi sửa. Chi tiết: `docs/ARM_B.md` mục "Kết quả".
+> Ghi chú tái lập: lần chạy đầu cho 2/40 nhưng có **lỗi đo** (nuclei coi `localhost` là chết, dalfox crash cờ `--no-spinner`, exploiter chỉ quét URL gốc). Đã sửa (dùng `127.0.0.1`, `dalfox -S`, nạp path từ ffuf cho exploiter, giới hạn ngân sách mỗi bước, thêm chỉ số detection) và chạy lại — 2/40 là **con số thật** sau khi sửa. Riêng **detection** từng bị thổi phồng 22/40=55% do 2 bug substring (tên tool "SSTImap" và token "not injectable"); sau khi sửa heuristic + bỏ cờ `-B` của SSTImap, detection đúng = **11/40 = 27,5%**. Chi tiết: `docs/ARM_B.md` mục "Kết quả".
 
 ## ĐANG CHẠY NỀN
 - (không có) — `uv sync` cài PentestGPT (nhánh C) đã xong trước đó.

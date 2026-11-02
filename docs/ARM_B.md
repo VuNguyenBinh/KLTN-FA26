@@ -63,16 +63,16 @@ Phân biệt này là **cốt lõi** của nhánh B: tự-động-không-AI thư
 
 | Chỉ số | Kết quả |
 |---|---|
-| **Bắt được flag** (`solved`) | **2/40 = 5%** — XBEN-071, XBEN-083 (đều SQLi, sqlmap dump DB) |
-| **Phát hiện lỗ hổng** (`detected`) | **22/40 = 55%** |
+| **Bắt được flag** (`solved`) | **2/40 = 5,0%** — XBEN-071, XBEN-083 (đều SQLi, sqlmap dump DB) |
+| **Phát hiện lỗ hổng** (`detected`) | **11/40 = 27,5%** |
 
-Theo độ khó (bắt / phát hiện): easy 2/14=14.3% / 9/14=64%; medium 0% / 10/18=56%; hard 0% / 3/8=37.5%.
+Theo độ khó (bắt / phát hiện): easy 2/14=14,3% / 7/14=50,0%; medium 0% / 2/18=11,1%; hard 0% / 2/8=25,0%.
 
-Phát hiện theo loại (đáng chú ý): **SSTI 6/6=100% phát hiện nhưng 0 bắt flag**; **XSS 8/10 phát hiện, 0 bắt**; **IDOR 0/6 phát hiện** (logic nghiệp vụ, scanner mù); **SQLi 2/2 bắt flag 100%**.
+Phát hiện theo loại: **XSS 8/10=80% phát hiện (dalfox báo `[POC]`) nhưng 0 bắt flag**; **SQLi 2/2=100% phát hiện VÀ bắt flag**; **CVE 1/1** (nuclei template đúng, không phải generic). Mọi lớp còn lại **0 phát hiện** — gồm **SSTI 0/6** (SSTImap chạy `--crawl` nhưng không tự tìm được injection point), **IDOR 0/6**, deserialization 0/3, command_injection 0/2…
 
-**Diễn giải:** khoảng cách *phát hiện (55%) ≫ bắt flag (5%)* cho thấy tự-động-không-AI nhận ra **lớp** lỗ hổng nhưng gần như không tự xâu chuỗi các bước khai thác để lấy đúng flag — trừ SQLi vì sqlmap tự dump DB ra flag. Đây chính là khoảng trống *phát hiện → khai thác* mà nhánh C (AI) được kỳ vọng lấp.
+**Diễn giải:** khoảng cách *phát hiện (27,5%) ≫ bắt flag (5%)* vẫn rõ (gấp ~5,5 lần). Tự-động-không-AI chỉ *thấy* lỗ hổng ở hai nơi: XSS phản chiếu (dalfox) — nhưng không tự dàn ngữ cảnh để bắt flag — và SQLi (sqlmap tự xâu chuỗi detect→dump→đọc, nên cũng bắt được flag). Các lớp cần suy luận ngữ cảnh/đa bước (SSTI, IDOR, logic) thì scanner cố định **không phát hiện nổi**. Đây là khoảng trống *phát hiện → khai thác* **và cả phát hiện** mà nhánh C (AI) được kỳ vọng lấp.
 
-> **Ghi chú tái lập (bug đã sửa):** lần chạy đầu cũng ra 2/40 nhưng vì lý do SAI, không phải đúng. 3 lỗi đo: (1) nuclei coi `localhost` là unresponsive → nay mọi công cụ dùng `127.0.0.1`; (2) dalfox 3.2.4 crash với `--no-spinner` → nay dùng `-S`; (3) exploiter chỉ quét URL gốc → nay nạp thêm các path ffuf tìm được. Thêm: giới hạn `--budget` ép theo từng bước, và cột `detected`. Sau khi sửa, 2/40 là con số thật.
+> **Ghi chú tái lập (các bug đo đã sửa):** (A) nuclei coi `localhost` là unresponsive → mọi công cụ dùng `127.0.0.1`; (B) dalfox 3.2.4 crash với `--no-spinner` → dùng `-S`; (C) exploiter chỉ quét URL gốc → nạp thêm path ffuf; (D) SSTImap crash vì cờ `-B` → bỏ, chỉ `--crawl`; (E) heuristic cũ thổi phồng detection 22/40=55% do (i) chuỗi con "ssti" khớp tên tool "SSTImap" trong banner lỗi và (ii) token trần `injectable` khớp cả "not injectable" → nay chỉ đếm tín hiệu DƯƠNG rõ ràng theo lớp. Detection đúng = **11/40**; cột `detected` được chấm lại từ log đã lưu bằng heuristic sửa (output công cụ không đổi). Capture 2/40 là thật từ đầu.
 
 ## 4. Lưu ý quan trọng (phương pháp)
 - **Cấu hình cố định = không tinh chỉnh theo từng bài.** Không được "giúp" scanner bằng cách thêm payload riêng cho bài khó — như vậy là lén đưa trí tuệ người vào, hỏng tính "tự động". Nếu muốn mạnh hơn, đổi cấu hình **cho cả 40 bài** rồi chạy lại hết.
