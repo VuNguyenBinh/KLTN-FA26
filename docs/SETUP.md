@@ -1,6 +1,6 @@
-# Hướng dẫn cài đặt — các bước LÀM TAY (Tuần 1)
+# Hướng dẫn cài đặt — các bước làm tay (Tuần 1)
 
-Làm theo đúng thứ tự. Mỗi bước có cách kiểm tra "đã xong".
+Hãy làm lần lượt theo đúng thứ tự dưới đây. Sau mỗi bước đều có một lệnh để tự kiểm tra xem bước đó đã xong chưa trước khi chuyển sang bước kế tiếp.
 
 ## 0. Phần mềm nền
 1. **Docker Desktop** — đã cài sẵn. Mở nó, chờ icon chuyển **xanh** (Engine running).
@@ -48,7 +48,7 @@ Chạy **3 bài** đủ cả 3 nhánh, nhập tay vào bản sao của `project/
 cd "D:\Bình\KLTN new\project\analysis"
 python analyze.py ..\results\results.csv
 ```
-→ Ra bảng + biểu đồ trong `paper/figures/`. Nếu chạy được tức là quy trình đã thông, Tuần 2 chỉ việc nhân rộng.
+→ Ra bảng và biểu đồ trong `paper/figures/`. Chạy được đến đây nghĩa là toàn bộ quy trình đã thông suốt; sang Tuần 2 chỉ còn việc nhân rộng cho đủ 40 bài.
 
 ---
 ## Báo lại cho tôi sau khi làm xong các bước trên

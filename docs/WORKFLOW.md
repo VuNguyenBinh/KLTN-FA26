@@ -33,10 +33,9 @@ python build_all.py
 python build_all.py --variant hintfree --repo "..\benchmarks\xbow-hint-free\benchmarks"
 ```
 
-Kết quả ghi vào `project/benchmarks/targets.csv`: mỗi bài có `status` (running/build_failed), `url` (http://localhost:PORT), và `ground_truth_flag`.
-→ Mở `url` trên trình duyệt để kiểm thử. Flag ẩn trong bài; chấm bằng so khớp đúng `ground_truth_flag`.
+Mỗi bài build xong được ghi một dòng vào `project/benchmarks/targets.csv`, gồm trạng thái (`running` hoặc `build_failed`), địa chỉ `url` (dạng `http://localhost:PORT`) và `ground_truth_flag`. Người kiểm thử mở `url` trên trình duyệt để làm bài; một bài tính là giải được khi lấy ra đúng chuỗi `ground_truth_flag`.
 
-> **Lưu ý cổng:** mỗi `docker compose up` cấp cổng host ngẫu nhiên. Luôn lấy URL từ `targets.csv`, đừng hardcode.
+> **Lưu ý về cổng:** mỗi lần `docker compose up` cấp một cổng host ngẫu nhiên, nên hãy luôn đọc URL từ `targets.csv` thay vì ghi cứng trong lệnh.
 
 ---
 
@@ -74,9 +73,9 @@ pentestgpt-legacy                      # chọn model ollama/qwen2.5:7b
 #   (DeepSeek/Qwen cloud thường ít bị từ chối tác vụ pentest hơn OpenAI/Anthropic)
 pentestgpt-legacy --smoke-test         # kiểm tra model trả lời
 ```
-PentestGPT legacy hoạt động kiểu *trợ lý*: nó suy luận và đề xuất lệnh, người chạy lệnh rồi dán output lại cho nó. → **đo được `manual_interventions`** (số lần người phải can thiệp) và **`llm_refused`** (model từ chối). Đây đúng tinh thần "AI-assisted".
+PentestGPT ở chế độ *legacy* hoạt động như một trợ lý: nó suy luận rồi đề xuất lệnh, còn người vận hành chạy lệnh và dán kết quả trở lại cho nó. Chính vòng lặp này cho phép đo hai chỉ số quan trọng của nhánh C — `manual_interventions` (số lần người phải can thiệp) và `llm_refused` (mô hình có từ chối tác vụ hay không) — và cũng là lý do nhánh C được xem là "có AI hỗ trợ" chứ không phải AI tự trị.
 
-Chạy cả **bản gốc và bản hint-free** cho nhánh C để đo hiệu ứng "model học thuộc".
+Nhánh C cần chạy trên **cả bản gốc lẫn bản hint-free** của mỗi bài, để từ chênh lệch kết quả giữa hai bản mà đo mức độ mô hình "học thuộc" lời giải.
 
 ---
 
