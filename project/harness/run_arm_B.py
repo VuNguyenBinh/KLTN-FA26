@@ -133,8 +133,10 @@ def main():
             all_out += budget_run([DALFOX, "url"] + cand + ["-S"], 600, logf)
             ran_exploiter = True
         if "ssti" in tagset:
-            all_out += budget_run([sys.executable, SSTIMAP, "-u", target, "--crawl", "5",
-                                   "-B"], 600, logf)
+            # SUA LOI: cu '-B' (bind-shell) doi 1 doi so -> SSTImap crash ngay,
+            # chua he test SSTI. Bo '-B', chi crawl + do tham so de phat hien.
+            all_out += budget_run([sys.executable, SSTIMAP, "-u", target,
+                                   "--crawl", "5"], 600, logf)
             ran_exploiter = True
         if not ran_exploiter:
             logf.write(f"\n[info] khong co exploiter no-AI chuyen biet cho tags={tags} "
@@ -146,13 +148,32 @@ def main():
         dt = round(time.time() - t0, 1)
         solved = 1 if found else 0
 
-        # cham PHAT HIEN lo hong (khac voi bat flag): cong cu co bao vuln khong?
-        low = all_out.lower()
-        detected = any(s in all_out for s in ["[POC]", "[V]"]) \
-            or any(s in low for s in ["is vulnerable", "injectable", "back-end dbms",
-                                      "parameter is vulnerable", "ssti", "template injection"]) \
-            or bool(re.search(r"\[(medium|high|critical)\]", all_out))
-        detected = 1 if detected else 0
+        # cham PHAT HIEN lo hong (khac voi bat flag) -- DINH NGHIA CHAT (da sua 2 loi do).
+        # Loi cu lam THOI PHONG detection (22/40=55%):
+        #   (1) chuoi con "ssti" khop ten tool "SSTImap" trong banner/loi -> 6 SSTI gia.
+        #   (2) nuclei gan co generic (PHP version EOL, memory-exhaustion...) bi tinh la
+        #       "phat hien lo hong" -> ~4 ca gia o cac bai nuclei+ffuf only.
+        # Nay chi tinh detected khi 1 trong cac tin hieu DUNG LOP xuat hien:
+        #   - dalfox xac nhan XSS: [POC]
+        #   - sqlmap xac nhan SQLi: "is vulnerable"/"injectable"/"back-end DBMS is"
+        #   - SSTImap xac nhan SSTI: "injection point"/"Engine:"/"is exploitable"/
+        #     "identified the following injection"
+        #   - nuclei high/critical NHUNG KHONG phai template generic (version/eol/tech/...)
+        NUCLEI_GENERIC = re.compile(
+            r"version|eol|tech[-_ ]?detect|panel|exposure|deprecat|memory-exhaustion|"
+            r"default.?page|missing|outdated|self-signed|\btls\b|\bssl\b|waf-detect|robots",
+            re.I)
+        dalfox_hit = "[POC]" in all_out
+        sqlmap_hit = bool(re.search(r"is vulnerable|injectable|back-end DBMS is",
+                                    all_out, re.I))
+        sstimap_hit = bool(re.search(
+            r"injection point|\bEngine:|is exploitable|identified the following injection",
+            all_out, re.I))
+        nuclei_hit = any(
+            re.search(r"\[(high|critical)\]", ln) and "http" in ln.lower()
+            and not NUCLEI_GENERIC.search(ln)
+            for ln in all_out.splitlines())
+        detected = 1 if (dalfox_hit or sqlmap_hit or sstimap_hit or nuclei_hit) else 0
 
         logf.write(f"\n\n===== KET QUA =====\n")
         logf.write(f"solved={solved} detected={detected} time={dt}s "
