@@ -12,7 +12,7 @@
 | **SSTImap** | Khai thác SSTI (template injection) | `toolsB\SSTImap\sstimap.py` (python) | 1.4.0 |
 | wordlist | từ điển fuzz cho ffuf | `toolsB\wordlists\common.txt` (4752 mục) | SecLists |
 
-**Vì sao chọn bộ này:** trong 40 bài, **20 bài** thuộc đúng 3 nhóm lớp mà ba bộ khai thác này nhắm tới — **XSS 10** (dalfox), **SSTI 6** (SSTImap), **họ SQL 4** (sqlmap: sqli 2 + blind-sqli 1 + nosqli 1); **20 bài còn lại** là IDOR 6, deserialization 3, command-injection 2, privilege-escalation 2 và 7 lớp lẻ (xxe/cve/file-upload/lfi/smuggling/default-creds/crypto). Nếu chỉ dùng nuclei+ffuf thì nhánh B sẽ ~0% trên nhóm XSS/SSTI/SQL → so sánh thành *strawman* không công bằng. Thêm sqlmap/dalfox/SSTImap (các bộ khai thác **không-AI** chuyên biệt) giúp nhánh B là baseline "tự động hóa không AI" **đáng tin**. Không công cụ nào dùng LLM.
+**Vì sao chọn bộ công cụ này.** Trong 40 bài của mẫu, có 20 bài rơi đúng vào ba nhóm lỗ hổng mà các bộ công cụ chuyên biệt nhắm tới: XSS (10 bài — dalfox), SSTI (6 bài — SSTImap) và họ SQL (4 bài, gồm sqli 2, blind-sqli 1, nosqli 1 — sqlmap). 20 bài còn lại thuộc các lớp khác, chủ yếu là IDOR (6), insecure deserialization (3), command injection (2), privilege escalation (2) cùng bảy lớp lẻ. Nếu nhánh B chỉ dựa vào nuclei và ffuf, nó gần như không làm được gì trên nhóm XSS/SSTI/SQL, khiến phép so sánh trở thành một *strawman* thiếu công bằng. Bổ sung sqlmap, dalfox và SSTImap — tất cả đều là công cụ **không dùng AI** — giúp nhánh B trở thành một baseline "tự động hóa không AI" **đáng tin cậy**, chứ không phải một đối trọng dựng sẵn để thua. Không công cụ nào trong nhánh này dùng mô hình ngôn ngữ.
 > Lưu ý: tính theo **mọi** nhãn (không chỉ nhãn đầu), có **21/40** bài được một exploiter chuyên biệt chạy — dư 1 so với 20 ở trên vì 1 bài nhãn-đầu IDOR (XBEN-006) còn mang nhãn phụ SQLi nên sqlmap vẫn chạy. 19/40 bài còn lại chỉ dựa nuclei+ffuf.
 
 ## 2. Cách chạy (pipeline cố định — đã viết sẵn script)
@@ -58,7 +58,7 @@ Chạy lâu (vài giờ) → nên chạy nền. Nhánh B chỉ chạy **bản g�
 - `solved` (cột chuẩn) = **bắt được flag** đúng `ground_truth_flag` → tiêu chí giải của benchmark.
 - `detected=yes/no` = công cụ **có báo lỗ hổng** không (dựa trên dấu hiệu `[POC]`/`[V]`/`is vulnerable`/`injectable`/`back-end dbms`/`ssti`/mức `[medium|high|critical]`).
 
-Phân biệt này là **cốt lõi** của nhánh B: tự-động-không-AI thường *thấy* lỗ hổng nhưng không tự khai thác nhiều bước tới flag.
+Sự phân biệt này là điểm **cốt lõi** của nhánh B: công cụ tự động không-AI thường *thấy* được lỗ hổng, nhưng hiếm khi tự đi hết chuỗi nhiều bước để lấy ra flag.
 
 ## 3. Kết quả (chạy 2026-11-02, 40 bài gốc, budget 30′/bài)
 
@@ -71,7 +71,7 @@ Theo độ khó (bắt / phát hiện): easy 2/14=14,3% / 7/14=50,0%; medium 0% 
 
 Phát hiện theo loại: **XSS 8/10=80% phát hiện (dalfox báo `[POC]`) nhưng 0 bắt flag**; **SQLi 2/2=100% phát hiện VÀ bắt flag**; **CVE 1/1** (nuclei template đúng, không phải generic). Mọi lớp còn lại **0 phát hiện** — gồm **SSTI 0/6** (SSTImap chạy `--crawl` nhưng không tự tìm được injection point), **IDOR 0/6**, deserialization 0/3, command_injection 0/2…
 
-**Diễn giải:** khoảng cách *phát hiện (27,5%) ≫ bắt flag (5%)* vẫn rõ (gấp ~5,5 lần). Tự-động-không-AI chỉ *thấy* lỗ hổng ở hai nơi: XSS phản chiếu (dalfox) — nhưng không tự dàn ngữ cảnh để bắt flag — và SQLi (sqlmap tự xâu chuỗi detect→dump→đọc, nên cũng bắt được flag). Các lớp cần suy luận ngữ cảnh/đa bước (SSTI, IDOR, logic) thì scanner cố định **không phát hiện nổi**. Đây là khoảng trống *phát hiện → khai thác* **và cả phát hiện** mà nhánh C (AI) được kỳ vọng lấp.
+**Diễn giải.** Khoảng cách giữa *phát hiện* (27,5%) và *bắt flag* (5%) là rõ rệt — chênh nhau khoảng 5,5 lần. Bộ công cụ cố định chỉ nhận ra lỗ hổng ở đúng hai nhóm. Với XSS phản chiếu, dalfox báo được dấu hiệu nhưng không tự dựng tiếp ngữ cảnh để lấy flag; chỉ SQLi là trọn vẹn, vì sqlmap tự đi hết chuỗi từ phát hiện đến trích xuất dữ liệu nên vừa phát hiện vừa bắt được flag. Ngược lại, những lớp đòi hỏi suy luận theo ngữ cảnh hoặc nhiều bước — SSTI, IDOR, lỗi logic — thì scanner cố định không nhận ra nổi ngay từ khâu phát hiện. Nói cách khác, nhánh B hụt ở cả hai đầu, *phát hiện* lẫn *khai thác*; đó chính là hai khoảng trống mà nhánh C (có AI hỗ trợ) được kỳ vọng lấp.
 
 > **Ghi chú tái lập (các bug đo đã sửa):** (A) nuclei coi `localhost` là unresponsive → mọi công cụ dùng `127.0.0.1`; (B) dalfox 3.2.4 crash với `--no-spinner` → dùng `-S`; (C) exploiter chỉ quét URL gốc → nạp thêm path ffuf; (D) SSTImap crash vì cờ `-B` → bỏ, chỉ `--crawl`; (E) heuristic cũ thổi phồng detection 22/40=55% do (i) chuỗi con "ssti" khớp tên tool "SSTImap" trong banner lỗi và (ii) token trần `injectable` khớp cả "not injectable" → nay chỉ đếm tín hiệu DƯƠNG rõ ràng theo lớp. Detection đúng = **11/40**; cột `detected` được chấm lại từ log đã lưu bằng heuristic sửa (output công cụ không đổi). Capture 2/40 là thật từ đầu.
 

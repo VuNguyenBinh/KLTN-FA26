@@ -18,7 +18,7 @@
 
 ## 2. Đóng góp cốt lõi — Khung đánh giá (evaluation benchmark)
 
-> **Khái quát:** đóng góp trung tâm của khóa luận **không** phải "làm AI hack", mà là **một khung đo lường có kiểm soát, tái lập được, để so sánh công bằng ba cách tiếp cận pentest web trên cùng một bộ target, cùng tiêu chí, cùng ràng buộc**. Nói cách khác, sản phẩm học thuật là *phương pháp + dữ liệu đo + phân tích*, đủ để người khác tái hiện và phản biện. Thành phần mới (so với benchmark gốc) là **thiết kế đo "AI học thuộc"** bằng cặp bản gốc / bản xóa-gợi-ý.
+> **Khái quát.** Đóng góp trung tâm của khóa luận không nằm ở việc tạo ra một công cụ AI tấn công, mà ở chỗ **xây dựng một khung đo lường có kiểm soát và tái lập được**, cho phép so sánh công bằng ba cách tiếp cận kiểm thử xâm nhập web trên cùng một bộ bài, cùng tiêu chí chấm và cùng ràng buộc tài nguyên. Hiểu theo cách đó, sản phẩm học thuật gồm ba phần gắn liền nhau — phương pháp đo, dữ liệu thu được và phần phân tích — tất cả đều đủ chi tiết để người khác tái hiện và phản biện. Điểm mới so với bộ benchmark gốc là cách **đo mức độ "học thuộc" của mô hình**, thực hiện bằng việc cho AI làm cùng một bài ở hai phiên bản: bản gốc và bản đã xóa gợi ý.
 
 ### 2.1 Bộ target — cụ thể hóa
 - **Nguồn:** XBOW *validation-benchmarks* — 104 bài CTF ứng dụng web, mỗi bài là một dịch vụ đóng gói Docker Compose với **đúng một lỗ hổng cài sẵn** và **một flag bí mật**.
