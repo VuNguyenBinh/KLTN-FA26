@@ -47,7 +47,12 @@ Theo loại (phát hiện nổi bật): SSTI 6/6=100% phát hiện nhưng 0 bắ
 
 ## CẦN NHÓM LÀM / QUYẾT (không tự động được)
 1. **Nhánh A (manual):** cài **Burp Suite Community**, kiểm thử tay 40 bài gốc, bấm giờ, ghi `results.csv` (`arm=A_manual`). Xem `docs/RUNBOOK.md` Bước 2.
-2. **Nhánh C (AI) — NHÂN RỘNG:** tooling đã chạy được (1 phiên mẫu xong, xem `docs/report_C.md`). Việc còn lại: chạy nốt các bài còn lại bằng PentestGPT legacy + Ollama (`qwen2.5:7b`), **mỗi bài trên bản gốc VÀ hint-free**, ghi tokens/manual_interventions/llm_refused. Theo mẫu `report_C.md` + RUNBOOK Bước 4. Kết quả phiên đầu: XBEN-061 LFI → `solved=0` (xác nhận khai thác LFI nhưng không bắt được flag; vượt nhánh B). (C2 API đã hoãn — chốt C1 local trước.)
+2. **Nhánh C (AI) — NHÂN RỘNG theo giao thức mới:** tooling đã chạy được (1/12 phiên xong). **Giao thức chốt ở `docs/arm_C_protocol.md`** — biến nhánh C từ n=1 (giai thoại) thành small-n có kiểm soát đủ sức phản biện:
+   - **Bộ 12 bài** (đều trong mẫu 40 → đối chiếu cặp với nhánh B), chia 3 nhóm: B-đã-bắt-flag (control: 083), B-chỉ-phát-hiện (flagship exploit-gap: 061✅,064,080,093,011), B-mù (006,005,037,032,041,014). Tối thiểu 8 bài để bỏ mác "giai thoại".
+   - **Prompt grey-box chuẩn** (cho *lớp* lỗ hổng = parity với B; KHÔNG cho endpoint/đường dẫn/kỹ thuật). Bỏ chữ "black-box".
+   - **Đếm can thiệp tách đôi:** `manual_interventions` = chỉ `redirect` (chỉnh hướng), `exec` (chạy lệnh) ghi notes. Lằn ranh cứng: không mớm kỹ thuật → nếu lỡ thì `solved=0`.
+   - **Hint-free ≥4 bài** (061,064,006,037) để có Δ memorization nhánh C.
+   - Phiên đầu XBEN-061 LFI → `solved=0` (khai thác LFI thật nhưng không bắt flag; vượt nhánh B detect-only). (C2 API hoãn — C1 local trước.)
 3. **(tùy chọn)** API key cho C2 nếu muốn chạy nhánh API: khuyến nghị **DeepSeek** hoặc **Qwen/DashScope** (rẻ, ít từ chối hơn). Đặt vào `PentestGPT/.env`.
 
 > Lưu ý: Claude KHÔNG thể đóng vai nhánh A (sẽ biến nó thành "có AI"). Nhánh A/C cần người thật.

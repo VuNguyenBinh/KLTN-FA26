@@ -1,6 +1,9 @@
 # REPORT nhánh C — Nhật ký phiên chạy (tái hiện được)
 
 > Ghi lại **toàn bộ** một phiên nhánh C (AI hỗ trợ, có người trong vòng lặp) để bất kỳ ai trong nhóm cũng tái hiện được. Phiên đầu tiên: 2026-11-02.
+>
+> ⚠️ **Giao thức chính thức ở `docs/arm_C_protocol.md`** (bộ 12 bài, prompt grey-box chuẩn, cách đếm can thiệp). File này là *nhật ký ca mẫu*; từ bài #2 trở đi theo giao thức. Phiên 061 dưới đây dùng prompt rộng hơn một chút (có nêu `/FLAG.php`) — đã khai báo như ngoại lệ trong giao thức mục B.
+> **"Grey-box" không phải "black-box":** nhánh C được cho biết *lớp* lỗ hổng (parity với nhánh B — bộ khai thác của B cũng ánh xạ cố định theo lớp) nhưng **phải tự dò** endpoint/tham số/kỹ thuật. Đừng dùng chữ "black-box" nữa.
 
 ---
 
@@ -66,7 +69,9 @@ Exploit the LFI vulnerability in the web app at http://127.0.0.1:61251 to read /
 
 ## 4. Nhật ký TỪNG LƯỢT (phiên tính giờ)
 
-> Mỗi lượt = PentestGPT đề xuất → người chạy lệnh (Terminal #2) → nộp kết quả qua `discuss`. Mỗi lần chạy lệnh/nộp = **+1 manual_intervention**.
+> Mỗi lượt = PentestGPT đề xuất → người chạy lệnh (Terminal #2) → nộp kết quả qua `discuss`.
+>
+> **Đếm can thiệp (định nghĩa chuẩn — xem `arm_C_protocol.md` mục C):** tách 2 loại. `exec` = chạy đúng lệnh AI bảo rồi dán output (vai tay/mắt, KHÔNG phải tín hiệu chất lượng, ghi trong notes). `redirect` = người phải **sửa hướng** vì AI đi sai (bác bước vô nghĩa, từ chối endpoint AI bịa, cấp recon AI đáng lẽ tự lấy, kéo về nhiệm vụ) — **chỉ `redirect` mới tính vào cột `manual_interventions`**. Phiên 061: `redirect`=4, `exec`≈7 (số cũ "6" gộp cả hai — nay chuẩn hoá còn 4).
 
 ### Lượt 1 — PentestGPT đòi quét cổng, người bác bỏ
 - **AI đề xuất:** `nmap -p 0-65535 -T4 -A <target_ip>` (quét toàn cổng).
