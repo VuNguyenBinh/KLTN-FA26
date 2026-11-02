@@ -43,6 +43,20 @@ def load(path):
             sv = sv[:-2]
         return truth.get(sv)  # None neu gia tri la
 
+    # 'detected' (phat hien lo hong, khac voi bat flag) nam trong cot 'notes'
+    # duoi dang "detected=yes/no" (chi nhanh B ghi). Boc ra thanh cot rieng.
+    # Dong khong co chu 'detected=' -> None -> tu bi loai khoi bang detection.
+    import re
+    def parse_detected(note):
+        if pd.isna(note):
+            return None
+        mm = re.search(r"detected\s*=\s*(yes|no)", str(note), re.IGNORECASE)
+        if not mm:
+            return None
+        return 1 if mm.group(1).lower() == "yes" else 0
+    df["detected"] = (df["notes"].map(parse_detected)
+                      if "notes" in df.columns else None)
+
     # QUAN TRONG: dong CHUA chay (solved trong) -> None -> bi loai, KHONG tinh la fail.
     df["solved"] = df["solved"].map(to_bool)
     if "llm_refused" in df.columns:
@@ -85,6 +99,52 @@ def solve_rate_by_category(df):
     t = (d.groupby(["vuln_category", "arm"])["solved"].mean() * 100).round(1).unstack("arm")
     cols = [a for a in ARM_ORDER if a in t.columns]
     return t[cols]
+
+
+def detection_table(df):
+    """CHI NHANH B: phat hien lo hong (detected) vs bat duoc flag (solved).
+    Detection chi co y nghia voi scanner tu dong; A/C khong co tin hieu nay."""
+    d = df[(df["arm"] == "B_auto") & (df["variant"] == "original")].copy()
+    d = d[d["detected"].notna()]
+    if d.empty:
+        return None, None, None
+    d["detected"] = d["detected"].astype(int)
+    overall = pd.DataFrame({
+        "n": [len(d)],
+        "detect_rate_%": [round(d["detected"].mean() * 100, 1)],
+        "capture_rate_%": [round(d["solved"].mean() * 100, 1)],
+    }, index=["B_auto"])
+    by_diff = d.groupby("difficulty").agg(
+        n=("detected", "size"),
+        detect_rate_pct=("detected", lambda s: round(s.mean() * 100, 1)),
+        capture_rate_pct=("solved", lambda s: round(s.mean() * 100, 1)),
+    )
+    by_cat = d.groupby("vuln_category").agg(
+        n=("detected", "size"),
+        detect_rate_pct=("detected", lambda s: round(s.mean() * 100, 1)),
+        capture_rate_pct=("solved", lambda s: round(s.mean() * 100, 1)),
+    ).sort_values("detect_rate_pct", ascending=False)
+    return overall, by_diff, by_cat
+
+
+def bar_detect_vs_capture(by_diff):
+    fig, ax = plt.subplots(figsize=(6, 4))
+    x = range(len(by_diff))
+    w = 0.38
+    order = [d for d in ["easy", "medium", "hard"] if d in by_diff.index]
+    t = by_diff.reindex(order)
+    ax.bar([i - w / 2 for i in x], t["detect_rate_pct"], w, label="Detected (phat hien)")
+    ax.bar([i + w / 2 for i in x], t["capture_rate_pct"], w, label="Captured (bat flag)")
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(list(t.index))
+    ax.set_ylabel("Rate (%)")
+    ax.set_title("Arm B: phat hien vs bat flag theo do kho")
+    ax.set_ylim(0, 100)
+    ax.legend()
+    fig.tight_layout()
+    p = os.path.join(FIG_DIR, "fig_detect_vs_capture.png")
+    fig.savefig(p, dpi=150)
+    print(f"[fig] {p}")
 
 
 def memorization_table(df):
@@ -170,6 +230,19 @@ def main():
 
     print("\n=== BANG 3: Solve rate theo loai lo hong (%, original) ===")
     print(solve_rate_by_category(df).to_string())
+
+    print("\n=== BANG 3b: Phat hien vs bat flag — CHI NHANH B (original) ===")
+    det_overall, det_diff, det_cat = detection_table(df)
+    if det_overall is not None:
+        print(det_overall.to_string())
+        print("\n-- theo do kho --")
+        print(det_diff.to_string())
+        print("\n-- theo loai lo hong (sap theo ty le phat hien) --")
+        print(det_cat.to_string())
+        det_cat.to_csv(os.path.join(FIG_DIR, "table_detection.csv"))
+        bar_detect_vs_capture(det_diff)
+    else:
+        print("(chua co du lieu 'detected' cua nhanh B)")
 
     print("\n=== BANG 4: Hieu ung 'AI hoc thuoc' (nhanh C: goc vs hint-free) ===")
     mem = memorization_table(df)

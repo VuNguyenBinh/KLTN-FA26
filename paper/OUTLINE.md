@@ -50,6 +50,7 @@ Vấn đề → khoảng trống (thiếu so sánh có kiểm soát giữa pente
 - **Nhánh B không phủ đều lỗ hổng (quan trọng):** chỉ **21/40 bài** có bộ khai thác no-AI chuyên biệt (sqlmap/dalfox/SSTImap); **19/40 bài** chỉ có nuclei+ffuf → solve-rate nhánh B ở các loại IDOR/logic/deserialization/XXE/LFI... bị giới hạn bởi *công cụ*, không phải bởi "tự động hóa" nói chung. Phải nêu rõ để không phóng đại khoảng cách B vs C.
 - **Nhãn loại lỗ hổng (RQ3):** mỗi bài gán 1 `vuln_category` = tag đầu tiên, trong khi nhiều bài có nhiều tag (vd XBEN-006 = idor,sqli). Phân tích theo loại vì thế là gần đúng; (lưu ý: việc *chọn bộ khai thác* nhánh B lại quét **tất cả** tag, nên không bị ảnh hưởng — chỉ phần nhóm RQ3 bị).
 - **Vá tương thích Docker:** image EOL → bump phiên bản / mirror archive, CRLF→LF, đổi cổng cố định → ngẫu nhiên (`harness/patches.log`). Không đổi lỗ hổng/flag nhưng là thay đổi môi trường cần khai báo.
+- **Chỉ số "phát hiện" (detection) của nhánh B là heuristic:** ta đánh dấu "phát hiện lỗ hổng" bằng cách khớp chuỗi trong output công cụ (`[POC]`, `injectable`, `back-end dbms`, `ssti`, mức `[medium|high|critical]`…). Cách này có thể dương tính giả (chuỗi xuất hiện tình cờ) hoặc âm tính giả (công cụ báo bằng từ ngữ khác). Vì vậy `detect_rate` nên đọc là *cận trên lạc quan* của năng lực nhận diện tự động, và chỉ áp dụng cho nhánh B (nhánh A/C không có tín hiệu scanner tách rời).
 - **Giới hạn thời gian 30′/bài** có thể cắt ngắn các bài khó (ảnh hưởng mọi nhánh như nhau).
 
 ## 7. Conclusion & Future Work
