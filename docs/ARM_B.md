@@ -12,7 +12,8 @@
 | **SSTImap** | Khai thác SSTI (template injection) | `toolsB\SSTImap\sstimap.py` (python) | 1.4.0 |
 | wordlist | từ điển fuzz cho ffuf | `toolsB\wordlists\common.txt` (4752 mục) | SecLists |
 
-**Vì sao chọn bộ này:** mẫu 40 bài nhiều XSS (10) + SSTI (6) + SQLi (4). Nếu chỉ dùng nuclei+ffuf thì nhánh B sẽ ~0% trên các loại này → so sánh thành *strawman* không công bằng. Thêm sqlmap/dalfox/SSTImap (các bộ khai thác **không-AI** chuyên biệt) giúp nhánh B là baseline "tự động hóa không AI" **đáng tin**. Không công cụ nào dùng LLM.
+**Vì sao chọn bộ này:** trong 40 bài, **20 bài** thuộc đúng 3 nhóm lớp mà ba bộ khai thác này nhắm tới — **XSS 10** (dalfox), **SSTI 6** (SSTImap), **họ SQL 4** (sqlmap: sqli 2 + blind-sqli 1 + nosqli 1); **20 bài còn lại** là IDOR 6, deserialization 3, command-injection 2, privilege-escalation 2 và 7 lớp lẻ (xxe/cve/file-upload/lfi/smuggling/default-creds/crypto). Nếu chỉ dùng nuclei+ffuf thì nhánh B sẽ ~0% trên nhóm XSS/SSTI/SQL → so sánh thành *strawman* không công bằng. Thêm sqlmap/dalfox/SSTImap (các bộ khai thác **không-AI** chuyên biệt) giúp nhánh B là baseline "tự động hóa không AI" **đáng tin**. Không công cụ nào dùng LLM.
+> Lưu ý: tính theo **mọi** nhãn (không chỉ nhãn đầu), có **21/40** bài được một exploiter chuyên biệt chạy — dư 1 so với 20 ở trên vì 1 bài nhãn-đầu IDOR (XBEN-006) còn mang nhãn phụ SQLi nên sqlmap vẫn chạy. 19/40 bài còn lại chỉ dựa nuclei+ffuf.
 
 ## 2. Cách chạy (pipeline cố định — đã viết sẵn script)
 Cùng một cấu hình cho MỌI bài (đây là điểm mấu chốt để kết quả tái lập được):
