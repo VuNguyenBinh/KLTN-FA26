@@ -61,8 +61,8 @@ Vấn đề → khoảng trống (thiếu so sánh có kiểm soát giữa pente
 
 ---
 
-### Nguồn khởi đầu (xác minh lại link trước khi trích)
+### Nguồn
+- **Danh sách nguồn đã xác minh (2026-11-02):** xem `paper/draft_intro_relatedwork.md` mục "Nguồn" — PentestGPT (USENIX Sec 2024), Fang et al. 2404.08144, AutoPenBench 2410.03225, CVE-Bench 2503.17332, HackSynth 2412.01778, survey 2607.02605, CTFusion 2605.11504, AWE (NDSS Wksp 2026). Có phân biệt xác minh trực tiếp vs trích gián tiếp qua survey.
 - XBOW validation-benchmarks: https://github.com/xbow-engineering/validation-benchmarks
 - Bản hint-free: https://github.com/KeygraphHQ/xbow-validation-benchmarks
-- PentestGPT (USENIX Security 2024 + repo agentic): tìm "PentestGPT GitHub"
 - Web of Science CPCI vs SCIE: https://www.aischolar.com/news/article/web-of-science-cpci-conference-authors

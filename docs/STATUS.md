@@ -7,10 +7,24 @@
 - Công thức flag = `FLAG{sha256(TEN_BAI)}`, **đã xác minh khớp pipeline gốc**. ✓
 - **Harness build tự động** (`harness/build_target.py`): tự vá tương thích Docker 2026, build, chạy, dò port, health-check (HTTP-probe, không tin healthcheck cũ), ghi `targets.csv`. Cô lập mỗi variant bằng `-p <bench>-<variant>`. ✓
 - **CẢ 80 target build + chạy được** (40 gốc + 40 hint-free, HTTP 200, flag khớp). ✓
-- Script phân tích + vẽ biểu đồ (`analysis/analyze.py`): có bảng solve-rate theo nhánh/độ khó/loại + bảng hiệu ứng memorization (gốc vs hint-free). Đã test. ✓
+- Script phân tích + vẽ biểu đồ (`analysis/analyze.py`): bảng solve-rate theo nhánh/độ khó/loại + bảng hiệu ứng memorization (gốc vs hint-free) + **Bảng 3b detection vs capture tự động cho nhánh B** (bóc `detected=` từ cột notes). Đã test. ✓
 - **NHÁNH B (auto, không AI) — HOÀN TẤT 40/40 bài gốc.** ✓ (xem kết quả bên dưới)
-- Tài liệu: PLAN, SETUP, WORKFLOW, ARM_B, RUNBOOK, OUTLINE (bài báo). ✓
+- Tài liệu hướng dẫn: PLAN, SETUP, WORKFLOW, ARM_B, RUNBOOK, OUTLINE. ✓
+- **Nháp bài báo** (trong `paper/draft_*.md`): Methodology (mục 3), Results/Discussion nhánh B (mục 4–5, chừa số A/C), Introduction + Related Work (mục 1–2, nguồn đã xác minh), Abstract + Conclusion (khung, chừa số A/C). ✓
 - Đã commit + push lên GitHub (`VuNguyenBinh/KLTN-FA26`), `results.csv` version-controlled. ✓
+
+## NHÁP BÀI BÁO — trạng thái từng mục
+| Mục | File | Trạng thái |
+|---|---|---|
+| 0 Abstract | `paper/draft_abstract_conclusion.md` | khung, chừa số A/C |
+| 1 Introduction | `paper/draft_intro_relatedwork.md` | đủ |
+| 2 Related Work | `paper/draft_intro_relatedwork.md` | đủ; nguồn đã xác minh (PentestGPT, Fang 2024, AutoPenBench, CVE-Bench, HackSynth, survey 2607.02605, CTFusion, AWE) |
+| 3 Methodology | `paper/draft_methodology.md` | đủ |
+| 4–5 Results/Discussion | `paper/draft_results_armB.md` | nhánh B xong; chừa `[[…]]` cho A/C |
+| 6 Threats to Validity | `paper/OUTLINE.md` §6 | đủ (có caveat detection-heuristic) |
+| 7 Conclusion | `paper/draft_abstract_conclusion.md` | khung, chừa số A/C |
+
+> Khi nhóm chạy xong nhánh A/C và điền `results.csv`, chạy `analyze.py` sẽ tự sinh Bảng 1 (so 3 nhánh) và Bảng 4 (memorization) để điền các chỗ `[[…]]`. Nguồn trích "gián tiếp qua survey" (CTFusion, AWE, PentestEval) nên mở bản gốc xác nhận trước khi nộp chính thức.
 
 ## KẾT QUẢ NHÁNH B (baseline tự-động-không-AI, 40 bài gốc, budget 30′/bài)
 Hai chỉ số (quan trọng — phân biệt *phát hiện* với *bắt flag*):
