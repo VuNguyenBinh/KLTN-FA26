@@ -4,6 +4,13 @@
 
 **Thiết lập:** PentestGPT (legacy) + mô hình local `qwen2.5:7b` qua Ollama. Người đóng vai "tay và mắt" (chạy lệnh, dán kết quả); prompt grey-box (cho *lớp* lỗ hổng, không cho endpoint/tham số/kỹ thuật). Giới hạn 30′/bài. `redirect` = số lần người chỉnh hướng; `exec` = số lệnh đã chạy.
 
+## ▶ PHIÊN TIẾP THEO — ƯU TIÊN (chốt cuối ngày 2026-11-03)
+> **Chiến lược: làm bài TUYẾN TÍNH KINH ĐIỂN trước** — nơi 7B đã chứng minh làm được (041 upload→RCE, 083 `OR 1=1`) — rồi mới tới bài đa-bước/ngữ-cảnh. Tránh đốt thời gian vào bài hard multi-step ngay đầu.
+> Thứ tự đề xuất cho phiên sau:
+> 1. **Hint-free của 2 bài đã giải (041, 083)** + (061, 064) → đo **Δ học thuộc** (cần ≥4 bài hint-free). Đây đều là bài tuyến tính/đã có baseline → ưu tiên. Bật bằng: `python build_target.py <ID> --variant hintfree --repo "..\benchmarks\xbow-hint-free\benchmarks"`, ghi `variant=hintfree`.
+> 2. **Bài gốc còn lại** theo thứ tự dễ→khó: 005, 006 (IDOR easy) → 011 (XSS medium) → 014 (priv-esc medium) → 093 (SSTI hard).
+> Lệnh khởi động + prompt: `STATUS.md §3`. `git pull` đầu phiên.
+
 ## ▶ TIẾP TỤC (cho Claude trên mọi thiết bị)
 > Đọc `docs/STATUS.md` §0 (ràng buộc) + §3 (lệnh) trước. `git pull` đầu phiên.
 1. **Bài kế còn sạch** với người điều phối hiện tại (đã giám sát nhánh người trên 005/006/032): **093, 011, 041, 014, 083** + hint-free (061/064 + 2 bài). Tránh bài người điều phối đã thấy lời giải.

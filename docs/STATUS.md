@@ -49,6 +49,7 @@
 - Claude làm gì: bật target, đưa URL + *lớp* lỗ hổng cho người giải, chấm flag, ghi `results.csv` (`arm=A_manual`) + điền `report_A.md`. **POLICY B:** được gợi ý **công cụ cho lớp lỗ hổng + cách dùng tổng quát**; **KHÔNG** chạm bài cụ thể, không gợi ý cách khai thác.
 
 ### 2b. Nhánh AI local (C1)
+> **▶ Phiên tiếp theo (chốt 2026-11-03): ưu tiên bài TUYẾN TÍNH KINH ĐIỂN trước** (nơi 7B có cửa), rồi mới tới đa-bước. Cụ thể: hint-free của 041/083 (+061/064) để đo Δ học thuộc, rồi bài gốc còn lại dễ→khó (005/006 → 011 → 014 → 093). Chi tiết: `task_C1.md §PHIÊN TIẾP THEO`.
 - Giao thức đầy đủ: **`docs/arm_C_protocol.md`**. Tiến độ + kết quả: **`docs/task_C1.md`**.
 - Đã xong 4/12 (061, 064, 080, 037 — tất cả solved=0). Bài **còn sạch với người điều phối đã giám sát A trên 005/006/032**: **093, 011, 041, 014, 083** + hint-free (061/064 + 2 bài).
 - Quy trình 1 phiên: §3 (lệnh khởi động) → prompt grey-box (lớp) → vòng `discuss`↔`curl.exe` → đếm redirect/exec → chốt `solved` → ghi `results.csv` (`C_ai_local`) + `report_C.md` + `task_C1.md`.
