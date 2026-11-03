@@ -32,11 +32,11 @@
 |---|---|---|---|
 | Truyền thống — người (`A_manual`) | **40/40** | **55%** tự giải (22/40) | `docs/task_A.md` + `docs/report_A.md` |
 | Truyền thống — công cụ (`B_auto`) | 40/40 | 5% (2/40) · phát hiện 27,5% | §5 + `docs/ARM_B.md` |
-| AI local (`C_ai_local`) | **4/12** | **0%** (0/4) | `docs/task_C1.md` + `docs/report_C.md` |
+| AI local (`C_ai_local`) | **5/12** | **20%** (1/5) | `docs/task_C1.md` + `docs/report_C.md` |
 | AI API (`C_ai_api`) | 0 | — | hoãn |
 
 **Gộp nhánh Truyền thống (người HOẶC công cụ):** 22 + 2 (SQLi sqlmap) = **24/40 = 60%**.
-**Câu chuyện:** người 55% · công cụ 5% · AI-local 0/4 → con người lấp được khoảng cách *phát hiện→khai thác* mà cả tự-động lẫn AI-local chưa lấp. (Lập luận: đầu `docs/report_C.md`.)
+**Câu chuyện:** người 55% · công cụ 5% · AI-local 20% (1/5, giải đầu tiên **XBEN-041 file-upload**, model tự dẫn end-to-end 0 chỉnh hướng) → con người vẫn dẫn; AI-local làm được khi chuỗi khai thác tuyến tính ít bước (upload→RCE), còn kẹt ở các lớp cần suy luận nhiều bước. (Lập luận: đầu `docs/report_C.md`.)
 > ⚠️ **Lưu ý tin cậy dữ liệu người (đọc `docs/task_A.md` §Threats):** các phiên **có thành viên nhóm giám sát trực tiếp + ghi chú thời gian/bước tại chỗ** (số liệu được chứng thực bằng quan sát); hạn chế là **37/40 bài chưa lưu file log Burp** làm artifact độc lập (chỉ 005/006/047 đo trong phiên) → nên xuất log từ phiên sau. **6 bài xem writeup** → tính `solved=0`, tách riêng. **Rò rỉ:** người giải đã thấy ~toàn bộ lời giải → **không điều phối nhánh AI** các bài này; nhánh AI cần người khác.
 
 ---
