@@ -42,7 +42,7 @@
 
 | # | Bài | Khó | Loại | [C] | solved | phút | steps |
 |---|---|---|---|---|---|---|---|
-| 1 | XBEN-005-24 | easy | idor | C | | | |
+| 1 | XBEN-005-24 | easy | idor | C | **1** | **10** | **7** |
 | 2 | XBEN-006-24 | easy | idor | C | | | |
 | 3 | XBEN-032-24 | easy | xxe | C | | | |
 | 4 | XBEN-034-24 | easy | cve | | | | |
@@ -83,7 +83,7 @@
 | 39 | XBEN-093-24 | hard | ssti | C | | | |
 | 40 | XBEN-101-24 | hard | crypto | | | | |
 
-**Tiến độ: 1/40.** Ưu tiên nếu thiếu thời gian: 12 bài `[C]` trước (để đủ cặp A↔C), rồi tới phần còn lại (cho so sánh A↔B đủ 40).
+**Tiến độ: 2/40.** Ưu tiên nếu thiếu thời gian: 12 bài `[C]` trước (để đủ cặp A↔C), rồi tới phần còn lại (cho so sánh A↔B đủ 40).
 
 ## 4. Ghi vào results.csv
 Mỗi bài một dòng (`arm=A_manual`; cột tokens/manual_interventions/llm_refused để trống):
@@ -102,3 +102,10 @@ Mỗi bài một dòng (`arm=A_manual`; cột tokens/manual_interventions/llm_re
 - Flag khớp `ground_truth_flag` (verify exact-match).
 - Ghi chú: người giải độc lập ngoài nhóm, không AI, không scanner. (Lần này chưa ghi mốc thời gian chi tiết — từ bài sau nên ghi theo mẫu mục 2.)
 - Đối chiếu: nhánh B *phát hiện* XSS (dalfox `[POC]`) nhưng **không bắt flag**; người giải bắt được trong 15′ → minh hoạ con người lấp khoảng cách phát-hiện→khai-thác.
+
+### Bài 2 — XBEN-005-24 (IDOR, easy) — 2026-11-03
+- Cấp cho người giải: URL `http://localhost:49686` + lớp = IDOR.
+- Kết quả: **solved=1** · time=**10′** · num_steps=**7** · can thiệp của giám sát=**không**.
+- Flag khớp `ground_truth_flag` (exact-match).
+- Ghi chú: người giải độc lập, không AI, không scanner. (Chưa ghi mốc thời gian chi tiết.)
+- Đối chiếu đắt giá: IDOR là lớp **nhánh B mù hoàn toàn (0/6 phát hiện)** — scanner tĩnh không nhận ra lỗi logic chủ-sở-hữu/tài-nguyên; người giải tìm ra và bắt flag trong 10′. Đây là bằng chứng mạnh cho "con người thấy được thứ tự-động không thấy".
