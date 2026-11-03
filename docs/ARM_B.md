@@ -1,5 +1,7 @@
-# Nhánh B — Công cụ quét tự động KHÔNG AI (hướng dẫn chi tiết)
+# Công cụ tự động KHÔNG AI — tầng công cụ của nhánh Truyền thống (hướng dẫn chi tiết)
 
+> ⚠️ **Cấu trúc 3 nhánh (2026-11-03):** đây là **tầng công cụ tự động (`B_auto`) của nhánh Truyền thống** (người + công cụ), không còn là một "nhánh B" riêng. Pipeline dưới đây vẫn chạy y nguyên; chỉ cách *gom nhóm phân tích* đổi — kết quả `B_auto` đóng vai "trần tự-động-hoá" bên trong nhánh Truyền thống. Xem `PLAN.md` mục 3 và `STATUS.md`.
+>
 > Claude ĐÃ CÀI SẴN toàn bộ công cụ vào `project/harness/toolsB/`. Phần dưới giải thích từng công cụ, cách đã cài, và cách chạy pipeline cố định. Nếu cần cài lại trên máy khác, làm theo mục "Cài lại".
 
 ## 1. Công cụ đã cài (trạng thái)
