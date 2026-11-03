@@ -131,7 +131,7 @@ Tick theo thứ tự, được quay lại pha trước. Phân bổ thời gian g
 ### Bài học từ lần chạy 2026-11-03
 | Vấn đề | Hậu quả | Cách workflow này chặn |
 |---|---|---|
-| 37 bài không bấm giờ / không log | Phút/bước chỉ là tự báo hồi cứu | Giám sát: `t0`, mốc pha, *Save items* bắt buộc |
+| 37 bài không lưu log Burp (có giám sát + ghi chú tại chỗ) | Thiếu artifact log độc lập | Giám sát: `t0`, mốc pha, *Save items* bắt buộc |
 | Người giải trong nhóm | Lệch giao thức, mất tính độc lập | Vai trò: người giải ngoài nhóm |
 | 6 bài xem writeup | Tính `solved=0` | Rules of Engagement đọc trước phiên |
 | Docker Desktop tắt giữa phiên | Target chết | P0: `docker info` trước mỗi bài, tắt sleep |
@@ -150,7 +150,7 @@ Tick theo thứ tự, được quay lại pha trước. Phân bổ thời gian g
 - **Gộp tầng người + tầng công cụ** (định nghĩa nhánh Truyền thống trong `PLAN.md` §3: giải nếu người *hoặc* công cụ giải): 22 + 2 (071, 083 — sqlmap) = **24/40 = 60,0%**.
 
 ## Bảng 40 bài
-`WU` = xem writeup → `solved=0`. `B` = công cụ tự động (`det` = phát hiện, `1` = bắt flag). `C` = AI local. Phút/bước có `*` là tự báo hồi cứu.
+`WU` = xem writeup → `solved=0`. `B` = công cụ tự động (`det` = phát hiện, `1` = bắt flag). `C` = AI local. Phút/bước có `*` = giám sát viên ghi chú tại chỗ (chưa lưu log Burp); không có `*` = đo trực tiếp trong phiên.
 
 | Bài | Khó | Loại | solved | phút | bước | B | C |
 |---|---|---|---|---|---|---|---|
@@ -204,7 +204,7 @@ Tick theo thứ tự, được quay lại pha trước. Phân bổ thời gian g
 
 ## Threats to Validity (bắt buộc nêu trong bài)
 1. **Người giải trong nhóm, không độc lập** — lệch giao thức `report_A.md` §0 (yêu cầu người ngoài nhóm chưa thấy bài).
-2. **Thời gian/số bước của 37/40 bài là tự báo cáo hồi cứu**, không bấm giờ, không Burp history/log. Chỉ 005, 006, 047 được đo trực tiếp. → Kết luận RQ2 (thời gian/công sức) cho nhánh người phải thận trọng; `avg_time_min` (21,3′) trộn hai loại số.
+2. **Thiếu file log Burp xuất ra cho 37/40 bài** (chỉ 005/006/047 đo trực tiếp trong phiên). Các phiên **được một thành viên nhóm giám sát trực tiếp và ghi chú thời gian/số bước tại chỗ**, nên số liệu được chứng thực bằng quan sát của giám sát viên — **không phải báo cáo hồi cứu**. Hạn chế là không có file HTTP-history của Burp làm **artifact độc lập**. → RQ2 (thời gian/công sức) dựa trên ghi chú giám sát; **nên lưu log Burp từ các phiên sau** để có bằng chứng xuất ra.
 3. **6 bài xem writeup** → loại khỏi chỉ số chính (báo cáo minh bạch ở chỉ số phụ).
-4. **Khớp flag không tự chứng minh quá trình khai thác** khi thiếu log — công thức flag `sha256(tên bài)` là công khai trong repo.
+4. **Thiếu artifact log độc lập.** Quá trình khai thác được **giám sát viên quan sát trực tiếp** (nên không phải chỉ "tính ra flag" từ công thức công khai `sha256(tên bài)`); tuy vậy một hội đồng khắt khe vẫn ưa có **log công cụ xuất ra** làm bằng chứng. Giảm thiểu: xuất Burp HTTP-history từ nay, và/hoặc chạy lại vài bài có-log để neo độ tin cậy.
 5. **Một người giải duy nhất** → kết quả phản ánh năng lực một cá nhân, không đại diện "người pentest" nói chung.

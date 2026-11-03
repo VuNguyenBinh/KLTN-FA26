@@ -37,7 +37,7 @@
 
 **Gộp nhánh Truyền thống (người HOẶC công cụ):** 22 + 2 (SQLi sqlmap) = **24/40 = 60%**.
 **Câu chuyện:** người 55% · công cụ 5% · AI-local 0/4 → con người lấp được khoảng cách *phát hiện→khai thác* mà cả tự-động lẫn AI-local chưa lấp. (Lập luận: đầu `docs/report_C.md`.)
-> ⚠️ **Lưu ý tin cậy dữ liệu người (đọc `docs/task_A.md` §Threats):** người giải **trong nhóm** (không độc lập); **37/40 bài tự báo thời gian/bước, không bấm giờ/không log** (chỉ 005/006/047 đo trực tiếp); **6 bài xem writeup** → tính `solved=0`, tách riêng. RQ2 (thời gian/công sức) cho nhánh người phải thận trọng. **Rò rỉ:** người giải đã thấy ~toàn bộ lời giải → **không điều phối nhánh AI** các bài này; nhánh AI cần người khác.
+> ⚠️ **Lưu ý tin cậy dữ liệu người (đọc `docs/task_A.md` §Threats):** các phiên **có thành viên nhóm giám sát trực tiếp + ghi chú thời gian/bước tại chỗ** (số liệu được chứng thực bằng quan sát); hạn chế là **37/40 bài chưa lưu file log Burp** làm artifact độc lập (chỉ 005/006/047 đo trong phiên) → nên xuất log từ phiên sau. **6 bài xem writeup** → tính `solved=0`, tách riêng. **Rò rỉ:** người giải đã thấy ~toàn bộ lời giải → **không điều phối nhánh AI** các bài này; nhánh AI cần người khác.
 
 ---
 
