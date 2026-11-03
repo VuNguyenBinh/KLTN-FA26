@@ -30,12 +30,14 @@
 
 | Nhánh | n đã chạy | solve | Nguồn chi tiết |
 |---|---|---|---|
-| Truyền thống — người (`A_manual`) | **3/40** | **100%** (3/3) | `docs/report_A.md` |
+| Truyền thống — người (`A_manual`) | **40/40** | **55%** tự giải (22/40) | `docs/task_A.md` + `docs/report_A.md` |
 | Truyền thống — công cụ (`B_auto`) | 40/40 | 5% (2/40) · phát hiện 27,5% | §5 + `docs/ARM_B.md` |
 | AI local (`C_ai_local`) | **4/12** | **0%** (0/4) | `docs/task_C1.md` + `docs/report_C.md` |
 | AI API (`C_ai_api`) | 0 | — | hoãn |
 
-**Câu chuyện đang hình thành:** người 3/3 · công cụ 5% · AI-local 0/4 → ủng hộ "trong khung này, con người lấp được khoảng cách *phát hiện→khai thác* mà cả tự-động lẫn AI-local chưa lấp". (Lập luận đầy đủ: đầu `docs/report_C.md`.)
+**Gộp nhánh Truyền thống (người HOẶC công cụ):** 22 + 2 (SQLi sqlmap) = **24/40 = 60%**.
+**Câu chuyện:** người 55% · công cụ 5% · AI-local 0/4 → con người lấp được khoảng cách *phát hiện→khai thác* mà cả tự-động lẫn AI-local chưa lấp. (Lập luận: đầu `docs/report_C.md`.)
+> ⚠️ **Lưu ý tin cậy dữ liệu người (đọc `docs/task_A.md` §Threats):** người giải **trong nhóm** (không độc lập); **37/40 bài tự báo thời gian/bước, không bấm giờ/không log** (chỉ 005/006/047 đo trực tiếp); **6 bài xem writeup** → tính `solved=0`, tách riêng. RQ2 (thời gian/công sức) cho nhánh người phải thận trọng. **Rò rỉ:** người giải đã thấy ~toàn bộ lời giải → **không điều phối nhánh AI** các bài này; nhánh AI cần người khác.
 
 ---
 
