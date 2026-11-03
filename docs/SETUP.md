@@ -7,7 +7,7 @@ Hãy làm lần lượt theo đúng thứ tự dưới đây. Sau mỗi bước 
    - Kiểm tra (PowerShell): `docker run --rm hello-world` → thấy "Hello from Docker!".
 2. **Git** — tải: https://git-scm.com/download/win → cài mặc định.
    - Kiểm tra: `git --version`.
-3. **Ollama** (cho nhánh C1 local) — tải: https://ollama.com/download → cài.
+3. **Ollama** (cho nhánh AI local) — tải: https://ollama.com/download → cài.
    - Kiểm tra: `ollama --version`.
    - Tải model: `ollama pull qwen2.5:7b` (hoặc `llama3.1:8b`). Model ~5GB.
    - Chạy thử: `ollama run qwen2.5:7b "hello"`.
@@ -27,7 +27,7 @@ make run     # dựng web target, mở trên cổng được in ra
 ```
 → Mở trình duyệt vào địa chỉ đó, xác nhận web chạy. Flag ẩn trong bài.
 
-## 2. Cài công cụ nhánh C (PentestGPT)
+## 2. Cài công cụ nhánh AI (PentestGPT)
 ```powershell
 cd "D:\Bình\KLTN new\project\harness"
 git clone https://github.com/GreyDGL/PentestGPT.git
@@ -36,10 +36,10 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e .
 ```
-- **C1 (local):** cấu hình PentestGPT trỏ tới Ollama (xem README của repo, phần local/Ollama; endpoint mặc định `http://localhost:11434`).
-- **C2 (API):** nếu nhóm có API key thương mại, đặt biến môi trường theo README. **Lưu ý:** tác vụ pentest có thể bị bộ lọc an toàn từ chối — ghi lại mỗi lần bị từ chối vào cột `llm_refused`, đó là dữ liệu có ích.
+- **AI local (local):** cấu hình PentestGPT trỏ tới Ollama (xem README của repo, phần local/Ollama; endpoint mặc định `http://localhost:11434`).
+- **AI API (API):** nếu nhóm có API key thương mại, đặt biến môi trường theo README. **Lưu ý:** tác vụ pentest có thể bị bộ lọc an toàn từ chối — ghi lại mỗi lần bị từ chối vào cột `llm_refused`, đó là dữ liệu có ích.
 
-## 3. Công cụ nhánh B (automated, no AI)
+## 3. Công cụ tự động (automated, no AI)
 Chọn 1 pipeline cố định, ví dụ kết hợp: `nuclei` (quét template lỗ hổng) + `sqlmap` (SQLi tự động) + `ffuf` (fuzzing path). Cấu hình cố định, cùng timeout cho mọi bài. Không có LLM trong nhánh này.
 
 ## 4. Chạy pilot

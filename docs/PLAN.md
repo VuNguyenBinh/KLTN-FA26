@@ -37,19 +37,19 @@
 - **Capture rate (tỷ lệ bắt flag)** — tiêu chí giải chính thức: flag thu được **khớp chính xác** chuỗi chuẩn, **không chấm điểm bộ phận**.
 
 **Chỉ số phụ & bối cảnh:**
-- **Detection rate — tỉ lệ phát hiện (chỉ nhánh B)** — tỉ lệ bài mà công cụ *có báo hiệu đã thấy lỗ hổng*, dù chưa khai thác tới flag. Cách đo: đọc phần chữ (output) mỗi công cụ in ra và dò những cụm từ khẳng định đặc trưng cho từng loại lỗ hổng — ví dụ dalfox in `[POC]` khi thấy XSS, sqlmap in `is vulnerable` khi thấy SQLi; thấy đúng cụm của loại đó thì tính là "đã phát hiện". Vì đây chỉ là so khớp chuỗi chữ (không phải kiểm chứng chắc chắn), con số này nên được hiểu là **mức trần lạc quan**: năng lực nhận diện thật của công cụ chỉ bằng hoặc thấp hơn, không thể cao hơn — chứ không phải một tỉ lệ chính xác tuyệt đối.
-- **time** (phút/bài), **num_steps** (số bước/lượt), **tokens_used** (nhánh C).
-- **manual_interventions (nhánh C)** — chỉ đếm **redirect** (người chỉnh hướng khi AI đi sai), tách khỏi **exec** (chạy lệnh máy móc, ghi ở notes); kèm **lằn ranh cứng**: người không mớm kỹ thuật/lời giải, nếu lỡ thì bài tính `solved=0`.
-- **llm_refused (nhánh C)** — mô hình có từ chối tác vụ không; **bản thân tỷ lệ từ chối là một kết quả** (rào cản triển khai của LLM thương mại).
-- **Δ học thuộc (memorization, nhánh C)** = `solve_rate(gốc) − solve_rate(hint-free)` — đo mức mô hình dựa vào *đã thấy lời giải* thay vì *tự suy luận*. Đây là đóng góp chính giải quyết vấn đề benchmark bão hòa.
+- **Detection rate — tỉ lệ phát hiện (chỉ công cụ tự động)** — tỉ lệ bài mà công cụ *có báo hiệu đã thấy lỗ hổng*, dù chưa khai thác tới flag. Cách đo: đọc phần chữ (output) mỗi công cụ in ra và dò những cụm từ khẳng định đặc trưng cho từng loại lỗ hổng — ví dụ dalfox in `[POC]` khi thấy XSS, sqlmap in `is vulnerable` khi thấy SQLi; thấy đúng cụm của loại đó thì tính là "đã phát hiện". Vì đây chỉ là so khớp chuỗi chữ (không phải kiểm chứng chắc chắn), con số này nên được hiểu là **mức trần lạc quan**: năng lực nhận diện thật của công cụ chỉ bằng hoặc thấp hơn, không thể cao hơn — chứ không phải một tỉ lệ chính xác tuyệt đối.
+- **time** (phút/bài), **num_steps** (số bước/lượt), **tokens_used** (nhánh AI).
+- **manual_interventions (nhánh AI)** — chỉ đếm **redirect** (người chỉnh hướng khi AI đi sai), tách khỏi **exec** (chạy lệnh máy móc, ghi ở notes); kèm **lằn ranh cứng**: người không mớm kỹ thuật/lời giải, nếu lỡ thì bài tính `solved=0`.
+- **llm_refused (nhánh AI)** — mô hình có từ chối tác vụ không; **bản thân tỷ lệ từ chối là một kết quả** (rào cản triển khai của LLM thương mại).
+- **Δ học thuộc (memorization, nhánh AI)** = `solve_rate(gốc) − solve_rate(hint-free)` — đo mức mô hình dựa vào *đã thấy lời giải* thay vì *tự suy luận*. Đây là đóng góp chính giải quyết vấn đề benchmark bão hòa.
 
-**Phân tầng báo cáo:** mọi chỉ số bóc theo **độ khó** và **loại lỗ hổng**. Ràng buộc chung: **30 phút/bài** cho mọi nhánh. Phân tích tự động hóa bằng `project/analysis/analyze.py` → Bảng 1 (theo nhánh), 2 (độ khó), 3 (loại), 3b (phát hiện vs bắt flag — nhánh B), 4 (học thuộc — nhánh C) + biểu đồ; dòng chưa chạy bị **loại khỏi thống kê**, không tính là thất bại.
+**Phân tầng báo cáo:** mọi chỉ số bóc theo **độ khó** và **loại lỗ hổng**. Ràng buộc chung: **30 phút/bài** cho mọi nhánh. Phân tích tự động hóa bằng `project/analysis/analyze.py` → Bảng 1 (theo nhánh), 2 (độ khó), 3 (loại), 3b (phát hiện vs bắt flag — công cụ tự động), 4 (học thuộc — nhánh AI) + biểu đồ; dòng chưa chạy bị **loại khỏi thống kê**, không tính là thất bại.
 
 ### 2.4 Vì sao khung này "đứng được" khi phản biện
 - **Tái lập:** seed cố định, phiên bản công cụ ghi rõ, `patches.log`, log thô từng bài trong `logs/`, dữ liệu version-controlled trong `results.csv`.
-- **Công bằng:** cùng target + cùng tiêu chí exact-match + cùng budget; nhánh B là baseline *đáng tin* (có exploiter chuyên biệt không-AI cho các lớp chiếm đa số), không phải strawman.
-- **Trung thực về giới hạn:** benchmark bão hòa (xử lý bằng hint-free), chỉ 21/40 bài có exploiter chuyên biệt, detection là heuristic, nhãn lấy tag đầu là gần đúng, n nhánh C nhỏ — tất cả nêu trong *Threats to Validity*.
-- **Kết quả baseline đã có để minh chứng khung chạy thật:** nhánh B hoàn tất 40/40 — bắt flag **2/40 (5%)**, phát hiện **11/40 (27,5%)** (xem `docs/ARM_B.md`).
+- **Công bằng:** cùng target + cùng tiêu chí exact-match + cùng budget; công cụ tự động là baseline *đáng tin* (có exploiter chuyên biệt không-AI cho các lớp chiếm đa số), không phải strawman.
+- **Trung thực về giới hạn:** benchmark bão hòa (xử lý bằng hint-free), chỉ 21/40 bài có exploiter chuyên biệt, detection là heuristic, nhãn lấy tag đầu là gần đúng, n nhánh AI nhỏ — tất cả nêu trong *Threats to Validity*.
+- **Kết quả baseline đã có để minh chứng khung chạy thật:** công cụ tự động hoàn tất 40/40 — bắt flag **2/40 (5%)**, phát hiện **11/40 (27,5%)** (xem `docs/ARM_B.md`).
 
 ---
 
@@ -81,7 +81,7 @@
 - [ ] **(tay)** Bật Docker Desktop, cài Git, cài Ollama. *(Người 1)*
 - [ ] Clone XBOW benchmarks, build thử 3 bài. *(Người 2)*
 - [ ] Chốt mẫu 40 bài + gán độ khó. *(cả nhóm, 1 buổi)*
-- [ ] Cài PentestGPT cho nhánh C (local + API). *(Người 3)*
+- [ ] Cài PentestGPT cho nhánh AI (local + API). *(Người 3)*
 - [ ] Chạy **pilot 3 bài** đủ cả 3 nhánh để kiểm tra quy trình ghi số liệu. *(cả nhóm)*
 - [ ] Chốt template ghi dữ liệu (`results/schema`).
 
@@ -101,7 +101,7 @@
 ## 5. Rủi ro & phương án dự phòng
 | Rủi ro | Dự phòng |
 |---|---|
-| API thương mại từ chối tác vụ pentest (bộ lọc an toàn) | Dựa chính vào **C1 local Ollama**; C2 chỉ chạy các bài không bị chặn, báo cáo trung thực tỷ lệ bị từ chối (bản thân nó là một **kết quả nghiên cứu**). |
+| API thương mại từ chối tác vụ pentest (bộ lọc an toàn) | Dựa chính vào **AI local Ollama**; AI API chỉ chạy các bài không bị chặn, báo cáo trung thực tỷ lệ bị từ chối (bản thân nó là một **kết quả nghiên cứu**). |
 | Bài build lỗi trên Docker mới | Dùng bản vá tương thích tối thiểu, ghi rõ bài nào bị loại. |
 | Không kịp 40 bài | Giảm còn 20–25 bài vẫn đủ ý nghĩa thống kê mô tả. |
 | Máy yếu khi chạy LLM local | Dùng model 7–8B lượng tử hóa (q4); chạy tuần tự, không song song. |
@@ -111,6 +111,6 @@
 ## 6. Tiêu chí "xong" cho mỗi bài
 - Flag tìm được? (Y/N) + chuỗi flag.
 - Thời gian (phút), số bước/lượt tương tác.
-- (Nhánh C) số token / số lần người can thiệp tay / có bị LLM từ chối không.
+- (Nhánh AI) số token / số lần người can thiệp tay / có bị LLM từ chối không.
 - Loại lỗ hổng của bài (lấy từ metadata benchmark).
 - Ghi chú định tính (AI gợi ý đúng/sai chỗ nào).

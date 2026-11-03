@@ -29,7 +29,7 @@ python build_target.py XBEN-001-24
 # build cả mẫu 40 bài (chạy qua đêm, bài lỗi vẫn tiếp tục)
 python build_all.py
 
-# build cả mẫu bản HINT-FREE cho nhánh C
+# build cả mẫu bản HINT-FREE cho nhánh AI
 python build_all.py --variant hintfree --repo "..\benchmarks\xbow-hint-free\benchmarks"
 ```
 
@@ -41,10 +41,10 @@ Mỗi bài build xong được ghi một dòng vào `project/benchmarks/targets.
 
 ## 2. Ba nhánh — chạy thế nào
 
-### Nhánh A — Manual (Người 1)
+### Nhánh Truyền thống (người) — Manual (Người 1)
 Mở `url` của bài → dùng trình duyệt + Burp Suite + công cụ tay. Bấm giờ. Khi tìm được flag, so với `targets.csv`. Ghi vào `results.csv`: solved, time_minutes, num_steps, notes. **Không dùng LLM.**
 
-### Nhánh B — Automated no-AI (Người 2)
+### Công cụ tự động — Automated no-AI (Người 2)
 Pipeline cố định (cùng cấu hình mọi bài), ví dụ:
 ```powershell
 # nuclei: quét template lỗ hổng
@@ -54,7 +54,7 @@ nuclei -u <url> -o logs\B_<bench>.txt
 ```
 Cài qua: `winget install ProjectDiscovery.nuclei` ; sqlmap/ffuf tải binary. Ghi solved theo việc pipeline có lộ flag/đường dẫn tới flag không. **Không có LLM.**
 
-### Nhánh C — AI-assisted (Người 3) — dùng PentestGPT legacy
+### Nhánh AI — AI-assisted (Người 3) — dùng PentestGPT legacy
 Cùng một công cụ, chỉ đổi model:
 ```powershell
 cd "D:\Bình\KLTN new\project\harness\PentestGPT"
@@ -62,20 +62,20 @@ cd "D:\Bình\KLTN new\project\harness\PentestGPT"
 pip install -e .            # hoặc: uv sync  (repo dùng uv)
 copy .env.example .env
 
-# --- C1: LOCAL Ollama ---
+# --- AI local: LOCAL Ollama ---
 #   trong .env đặt:  OLLAMA_BASE_URL=http://localhost:11434/v1
 #   bảo đảm Ollama đang chạy + đã có qwen2.5:7b
 pentestgpt-legacy --list-models        # xem model khả dụng
 pentestgpt-legacy                      # chọn model ollama/qwen2.5:7b
 
-# --- C2: API thương mại ---
+# --- AI API: API thương mại ---
 #   trong .env đặt key: OPENAI_API_KEY / DEEPSEEK_API_KEY / QWEN_API_KEY ...
 #   (DeepSeek/Qwen cloud thường ít bị từ chối tác vụ pentest hơn OpenAI/Anthropic)
 pentestgpt-legacy --smoke-test         # kiểm tra model trả lời
 ```
-PentestGPT ở chế độ *legacy* hoạt động như một trợ lý: nó suy luận rồi đề xuất lệnh, còn người vận hành chạy lệnh và dán kết quả trở lại cho nó. Chính vòng lặp này cho phép đo hai chỉ số quan trọng của nhánh C — `manual_interventions` (số lần người phải can thiệp) và `llm_refused` (mô hình có từ chối tác vụ hay không) — và cũng là lý do nhánh C được xem là "có AI hỗ trợ" chứ không phải AI tự trị.
+PentestGPT ở chế độ *legacy* hoạt động như một trợ lý: nó suy luận rồi đề xuất lệnh, còn người vận hành chạy lệnh và dán kết quả trở lại cho nó. Chính vòng lặp này cho phép đo hai chỉ số quan trọng của nhánh AI — `manual_interventions` (số lần người phải can thiệp) và `llm_refused` (mô hình có từ chối tác vụ hay không) — và cũng là lý do nhánh AI được xem là "có AI hỗ trợ" chứ không phải AI tự trị.
 
-Nhánh C cần chạy trên **cả bản gốc lẫn bản hint-free** của mỗi bài, để từ chênh lệch kết quả giữa hai bản mà đo mức độ mô hình "học thuộc" lời giải.
+Nhánh AI cần chạy trên **cả bản gốc lẫn bản hint-free** của mỗi bài, để từ chênh lệch kết quả giữa hai bản mà đo mức độ mô hình "học thuộc" lời giải.
 
 ---
 

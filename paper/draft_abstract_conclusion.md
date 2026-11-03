@@ -24,7 +24,7 @@ Nghiên cứu đặt ba cách tiếp cận pentest web cạnh nhau trong cùng �
 `[[Về học thuộc: delta gốc–hintfree cho thấy mức điểm nhánh AI phụ thuộc ghi nhớ đến đâu.]]` `[[Về triển khai: bộ lọc an toàn thương mại từ chối W% tác vụ, cho thấy rào cản thực tế ngoài năng lực kỹ thuật.]]` Tổng hợp lại, dữ liệu `[[ủng hộ/bác bỏ]]` quan điểm xem AI như *trợ lý tăng tốc có-người-trong-vòng-lặp* hơn là công cụ thay thế chuyên gia, ít nhất ở các lớp lỗ hổng cần suy luận ngữ cảnh.
 
 ### 7.2 Giới hạn
-Kết quả gắn với 40 bài CTF-style (không hẳn giống web sản xuất), một bộ mô hình cụ thể, và chủ quan người chấm nhánh A; chi tiết ở *Threats to Validity*. Đặc biệt, chỉ 21/40 bài có bộ khai thác no-AI chuyên biệt, nên khoảng cách B–C ở các lớp còn lại một phần do giới hạn công cụ.
+Kết quả gắn với 40 bài CTF-style (không hẳn giống web sản xuất), một bộ mô hình cụ thể, và chủ quan người chấm nhánh Truyền thống (người); chi tiết ở *Threats to Validity*. Đặc biệt, chỉ 21/40 bài có bộ khai thác no-AI chuyên biệt, nên khoảng cách công cụ–AI ở các lớp còn lại một phần do giới hạn công cụ.
 
 ### 7.3 Hướng mở rộng
 - Mở rộng mẫu và thêm **mục tiêu web thực (có phép)** để kiểm chứng ngoài môi trường CTF.

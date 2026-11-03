@@ -31,8 +31,8 @@ Vấn đề → khoảng trống (thiếu so sánh có kiểm soát giữa pente
 - 3.2 Bộ target: mẫu 40 bài XBOW, phân tầng độ khó, gán loại lỗ hổng.
 - 3.3 Giao thức: giới hạn thời gian 30′/bài, tiêu chí giải = flag exact-match, cách ghi số liệu.
 - 3.4 Chỉ số: solve rate, time, steps, tokens/cost, manual interventions, refusal rate.
-- 3.5 Thiết lập kỹ thuật: Docker, phần cứng, model local (Ollama 7–8B q4), model API, công cụ nhánh B.
-- 3.6 Giảm thiên lệch: cùng người không làm trùng nhánh A và C trên cùng bài; thứ tự ngẫu nhiên; mù một phần.
+- 3.5 Thiết lập kỹ thuật: Docker, phần cứng, model local (Ollama 7–8B q4), model API, công cụ tự động.
+- 3.6 Giảm thiên lệch: cùng người không làm trùng nhánh người và nhánh AI trên cùng bài; thứ tự ngẫu nhiên; mù một phần.
 
 ## 4. Results
 - 4.1 Tổng hợp (Bảng 1 từ `analyze.py`).
@@ -47,12 +47,12 @@ Vấn đề → khoảng trống (thiếu so sánh có kiểm soát giữa pente
 - Ý nghĩa thực tế: AI là *trợ lý tăng tốc* hay *thay thế*? Rào cản triển khai (bộ lọc an toàn, chi phí token).
 
 ## 6. Threats to Validity (cụ thể — hội đồng/phản biện sẽ hỏi)
-- **Mẫu & bối cảnh:** 40 bài CTF-style (không hẳn giống web thật), 1 bộ model cụ thể; chủ quan người chấm nhánh A.
+- **Mẫu & bối cảnh:** 40 bài CTF-style (không hẳn giống web thật), 1 bộ model cụ thể; chủ quan người chấm nhánh Truyền thống (người).
 - **Benchmark bão hòa / memorization:** XBOW đã bị huấn luyện vào model → solve-rate nhánh AI trên bản gốc bị thổi phồng. Ta xử lý bằng cặp gốc/hint-free và báo cáo *delta memorization*; nhưng bản hint-free vẫn cùng lớp lỗ hổng nên chỉ giảm chứ không loại hết hiệu ứng.
-- **Nhánh B không phủ đều lỗ hổng (quan trọng):** chỉ **21/40 bài** có bộ khai thác no-AI chuyên biệt (sqlmap/dalfox/SSTImap); **19/40 bài** chỉ có nuclei+ffuf → solve-rate nhánh B ở các loại IDOR/logic/deserialization/XXE/LFI... bị giới hạn bởi *công cụ*, không phải bởi "tự động hóa" nói chung. Phải nêu rõ để không phóng đại khoảng cách B vs C.
-- **Nhãn loại lỗ hổng (RQ3):** mỗi bài gán 1 `vuln_category` = tag đầu tiên, trong khi nhiều bài có nhiều tag (vd XBEN-006 = idor,sqli). Phân tích theo loại vì thế là gần đúng; (lưu ý: việc *chọn bộ khai thác* nhánh B lại quét **tất cả** tag, nên không bị ảnh hưởng — chỉ phần nhóm RQ3 bị).
+- **Công cụ tự động không phủ đều lỗ hổng (quan trọng):** chỉ **21/40 bài** có bộ khai thác no-AI chuyên biệt (sqlmap/dalfox/SSTImap); **19/40 bài** chỉ có nuclei+ffuf → solve-rate công cụ tự động ở các loại IDOR/logic/deserialization/XXE/LFI... bị giới hạn bởi *công cụ*, không phải bởi "tự động hóa" nói chung. Phải nêu rõ để không phóng đại khoảng cách công cụ vs AI.
+- **Nhãn loại lỗ hổng (RQ3):** mỗi bài gán 1 `vuln_category` = tag đầu tiên, trong khi nhiều bài có nhiều tag (vd XBEN-006 = idor,sqli). Phân tích theo loại vì thế là gần đúng; (lưu ý: việc *chọn bộ khai thác* công cụ tự động lại quét **tất cả** tag, nên không bị ảnh hưởng — chỉ phần nhóm RQ3 bị).
 - **Vá tương thích Docker:** image EOL → bump phiên bản / mirror archive, CRLF→LF, đổi cổng cố định → ngẫu nhiên (`harness/patches.log`). Không đổi lỗ hổng/flag nhưng là thay đổi môi trường cần khai báo.
-- **Chỉ số "phát hiện" (detection) của nhánh B là heuristic:** ta đánh dấu "phát hiện lỗ hổng" bằng cách khớp chuỗi trong output công cụ (`[POC]`, `injectable`, `back-end dbms`, `ssti`, mức `[medium|high|critical]`…). Cách này có thể dương tính giả (chuỗi xuất hiện tình cờ) hoặc âm tính giả (công cụ báo bằng từ ngữ khác). Vì vậy `detect_rate` nên đọc là *cận trên lạc quan* của năng lực nhận diện tự động, và chỉ áp dụng cho nhánh B (nhánh A/C không có tín hiệu scanner tách rời).
+- **Chỉ số "phát hiện" (detection) của công cụ tự động là heuristic:** ta đánh dấu "phát hiện lỗ hổng" bằng cách khớp chuỗi trong output công cụ (`[POC]`, `injectable`, `back-end dbms`, `ssti`, mức `[medium|high|critical]`…). Cách này có thể dương tính giả (chuỗi xuất hiện tình cờ) hoặc âm tính giả (công cụ báo bằng từ ngữ khác). Vì vậy `detect_rate` nên đọc là *cận trên lạc quan* của năng lực nhận diện tự động, và chỉ áp dụng cho công cụ tự động (nhánh người và nhánh AI không có tín hiệu scanner tách rời).
 - **Giới hạn thời gian 30′/bài** có thể cắt ngắn các bài khó (ảnh hưởng mọi nhánh như nhau).
 
 ## 7. Conclusion & Future Work
