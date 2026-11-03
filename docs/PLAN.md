@@ -63,6 +63,32 @@
 
 > Đọc bảng: **bắt flag** là trục so sánh chung cho cả 3 nhánh; **phát hiện** chỉ có ở tầng công cụ (để đo khoảng cách *phát hiện→khai thác*); **tokens/interventions/refused/memorization** là bộ chỉ số **riêng của nhánh AI** (trả lời "AI thay thế hay tăng tốc" + "rào cản triển khai"); **tool-ref** riêng của tầng người (minh bạch Policy B).
 
+#### Các tiêu chí LIÊN KẾT với nhau thế nào (chống hỏi sâu)
+Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pentest* và *một trục so sánh duy nhất*. Nắm cái này thì trả lời được mọi câu "sao lại đo cái đó / sao mỗi nhánh đo khác nhau".
+
+**(1) Một chuỗi: phát hiện → khai thác → bắt flag.** Một bài pentest đi qua ba nấc: *thấy* lỗ hổng → *khai thác* → *bắt flag* (chứng minh tác động). Các chỉ số là cách đo từng nấc:
+- **Bắt flag = nấc cuối = chỉ số CHÍNH**, vì chỉ bắt được flag mới chứng minh tác động thật — và đây là cái so sánh giữa 3 nhánh.
+- **Phát hiện = nấc giữa (chỉ công cụ).** Quan hệ chặt: **bắt flag ⊂ phát hiện** (không thấy thì không bắt được). Cái có giá trị là **khoảng cách** phát hiện (27,5%) ≫ bắt flag (5%) = "thấy mà không với tới" = điểm tắc của tự động hoá.
+
+**(2) Một trục so sánh (bắt flag) + các chỉ số khác "treo" vào để GIẢI THÍCH con số đó** (không so chéo giữa nhánh):
+- **time + num_steps = công sức** → cùng bắt được flag thì ai nhanh/ít bước hơn? (RQ2: AI *tăng tốc* không).
+- **manual_interventions = mức AI cần người kèm** → bắt được flag nhưng phải kéo lại nhiều lần = "*hỗ trợ*", không phải "*tự trị*". Chỉ số này **hạ giá** một lần bắt flag nếu can thiệp nhiều.
+- **tokens = chi phí** → bắt được nhưng tốn bao nhiêu (khả thi vận hành).
+- **llm_refused = rào cản TRƯỚC khi thử** → model từ chối thì bắt flag = 0 **không phải vì kém** mà vì *không được làm*; phải tách "không làm được" khỏi "không được làm".
+- **Δ học thuộc = độ THẬT của con số bắt flag** → nếu AI bắt được vì *đã thấy lời giải khi huấn luyện* thì tỷ lệ bị thổi phồng; Δ là mức **chiết khấu** cho con số đó.
+
+**(3) Vì sao mỗi nhánh có bộ chỉ số khác nhau mà vẫn công bằng:** **so sánh** chỉ diễn ra trên **bắt flag** (chung cả 3 nhánh, cùng bài, cùng tiêu chí) → công bằng; còn các chỉ số đặc thù (phát hiện/can thiệp/token/refused/học thuộc/tool-ref) chỉ để **giải thích** từng nhánh, **không đem so chéo**. Nên "nhánh người không có token" hay "công cụ không có interventions" là **bản chất khác nhau của từng cách làm**, không phải bất công.
+
+**Câu hỏi sâu thường gặp — một câu trả lời (nhờ chỉ số nào):**
+| Hội đồng hỏi | Trả lời |
+|---|---|
+| Sao chính là *bắt flag* mà không phải *phát hiện*? | Phát hiện chỉ là "thấy"; bắt flag mới chứng minh tác động — mục tiêu thật của pentest. |
+| AI bắt được nhưng cần kéo lại 4 lần — ai giải? | Đúng lý do đo `manual_interventions`: bắt + nhiều can thiệp = *hỗ trợ*, không *tự trị*. |
+| Tỷ lệ bắt flag của AI là thật hay học thuộc? | `Δ(gốc − hint-free)` chiết khấu phần học thuộc. |
+| Nhánh người không có *detection* — thiếu sót? | Detection là *tín hiệu output của scanner*; người không phát ra tín hiệu đó, chỉ "bắt được hay không". Gap analysis là riêng cho tự động hoá. |
+| Ba nhánh đo khác nhau thì so kiểu gì? | So trên **bắt flag** (chung); phần còn lại chỉ *giải thích* từng nhánh, không so chéo. |
+| AI 0% — do dở hay do bị chặn? | `llm_refused` tách rào cản an toàn; local `refused=0` nên 0% là *năng lực*, không phải bị chặn. |
+
 ### 2.4 Vì sao khung này "đứng được" khi phản biện
 - **Tái lập:** seed cố định, phiên bản công cụ ghi rõ, `patches.log`, log thô từng bài trong `logs/`, dữ liệu version-controlled trong `results.csv`.
 - **Công bằng:** cùng target + cùng tiêu chí exact-match + cùng budget; công cụ tự động là baseline *đáng tin* (có exploiter chuyên biệt không-AI cho các lớp chiếm đa số), không phải strawman.
