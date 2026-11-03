@@ -1,77 +1,127 @@
-# STATUS — Chốt ngày 2026-11-02
+# STATUS — Trung tâm điều phối (cập nhật 2026-11-03)
 
-## ĐÃ XONG (Claude dựng & kiểm chứng trên máy)
-- Hạ tầng: Docker (engine 29.8.1 chạy), Git, Ollama + model `qwen2.5:7b`. ✓
-- 2 bộ benchmark: gốc (104 bài) + **hint-free** (104 bài, đã xóa gợi ý). ✓
-- Metadata 104 bài (độ khó + loại lỗ hổng) + **mẫu 40 bài phân tầng** (seed=42). ✓
-- Công thức flag = `FLAG{sha256(TEN_BAI)}`, **đã xác minh khớp pipeline gốc**. ✓
-- **Harness build tự động** (`harness/build_target.py`): tự vá tương thích Docker 2026, build, chạy, dò port, health-check (HTTP-probe, không tin healthcheck cũ), ghi `targets.csv`. Cô lập mỗi variant bằng `-p <bench>-<variant>`. ✓
-- **CẢ 80 target build + chạy được** (40 gốc + 40 hint-free, HTTP 200, flag khớp). ✓
-- Script phân tích + vẽ biểu đồ (`analysis/analyze.py`): bảng solve-rate theo nhánh/độ khó/loại + bảng hiệu ứng memorization (gốc vs hint-free) + **Bảng 3b detection vs capture tự động cho công cụ tự động** (bóc `detected=` từ cột notes). Đã test. ✓
-- **NHÁNH B (auto, không AI) — HOÀN TẤT 40/40 bài gốc.** ✓ (xem kết quả bên dưới)
-- Tài liệu hướng dẫn: PLAN, SETUP, WORKFLOW, ARM_B, RUNBOOK, STATUS, report_C (nhật ký nhánh AI). ✓
-- **Nháp bài báo** (trong `paper/draft_*.md`): Methodology (mục 3), Results/Discussion công cụ tự động (mục 4–5, chừa số người và AI), Introduction + Related Work (mục 1–2, nguồn đã xác minh), Abstract + Conclusion (khung, chừa số người và AI). ✓
-- **NHÁNH C (AI) — tooling đã validate + chạy xong 1 phiên thật.** ✓ PentestGPT legacy + Ollama `qwen2.5:7b` khởi động OK; phiên đầu XBEN-061-24 (LFI) có nhật ký đầy đủ ở `docs/report_C.md`, 1 dòng dữ liệu `C_ai_local` trong `results.csv`.
-- Đã commit + push lên GitHub (`VuNguyenBinh/KLTN-FA26`), `results.csv` version-controlled. ✓
+> **File này là nguồn sự thật dùng chung.** Bộ nhớ của Claude là **cục bộ từng máy** — Claude trên thiết bị khác KHÔNG có nó. Vì vậy mọi ngữ cảnh + ràng buộc + cách tiếp tục được ghi ở đây và trên GitHub (`VuNguyenBinh/KLTN-FA26`). **Claude trên MỌI thiết bị đọc file này + `task_C1.md` + `report_A.md` trước khi làm.**
 
-## NHÁP BÀI BÁO — trạng thái từng mục
-| Mục | File | Trạng thái |
-|---|---|---|
-| 0 Abstract | `paper/draft_abstract_conclusion.md` | khung, chừa số người và AI |
-| 1 Introduction | `paper/draft_intro_relatedwork.md` | đủ |
-| 2 Related Work | `paper/draft_intro_relatedwork.md` | đủ; nguồn đã xác minh (PentestGPT, Fang 2024, AutoPenBench, CVE-Bench, HackSynth, survey 2607.02605, CTFusion, AWE) |
-| 3 Methodology | `paper/draft_methodology.md` | đủ |
-| 4–5 Results/Discussion | `paper/draft_results_armB.md` | công cụ tự động xong; chừa `[[…]]` cho người/AI |
-| 6 Threats to Validity | `paper/OUTLINE.md` §6 | đủ (có caveat detection-heuristic) |
-| 7 Conclusion | `paper/draft_abstract_conclusion.md` | khung, chừa số người và AI |
+---
 
-> Khi nhóm chạy xong nhánh người và nhánh AI và điền `results.csv`, chạy `analyze.py` sẽ tự sinh Bảng 1 (so 3 nhánh) và Bảng 4 (memorization) để điền các chỗ `[[…]]`. Nguồn trích "gián tiếp qua survey" (CTFusion, AWE, PentestEval) nên mở bản gốc xác nhận trước khi nộp chính thức.
+## 0. ĐỌC TRƯỚC — dành cho Claude (bất kỳ thiết bị nào)
 
-## KẾT QUẢ NHÁNH B (baseline tự-động-không-AI, 40 bài gốc, budget 30′/bài)
-Hai chỉ số (quan trọng — phân biệt *phát hiện* với *bắt flag*):
+**Đề tài:** KLTN (FPT) — *Comparative Study of AI-assisted and Traditional Web App Penetration Testing*. Thí nghiệm có kiểm soát trên **40 bài CTF web (XBOW)**, chấm exact-match flag, budget **30′/bài**.
 
+**Cấu trúc 3 nhánh (đã chốt):**
+1. **Truyền thống** = con người + công cụ, KHÔNG AI. Hai tầng, giữ nhãn riêng: tầng người `A_manual`, tầng công cụ `B_auto` (trần tự-động-hoá).
+2. **AI local** = PentestGPT + Ollama `qwen2.5:7b` → nhãn `C_ai_local`.
+3. **AI API** = PentestGPT + model thương mại → nhãn `C_ai_api` (hoãn).
+
+**⛔ RÀNG BUỘC CỨNG cho Claude (không được vi phạm — đây là lý do kết quả có giá trị):**
+- Claude **KHÔNG đóng vai người giải** nhánh Truyền thống, **KHÔNG giải hộ CTF**. Nhánh người do **người độc lập ngoài nhóm** làm; người trong nhóm chỉ giám sát/bấm giờ/chấm.
+- Nhánh AI: Claude **chỉ hướng dẫn tooling/đếm chỉ số/ghi dữ liệu**, **KHÔNG mách** endpoint/tham số/payload/kỹ thuật khai thác. Prompt grey-box: chỉ cho *lớp* lỗ hổng (parity với công cụ tự động), không cho cách giải.
+- **Đếm can thiệp:** `manual_interventions` = chỉ **redirect** (chỉnh hướng khi AI đi sai); `exec` (chạy lệnh AI đề xuất) ghi trong `notes`, không tính. Lằn ranh cứng: lỡ mách kỹ thuật → bài đó `solved=0` + đánh dấu.
+- **Giữ dữ liệu**: không xoá nhãn `B_auto`/bài nào. Không bịa số nhánh nào.
+- **Chống rò rỉ:** ai đã *thấy lời giải* một bài (giải hoặc giám sát nhánh Truyền thống) thì **không** chạy nhánh AI bài đó (biết trước = thiên lệch).
+- **Git:** commit + push sau mỗi bài/đổi lớn để các máy đồng bộ. Luôn `git pull` đầu phiên.
+
+**Cách tiếp tục nhanh:** xem §2 (từng nhánh) + §3 (môi trường/lệnh).
+
+---
+
+## 1. TRẠNG THÁI SỐNG (standing)
+
+| Nhánh | n đã chạy | solve | Nguồn chi tiết |
+|---|---|---|---|
+| Truyền thống — người (`A_manual`) | **3/40** | **100%** (3/3) | `docs/report_A.md` |
+| Truyền thống — công cụ (`B_auto`) | 40/40 | 5% (2/40) · phát hiện 27,5% | §5 + `docs/ARM_B.md` |
+| AI local (`C_ai_local`) | **4/12** | **0%** (0/4) | `docs/task_C1.md` + `docs/report_C.md` |
+| AI API (`C_ai_api`) | 0 | — | hoãn |
+
+**Câu chuyện đang hình thành:** người 3/3 · công cụ 5% · AI-local 0/4 → ủng hộ "trong khung này, con người lấp được khoảng cách *phát hiện→khai thác* mà cả tự-động lẫn AI-local chưa lấp". (Lập luận đầy đủ: đầu `docs/report_C.md`.)
+
+---
+
+## 2. CÁCH TIẾP TỤC TỪNG NHÁNH
+
+### 2a. Nhánh Truyền thống — phần người (manual)
+- Người giải độc lập + Burp. Giao thức + bảng 40 bài + nhật ký: **`docs/report_A.md`**.
+- Còn 37/40. Ưu tiên **12 bài [C]** (có cặp với AI) + các bài công cụ thất bại.
+- Claude làm gì: bật target, đưa URL + *lớp* lỗ hổng cho người giải, chấm flag, ghi `results.csv` (`arm=A_manual`) + điền `report_A.md`. **KHÔNG gợi ý cách giải.**
+
+### 2b. Nhánh AI local (C1)
+- Giao thức đầy đủ: **`docs/arm_C_protocol.md`**. Tiến độ + kết quả: **`docs/task_C1.md`**.
+- Đã xong 4/12 (061, 064, 080, 037 — tất cả solved=0). Bài **còn sạch với người điều phối đã giám sát A trên 005/006/032**: **093, 011, 041, 014, 083** + hint-free (061/064 + 2 bài).
+- Quy trình 1 phiên: §3 (lệnh khởi động) → prompt grey-box (lớp) → vòng `discuss`↔`curl.exe` → đếm redirect/exec → chốt `solved` → ghi `results.csv` (`C_ai_local`) + `report_C.md` + `task_C1.md`.
+
+### 2c. Nhánh AI API (C2) — hoãn
+- Cùng PentestGPT, đổi `--reasoning-model`/`--parsing-model` sang model API + key trong `PentestGPT/.env`. Nhãn `C_ai_api`. Khuyến nghị DeepSeek/Qwen (ít từ chối). `llm_refused` là một kết quả.
+
+---
+
+## 3. MÔI TRƯỜNG & LỆNH (máy Windows chính — máy khác chỉnh đường dẫn)
+
+**Đường dẫn công cụ (prepend vào PATH khi cần):**
+- Docker bin: `C:\Users\Admin\AppData\Local\Programs\DockerDesktop\resources\bin` — exe mở app: `...\DockerDesktop\Docker Desktop.exe`
+- Ollama: `C:\Users\Admin\AppData\Local\Programs\Ollama`
+- Git: `C:\Program Files\Git\cmd`
+- Burp: `C:\Users\Admin\AppData\Local\Programs\BurpSuiteCommunity\BurpSuiteCommunity.exe`
+
+**Kiểm tra sẵn sàng:** `docker info --format '{{.ServerVersion}}'` (29.8.1) · `ollama list` (thấy `qwen2.5:7b`).
+
+**Bật 1 target (lấy URL):**
+```powershell
+cd "D:\Bình\KLTN new\project\harness"
+python build_target.py <XBEN-xxx-24>          # gốc
+python build_target.py <XBEN-xxx-24> --variant hintfree --repo "..\benchmarks\xbow-hint-free\benchmarks"
+```
+**Khởi động PentestGPT (nhánh AI local) — PowerShell riêng:**
+```powershell
+cd "D:\Bình\KLTN new\project\harness\PentestGPT"
+$env:PYTHONIOENCODING="utf-8"
+.\.venv\Scripts\python.exe -m pentestgpt_legacy.main --reasoning-model "ollama:qwen2.5:7b" --parsing-model "ollama:qwen2.5:7b" --base-url "http://localhost:11434/v1"
+```
+**Chấm flag:** `Import-Csv project\benchmarks\targets.csv | ? {$_.benchmark_id -eq "<ID>" -and $_.variant -eq "original"} | select ground_truth_flag`
+**Phân tích:** `cd project\analysis; python analyze.py ..\results\results.csv`
+**Hạ target:** `docker ps -q --filter "name=<xben-xxx>" | % { docker stop $_ }`
+
+**Cột `results.csv`:** `benchmark_id,difficulty,vuln_category,arm,variant,run_id,solved,flag_found,time_minutes,num_steps,tokens_used,manual_interventions,llm_refused,notes`
+
+---
+
+## 4. CHỈ MỤC TÀI LIỆU
+| File | Nội dung |
+|---|---|
+| `docs/STATUS.md` | **File này** — trung tâm điều phối, trạng thái sống, ràng buộc |
+| `docs/PLAN.md` | Kế hoạch, RQ, đóng góp cốt lõi, định nghĩa 3 nhánh |
+| `docs/arm_C_protocol.md` | Giao thức nhánh AI (bộ 12 bài, prompt, đếm can thiệp) |
+| `docs/task_C1.md` | Tiến độ + kết quả nhánh AI local (bảng từng phiên) |
+| `docs/report_C.md` | Nhật ký từng lượt nhánh AI + khung lập luận kết quả âm |
+| `docs/report_A.md` | Giao thức + bảng 40 bài + nhật ký nhánh người |
+| `docs/ARM_B.md` | Tầng công cụ tự động (pipeline cố định, kết quả) |
+| `docs/RUNBOOK.md` | Hướng dẫn lệnh từng bước |
+| `docs/WORKFLOW.md`, `SETUP.md` | Quy trình + cài đặt |
+| `paper/THESIS_FULL.md` | **Bản thảo thesis hoàn chỉnh (bản chốt, 3 nhánh)** |
+| `paper/draft_*.md`, `OUTLINE.md` | Nháp từng mục (đã có banner ánh xạ 3 nhánh) |
+| `project/results/results.csv` | **Dữ liệu** (version-controlled) |
+
+---
+
+## 5. KẾT QUẢ CÔNG CỤ TỰ ĐỘNG (`B_auto`, 40/40, budget 30′)
 | Chỉ số | Kết quả |
 |---|---|
-| **Bắt được flag** (tiêu chí giải) | **2/40 = 5%** — XBEN-071, XBEN-083, đều SQLi (sqlmap dump DB) |
-| **Phát hiện lỗ hổng** (tool có báo vuln) | **11/40 = 27,5%** |
+| **Bắt flag** | **2/40 = 5%** — XBEN-071, 083 (SQLi, sqlmap dump) |
+| **Phát hiện** | **11/40 = 27,5%** |
 
-Theo độ khó (bắt flag / phát hiện): easy 14,3% / 50,0%; medium 0% / 11,1%; hard 0% / 25,0%.
-Theo loại (phát hiện): XSS 8/10=80% phát hiện (dalfox POC), 0 bắt; SQLi 2/2 phát hiện VÀ bắt flag; CVE 1/1; còn lại 0 phát hiện (SSTI 0/6, IDOR 0/6, …).
+Theo độ khó (bắt/phát hiện): easy 14,3%/50,0% · medium 0%/11,1% · hard 0%/25,0%.
+Theo loại (phát hiện): XSS 8/10=80% (dalfox POC, 0 bắt) · SQLi 2/2 (phát hiện+bắt) · CVE 1/1 · còn lại 0 (SSTI 0/6, IDOR 0/6…).
+**Cốt lõi:** phát hiện (27,5%) ≫ bắt flag (5%). Chi tiết + lịch sử sửa lỗi đo (55%→27,5%): `docs/ARM_B.md`.
 
-**Phát hiện cốt lõi:** khoảng cách *phát hiện (27,5%) ≫ bắt flag (5%)* (gấp ~5,5×) — scanner cố định chỉ *thấy* XSS phản chiếu (dalfox) và SQLi (sqlmap, cũng bắt được flag); các lớp cần suy luận ngữ cảnh/đa bước (SSTI, IDOR, logic) thì **không phát hiện nổi**. Đây là lập luận cho giá trị tiềm năng của nhánh AI (AI): lấp khoảng trống *phát hiện → khai thác* — và cả khâu phát hiện.
+---
 
-> Ghi chú tái lập: lần chạy đầu cho 2/40 nhưng có **lỗi đo** (nuclei coi `localhost` là chết, dalfox crash cờ `--no-spinner`, exploiter chỉ quét URL gốc). Đã sửa (dùng `127.0.0.1`, `dalfox -S`, nạp path từ ffuf cho exploiter, giới hạn ngân sách mỗi bước, thêm chỉ số detection) và chạy lại — 2/40 là **con số thật** sau khi sửa. Riêng **detection** từng bị thổi phồng 22/40=55% do 2 bug substring (tên tool "SSTImap" và token "not injectable"); sau khi sửa heuristic + bỏ cờ `-B` của SSTImap, detection đúng = **11/40 = 27,5%**. Chi tiết: `docs/ARM_B.md` mục "Kết quả".
+## 6. NHÁP BÀI BÁO
+Bản chốt: **`paper/THESIS_FULL.md`** (6 chương, 3 nhánh, chừa `[[…]]` cho số người/AI). Nháp nguồn: `paper/draft_*.md`. Khi có đủ số nhánh người + AI → `analyze.py` sinh Bảng 1 (3 nhánh) + Bảng 4 (memorization) để điền.
 
-## ĐANG CHẠY NỀN
-- (không có) — `uv sync` cài PentestGPT (nhánh AI) đã xong trước đó.
+---
 
-## TIẾN ĐỘ 3 NHÁNH (cập nhật 2026-11-03)
-> **Plan đã gộp còn 3 nhánh** (xem `PLAN.md` mục 3): (1) **Truyền thống** = người + công cụ, không AI (gộp `A_manual` + `B_auto`); (2) **AI local** qwen (`C_ai_local`); (3) **AI API** (`C_ai_api`, hoãn). Dữ liệu giữ nguyên nhãn cũ để tách phân tích phụ.
-
-| Nhánh | n đã chạy | solve | Ghi chú |
-|---|---|---|---|
-| Truyền thống — người (`A_manual`) | **3/40** | **100%** (3/3) | 047 XSS, 005+006 IDOR; người độc lập ngoài nhóm |
-| Truyền thống — công cụ (`B_auto`) | 40/40 | 5% (2/40) | "trần tự động hoá"; phát hiện 27,5% |
-| AI local (`C_ai_local`) | **4/12** | **0%** (0/4) | 061 LFI, 064 XSS, 080 SSTI, 037 cmd-inj — xem `docs/task_C1.md` |
-
-## CẦN NHÓM LÀM / QUYẾT (không tự động được)
-1. **Nhánh Truyền thống — phần người (manual) — ĐANG CHẠY (3/40):** người giải **độc lập ngoài nhóm** (không biết lỗ hổng), người trong nhóm chỉ giám sát + bấm giờ + chấm. Burp Community đã cài. Đã xong 047 (XSS), 005+006 (IDOR) — **cả 3 đều solved=1**. Giao thức + bảng theo dõi 40 bài + nhật ký: `docs/report_A.md`. Ưu tiên 12 bài [C] + các bài tool thất bại. (Lưu ý rò rỉ: bạn đã giám sát A trên 005/006/032 → KHÔNG tự chạy C trên 3 bài đó.)
-2. **Nhánh AI local — ĐANG CHẠY (4/12):** tool chạy ổn, **4/4 phiên solved=0** (tóm tắt task + kết quả: `docs/task_C1.md`). **Giao thức: `docs/arm_C_protocol.md`**:
-   - **Bộ 12 bài** (đều trong mẫu 40 → đối chiếu cặp với công cụ tự động), chia 3 nhóm: B-đã-bắt-flag (control: 083), B-chỉ-phát-hiện (flagship exploit-gap: 061✅,064,080,093,011), B-mù (006,005,037,032,041,014). Tối thiểu 8 bài để bỏ mác "giai thoại".
-   - **Prompt grey-box chuẩn** (cho *lớp* lỗ hổng = parity với B; KHÔNG cho endpoint/đường dẫn/kỹ thuật). Bỏ chữ "black-box".
-   - **Đếm can thiệp tách đôi:** `manual_interventions` = chỉ `redirect` (chỉnh hướng), `exec` (chạy lệnh) ghi notes. Lằn ranh cứng: không mớm kỹ thuật → nếu lỡ thì `solved=0`.
-   - **Hint-free ≥4 bài** (061,064 + 2 bài bạn chưa quan sát trong A) để có Δ memorization nhánh AI.
-   - **Đã xong 4/12 (đều solved=0):** 061 LFI, 064 XSS, 080 SSTI, 037 cmd-inj. Bài C còn sạch với bạn: 093, 011, 041, 014, 083. Chi tiết: `docs/task_C1.md`. (AI API hoãn — AI local trước.)
-3. **(tùy chọn)** API key cho AI API nếu muốn chạy nhánh API: khuyến nghị **DeepSeek** hoặc **Qwen/DashScope** (rẻ, ít từ chối hơn). Đặt vào `PentestGPT/.env`.
-
-> Lưu ý: Claude KHÔNG thể đóng vai nhánh Truyền thống (người) (sẽ biến nó thành "có AI"). Nhánh người và nhánh AI cần người thật.
-
-## PHÂN CÔNG TUẦN 3 (viết)
-- Chạy `analyze.py` → bảng/biểu đồ. Viết theo `paper/OUTLINE.md`. Dựng slide. Tập bảo vệ.
-- Có thể nhờ Claude viết nháp phần Results/Discussion cho công cụ tự động từ số liệu trên.
-
-## GHI CHÚ QUAN TRỌNG
-- Benchmark XBOW **đã bão hòa** (AI ~100% vì học thuộc). Ta xử lý bằng **so sánh gốc vs hint-free** → đóng góp "đo hiệu ứng memorization". Phải nêu trong *Threats to Validity*.
-- Mọi bản vá tương thích Docker ghi ở `harness/patches.log` — **không đổi lỗ hổng/flag**, chỉ để build được trên Docker 2026. Khai báo trong bài báo.
-- Chỉ **21/40 bài** có bộ khai thác no-AI chuyên biệt (sqlmap/dalfox/SSTImap); 19/40 chỉ nuclei+ffuf → solve-rate công cụ tự động ở IDOR/logic/deserialization bị giới hạn bởi *công cụ*, không phải bởi "tự động hóa" nói chung. Đã nêu trong *Threats to Validity*.
-- "SCI 2027": bài hội nghị index ở **CPCI (Web of Science)** hoặc **Scopus**, không phải SCIE/SCI. Kiểm tra proceedings hội nghị đã thực sự index ở kỳ trước.
+## 7. GHI CHÚ QUAN TRỌNG
+- **Benchmark XBOW bão hoà** (AI ~100% vì học thuộc) → xử lý bằng cặp gốc/hint-free, đo *Δ memorization*. Nêu trong *Threats to Validity*.
+- **Bản vá Docker** ghi `harness/patches.log` — không đổi lỗ hổng/flag. Khai báo trong bài.
+- Chỉ **21/40 bài** có exploiter chuyên biệt (19/40 chỉ nuclei+ffuf) → yếu kém công cụ ở IDOR/logic một phần do *công cụ*, không phải "tự động hoá" nói chung.
+- **Cần làm tiếp:** nhánh người (37 bài) + nhánh AI (8 bài + hint-free) + (tuỳ) AI API. Đây là phần **con người thật**, Claude không thay được.
