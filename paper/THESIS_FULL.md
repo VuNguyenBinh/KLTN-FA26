@@ -300,7 +300,23 @@ The study set out to separate the effect of automation from the effect of a lang
 
 **Interpretation.** Taken together, the evidence so far is consistent with viewing AI as an *accelerating, human-in-the-loop assistant* rather than a replacement for the tester, at least for a small local model on classes that need contextual reasoning. This lines up with the broader literature [5], [8], [10] and is exactly why the design counts human interventions rather than assuming autonomy.
 
-## 5.2. Threats to Validity
+## 5.3. Interpreting the AI Arm's Non-Solves
+
+A reasonable objection is that an AI arm which captures no flags cannot support any conclusion. We argue the opposite. Read against the completed baseline and the session logs, the near-zero result is itself an informative and defensible finding, as long as its claim is stated at the right scope.
+
+The central claim is that on these targets automation, whether the non-AI pipeline or a small local model assisting a human, recognises the class of vulnerability that is present but does not carry the exploitation through to a captured flag. Three strands of evidence support it.
+
+First, the completed non-AI baseline quantifies the gap directly. A vulnerability is detected in 27.5% of targets but a flag is captured in only 5%, a roughly five-fold difference. Every capture is a SQL injection, where sqlmap packages the whole detect-then-dump-then-read chain into a single automated step, whereas the classes that require multi-step contextual reasoning, such as server-side template injection, insecure direct object reference, and business-logic flaws, are not even detected. This gap is measured, not assumed.
+
+Second, the logged AI sessions show that the local model does not close that gap, and they locate precisely where it breaks down. On the file-inclusion target the model went further than the scanner, since it genuinely exploited the flaw and read a system file, yet it stalled at the final step of reading the page source to recover the flag. On the cross-site-scripting target it broke down earlier: given the page's HTML twice, it still could not parse the form field needed to build a correct request, it repeated one wrong command three times, and it ignored two operator corrections; even when the parameter name was supplied directly, its payload was reflected but did not execute. The number of corrective interventions, four on the first target and two on the second, makes the cost of human supervision explicit. Within this sample the local model behaves as a weak assistant that needs continuous steering rather than an autonomous solver.
+
+Third, this low result is consistent with the published literature rather than an artefact of our setup. Autonomous agents reach about 21% on AutoPenBench [5] and at best 12.5% on CVE-Bench [7], and smaller models perform worse still. A local model sitting near zero follows that trend, which points to genuine task difficulty and model scale rather than a flawed experiment.
+
+Stated at its proper scope, the conclusion is therefore that a small, locally hosted language model used as an assistant does not, on this CTF web benchmark, close the detection-to-exploitation gap that the non-AI baseline also leaves open, and that the human supervision cost remains substantial. This claim rests on the evidence above and does not depend on whether the other two arms have been run.
+
+Two questions are deliberately left outside this claim, and we do not prejudge them. Whether a larger hosted model would close the gap is a question for Arm C2; we do not assert that artificial intelligence cannot perform penetration testing, only that a small local model does not do so here. Whether humans outperform both automated arms is a question for Arm A; should the manual arm solve substantially more while Arms B and C remain near zero, the claim strengthens from "the local model does not close the gap" to "within this setting, only humans do." Arm A is therefore pursued to widen the conclusion, not to rescue the AI result.
+
+## 5.4. Threats to Validity
 
 > ⚙️ HƯỚNG DẪN: giữ văn phong thẳng, mỗi mối đe doạ kèm cách giảm thiểu. Khi có đủ số nhánh C, rà lại các con số trong mục này.
 
