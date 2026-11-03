@@ -45,6 +45,24 @@
 
 **Phân tầng báo cáo:** mọi chỉ số bóc theo **độ khó** và **loại lỗ hổng**. Ràng buộc chung: **30 phút/bài** cho mọi nhánh. Phân tích tự động hóa bằng `project/analysis/analyze.py` → Bảng 1 (theo nhánh), 2 (độ khó), 3 (loại), 3b (phát hiện vs bắt flag — công cụ tự động), 4 (học thuộc — nhánh AI) + biểu đồ; dòng chưa chạy bị **loại khỏi thống kê**, không tính là thất bại.
 
+#### Bảng đối chiếu: tiêu chí × 3 nhánh
+`✓` = đo/áp dụng · `—` = không áp dụng. Nhánh Truyền thống tách 2 tầng (người `A_manual`, công cụ `B_auto`); nhánh AI gồm local + API.
+
+| Tiêu chí | Truyền thống · Người | Truyền thống · Công cụ | AI local | AI API | Ghi chú |
+|---|:--:|:--:|:--:|:--:|---|
+| **Bắt flag (solve rate)** — *chỉ số CHÍNH* | ✓ | ✓ | ✓ | ✓ | khớp chính xác flag; so sánh cả 3 nhánh |
+| **Phát hiện (detection rate)** | — | ✓ | — | — | chỉ công cụ tự động có tín hiệu scanner tách rời; đo bằng heuristic (cận trên lạc quan) |
+| **time** (phút/bài) | ✓ | ✓ | ✓ | ✓ | budget 30′ chung |
+| **num_steps** (số bước/lượt) | ✓ | — | ✓ | ✓ | người = số request; công cụ = pipeline cố định (không đếm); AI = số lượt |
+| **tokens_used** | — | — | ✓ | ✓ | chi phí tính toán, chỉ nhánh AI |
+| **manual_interventions** (redirect) | — | — | ✓ | ✓ | chi phí giám sát con người; lằn ranh cứng không mớm lời giải |
+| **llm_refused** (từ chối tác vụ) | — | — | ✓ (thường 0) | ✓ | *chỉ số nổi bật của AI API* — rào cản triển khai LLM thương mại |
+| **Δ học thuộc** (gốc vs hint-free) | — | — | ✓ | ✓ | chỉ nhánh AI chạy cả 2 biến thể |
+| **tools / tool-ref** (công cụ đã dùng) | ✓ | (bản thân là công cụ) | — | — | người ghi công cụ + lần tra cứu (Policy B) |
+| **Phân tầng độ khó & loại** | ✓ | ✓ | ✓ | ✓ | mọi chỉ số bóc theo difficulty + vuln_category |
+
+> Đọc bảng: **bắt flag** là trục so sánh chung cho cả 3 nhánh; **phát hiện** chỉ có ở tầng công cụ (để đo khoảng cách *phát hiện→khai thác*); **tokens/interventions/refused/memorization** là bộ chỉ số **riêng của nhánh AI** (trả lời "AI thay thế hay tăng tốc" + "rào cản triển khai"); **tool-ref** riêng của tầng người (minh bạch Policy B).
+
 ### 2.4 Vì sao khung này "đứng được" khi phản biện
 - **Tái lập:** seed cố định, phiên bản công cụ ghi rõ, `patches.log`, log thô từng bài trong `logs/`, dữ liệu version-controlled trong `results.csv`.
 - **Công bằng:** cùng target + cùng tiêu chí exact-match + cùng budget; công cụ tự động là baseline *đáng tin* (có exploiter chuyên biệt không-AI cho các lớp chiếm đa số), không phải strawman.
