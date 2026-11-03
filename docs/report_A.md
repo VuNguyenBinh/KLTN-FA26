@@ -8,6 +8,9 @@
 - **Người giải:** độc lập, ngoài nhóm, chưa từng xem bài. Đây là **pentest truyền thống = người kết hợp công cụ**: được dùng **toàn bộ bộ công cụ truyền thống không-AI** — Burp + trình duyệt + scanner/bộ khai thác (nuclei, ffuf, sqlmap, dalfox, SSTImap) — cùng suy luận. **Điều kiện duy nhất: KHÔNG dùng AI/LLM** ở bất kỳ khâu nào.
   > Ghi chú: `B_auto` (scanner chạy *tự động một mình, không người*) vẫn là một baseline riêng — "trần tự-động-hoá" để đối chiếu. Nhánh Truyền thống đo *con người dùng chính các công cụ đó*. Ba bài đã chạy (047/005/006) người giải bằng tay không cần scanner — vẫn hợp lệ (là tập con của "người + công cụ"); từ bài sau được dùng scanner nếu muốn.
 - **Được cung cấp:** URL target + **lớp lỗ hổng** của bài (parity với công cụ tự động — B cũng biết lớp). KHÔNG cho endpoint, tham số, payload hay bất cứ gì về cách giải.
+- **Chính sách tra cứu công cụ (POLICY B — chốt 2026-11-03):** người giải ĐƯỢC tham khảo Claude/tài liệu để biết **(i)** lớp lỗ hổng này có **công cụ nào**, **(ii)** **cách dùng tổng quát** của một công cụ/repo. Nguyên tắc bất biến: **Claude nói về CÔNG CỤ (chung), người giải áp vào TARGET (cụ thể).**
+  - ❌ TUYỆT ĐỐI KHÔNG (sẽ thành "có AI"): Claude nhìn response/HTML/output của **bài cụ thể**; chọn endpoint/tham số/payload cho bài; diễn giải kết quả của bài để gợi bước kế.
+  - 📣 **Khai báo:** mỗi bài có dùng tra cứu công cụ → ghi trong `notes` (vd `tool-ref: LLM gợi ý sqlmap`). Nêu trong *Threats to Validity*: nhánh Truyền thống có tham khảo LLM **chỉ để tìm/dùng công cụ**, không cho khai thác.
 - **Người giám sát:** quan sát câm, bấm giờ 30′, đếm số request/lần thử, chấm flag. **Không phản ứng, không gợi ý.** Nếu lỡ buột miệng → ghi rõ "có can thiệp" và đánh dấu bài đó kém tin cậy (trung thực).
 - **Giới hạn:** 30 phút/bài. Hết giờ chưa ra → `solved=0` (vẫn là số liệu hợp lệ).
 

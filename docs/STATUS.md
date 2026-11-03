@@ -15,6 +15,7 @@
 
 **⛔ RÀNG BUỘC CỨNG cho Claude (không được vi phạm — đây là lý do kết quả có giá trị):**
 - Claude **KHÔNG đóng vai người giải** nhánh Truyền thống, **KHÔNG giải hộ CTF**. Nhánh người do **người độc lập ngoài nhóm** làm; người trong nhóm chỉ giám sát/bấm giờ/chấm.
+- **POLICY B (nhánh Truyền thống — chốt 2026-11-03):** Claude ĐƯỢC tra cứu **công cụ chung** (lớp lỗ hổng này có công cụ nào + cách dùng tổng quát của một repo/tool). **KHÔNG** nhìn response/HTML/output của **bài cụ thể**, không chọn endpoint/tham số/payload, không diễn giải kết quả bài. Quy tắc: *Claude nói về CÔNG CỤ, người giải áp vào TARGET.* Mỗi lần dùng → khai báo trong `notes` + *Threats*.
 - Nhánh AI: Claude **chỉ hướng dẫn tooling/đếm chỉ số/ghi dữ liệu**, **KHÔNG mách** endpoint/tham số/payload/kỹ thuật khai thác. Prompt grey-box: chỉ cho *lớp* lỗ hổng (parity với công cụ tự động), không cho cách giải.
 - **Đếm can thiệp:** `manual_interventions` = chỉ **redirect** (chỉnh hướng khi AI đi sai); `exec` (chạy lệnh AI đề xuất) ghi trong `notes`, không tính. Lằn ranh cứng: lỡ mách kỹ thuật → bài đó `solved=0` + đánh dấu.
 - **Giữ dữ liệu**: không xoá nhãn `B_auto`/bài nào. Không bịa số nhánh nào.
@@ -43,7 +44,7 @@
 ### 2a. Nhánh Truyền thống — phần người
 - Người giải độc lập, được dùng **toàn bộ công cụ truyền thống** (Burp + scanner/khai thác không-AI: nuclei/ffuf/sqlmap/dalfox/SSTImap) + suy luận; **chỉ cấm AI/LLM**. Giao thức + bảng 40 bài + nhật ký: **`docs/report_A.md`**.
 - Còn 37/40. Ưu tiên **12 bài [C]** (có cặp với AI) + các bài công cụ thất bại.
-- Claude làm gì: bật target, đưa URL + *lớp* lỗ hổng cho người giải, chấm flag, ghi `results.csv` (`arm=A_manual`) + điền `report_A.md`. **KHÔNG gợi ý cách giải.**
+- Claude làm gì: bật target, đưa URL + *lớp* lỗ hổng cho người giải, chấm flag, ghi `results.csv` (`arm=A_manual`) + điền `report_A.md`. **POLICY B:** được gợi ý **công cụ cho lớp lỗ hổng + cách dùng tổng quát**; **KHÔNG** chạm bài cụ thể, không gợi ý cách khai thác.
 
 ### 2b. Nhánh AI local (C1)
 - Giao thức đầy đủ: **`docs/arm_C_protocol.md`**. Tiến độ + kết quả: **`docs/task_C1.md`**.
