@@ -7,6 +7,28 @@
 
 ---
 
+## Khung lập luận: "nhánh C không giải được" vẫn là một kết quả có giá trị
+
+> Đọc trước khi lo lắng về việc nhánh C ra 0 capture. Phần này chốt cách biến kết quả âm thành luận điểm bảo vệ được — và nêu rõ hai chỗ **bắt buộc** phải bịt, nếu không hội đồng sẽ đánh sập.
+
+**1. Vì sao kết quả âm vẫn hợp lệ.** Đề tài là *nghiên cứu so sánh*, không phải "chế ra AI biết hack". Kết luận *"AI-hỗ-trợ với model local không vượt được baseline tự-động-không-AI trên bộ bài này"* là một phát hiện âm công bố được — **với điều kiện** giải thích rõ *ở đâu* và *vì sao* nó hỏng, chứ không chỉ báo con số 0. Giá trị nằm ở **phân tích định tính kiểu thất bại** chứ không ở riêng solve-rate:
+- Khoảng cách *detect→exploit* đo được (nhánh B: 27,5% phát hiện vs 5% bắt flag).
+- Phân loại kiểu thất bại từ log: 061 khai thác được LFI nhưng không đọc được mã nguồn; 064 không đọc nổi một form HTML, lặp lệnh sai 3 lần, phớt lờ feedback.
+- Chi phí giám sát định lượng (`manual_interventions` / redirect).
+- Hint probe (064): mách tận tham số vẫn không hoàn tất → trần năng lực rất rõ.
+
+**2. Kết quả âm này KHỚP y văn** (nên trông đáng tin, không giống lỗi): AutoPenBench tự trị ~21%, CVE-Bench tốt nhất 12,5%, model nhỏ còn thấp hơn. Trích dẫn để nói "kết quả của nhóm nhất quán với các mốc đã công bố".
+
+**3. Hai lỗ hổng lập luận PHẢI bịt:**
+- **(a) Đòn "chỉ vì chọn model 7B yếu".** Đây là phản biện nguy hiểm nhất. Chặn bằng: (i) nêu rõ **phạm vi** — kết luận chỉ cho *model local nhỏ, chế độ assisted, trên bộ CTF này*, KHÔNG phải "AI không pentest được"; (ii) C1-local là **cận dưới bảo thủ có chủ đích** (tái lập + không bị từ chối); (iii) **nên chạy vài bài C2-API** làm điểm đối chiếu model mạnh — nếu C2 cũng vật lộn thì luận điểm mạnh gấp bội; nếu bỏ qua thì đòn này vẫn đứng.
+- **(b) Thiếu nhánh A thì phép so sánh rỗng.** Nếu B≈0 và C=0 mà **không có A (người)**, câu chuyện chỉ còn là *"bộ bài khó với mọi công cụ"* — nhạt. Sức nặng đến từ tương phản với con người: nếu **A giải được nhiều** còn B, C gần 0 → luận điểm rất mạnh ("người làm được; tự-động-hoá lẫn AI-local đều chưa lấp được gap"). **Nhánh A quyết định việc C=0 có ý nghĩa hay không — bắt buộc phải chạy.**
+
+**4. Phát biểu luận điểm cho đúng phạm vi** (dùng trong Discussion/Conclusion): không viết "AI thất bại", mà viết *"trong giới hạn một model ngôn ngữ local nhỏ chạy ở chế độ trợ lý, AI chưa thu hẹp được khoảng cách phát-hiện→khai-thác mà ngay cả baseline tự-động cũng bỏ ngỏ; chi phí giám sát của con người vẫn cao"*. Giữ small-n + phạm vi hẹp trong *Threats to Validity*.
+
+**Một dòng:** C=0 **đủ** để lập luận *nếu* đặt cạnh **nhánh A (người)** và có vài điểm **C2 (model mạnh)**, cộng phân tích "vì sao hỏng"; còn C=0 đứng một mình thì **chưa đủ** — sẽ bị quy do chọn model yếu hoặc do bài khó.
+
+---
+
 ## 0. Thông tin phiên
 
 | Mục | Giá trị |
