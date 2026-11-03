@@ -50,7 +50,7 @@ MINISTRY OF EDUCATION AND TRAINING — FPT UNIVERSITY
 
 > ⚙️ HƯỚNG DẪN: Abstract phải tự đứng một mình: KHÔNG viết tắt chưa định nghĩa, KHÔNG URL, KHÔNG trích dẫn. Giữ 200–300 từ. Điền `[[…]]` khi có số nhánh A/C. Giữ 4 ý ẩn (Background/Methods/Results/Conclusions) nhưng KHÔNG in tiêu đề.
 
-Automated security tools that use large language models now report high success rates on penetration-testing benchmarks, yet those numbers are rarely obtained under the same conditions as a human tester or a classic scanner, which makes them hard to trust. This study tackles that gap with a controlled, three-arm comparison on a single target set. We run forty web capture-the-flag challenges, drawn by stratified sampling from the XBOW validation benchmarks, through three approaches under identical rules: a manual tester (arm A), a fixed non-AI automation pipeline (arm B), and an AI-assisted tester that pairs a human operator with a locally hosted language model (arm C). Every run is scored by exact-match flag capture and logged for time, number of steps, human interventions, and tool-refusal events; the AI arm is additionally run against a hint-removed copy of each target so that we can estimate how much of its performance is memorisation rather than reasoning. Our completed non-AI baseline detects a vulnerability in 11 of 40 targets (27.5%) but captures the flag in only 2 (5%), a gap that exposes where automation stalls: recognising a vulnerability class is far easier than chaining a multi-step exploit to the flag, and several classes are not even recognised. [[Điền kết quả so sánh arm A và arm C: solve-rate, Δ memorisation, refusal rate.]] The findings suggest that, with a small local model, AI functions as an accelerating assistant rather than a replacement for the human tester, and they make the practical cost of that assistance visible.
+Automated security tools that use large language models now report high success rates on penetration-testing benchmarks, yet those numbers are rarely obtained under the same conditions as a human tester or a classic scanner, which makes them hard to trust. This study tackles that gap with a controlled, three-arm comparison on a single target set. We run forty web capture-the-flag challenges, drawn by stratified sampling from the XBOW validation benchmarks, through three arms under identical rules: a **traditional** arm in which a human tester works by hand with the standard non-AI tools, and two **AI-assisted** arms that pair a human operator with a language model, one local and one a commercial API. Every run is scored by exact-match flag capture and logged for time, number of steps, human interventions, and tool-refusal events; the AI arms are additionally run against a hint-removed copy of each target so that we can estimate how much of their performance is memorisation rather than reasoning. Within the traditional arm, the automated tooling on its own detects a vulnerability in 11 of 40 targets (27.5%) but captures the flag in only 2 (5%), a gap that exposes where automation stalls: recognising a vulnerability class is far easier than chaining a multi-step exploit to the flag, and several classes are not even recognised. [[Điền kết quả nhánh người (traditional) và nhánh AI: solve-rate, Δ memorisation, refusal rate.]] The findings suggest that, with a small local model, AI functions as an accelerating assistant rather than a replacement for the human tester, and they make the practical cost of that assistance visible.
 
 **Keywords:** penetration testing; large language models; web application security; controlled benchmark; vulnerability detection; memorisation; PentestGPT
 
@@ -82,7 +82,7 @@ Automated security tools that use large language models now report high success 
 > ⚙️ HƯỚNG DẪN: chèn hình thật từ `paper/figures/` (do analyze.py sinh) rồi tạo caption. Tối thiểu nên có:
 - Figure 1. Overall solve rate by method (`fig_solve_rate.png`).
 - Figure 2. Solve rate by difficulty (`fig_by_difficulty.png`).
-- Figure 3. Arm B — detection vs capture by difficulty (`fig_detect_vs_capture.png`).
+- Figure 3. Automated tooling — detection vs capture by difficulty (`fig_detect_vs_capture.png`).
 - Figure 4. Memorisation effect: original vs hint-free for the AI arm (`fig_memorization.png`, sau khi có số nhánh C).
 
 # LIST OF TABLES
@@ -90,7 +90,7 @@ Automated security tools that use large language models now report high success 
 > ⚙️ HƯỚNG DẪN: các bảng do analyze.py xuất ra (`paper/figures/table_*.csv`):
 - Table 1. Summary of metrics per arm.
 - Table 2. Solve rate by difficulty.
-- Table 3. Detection vs capture by vulnerability class (arm B).
+- Table 3. Detection vs capture by vulnerability class (automated tooling).
 - Table 4. Memorisation table for the AI arm (original vs hint-free).
 
 # ABBREVIATIONS
@@ -153,11 +153,11 @@ Chapter 2 reviews traditional scanners, LLM-based pentest systems, and the bench
 
 ### Traditional non-AI automation
 
-The backbone of non-AI automation is a family of scanners and class-specific exploiters: template scanners such as nuclei, directory fuzzers such as ffuf, and dedicated tools such as sqlmap for SQL injection, dalfox for cross-site scripting, and SSTImap for template injection. Their strength is quick, repeatable recognition of vulnerability classes that carry a clear signature. Their well-documented weakness lies with business-logic flaws — insecure direct object references, broken access control — and with exploits that take several chained steps, where no static signature captures enough of the context. We use exactly this toolchain as arm B, so that the study's baseline reflects a credible non-AI starting point rather than a strawman.
+The backbone of non-AI automation is a family of scanners and class-specific exploiters: template scanners such as nuclei, directory fuzzers such as ffuf, and dedicated tools such as sqlmap for SQL injection, dalfox for cross-site scripting, and SSTImap for template injection. Their strength is quick, repeatable recognition of vulnerability classes that carry a clear signature. Their well-documented weakness lies with business-logic flaws — insecure direct object references, broken access control — and with exploits that take several chained steps, where no static signature captures enough of the context. We use exactly this toolchain as the automated-tooling layer of the traditional arm (recorded as `B_auto`), so that the study's baseline reflects a credible non-AI starting point rather than a strawman.
 
 ### Pentest systems built on LLMs
 
-PentestGPT [1] is the reference point. It decomposes an engagement into three self-interacting modules (reasoning, generation, parsing) to keep context from collapsing, and it reports a 58.6% improvement in sub-task completion over direct use of GPT-4, on a benchmark covering the OWASP Top 10; the work received a Distinguished Artifact Award at USENIX Security 2024. We adopt PentestGPT in its assistant ("legacy") mode as arm C, specifically so that the number of human interventions can be counted — a figure that speaks directly to whether AI *replaces* or merely *accelerates* the tester.
+PentestGPT [1] is the reference point. It decomposes an engagement into three self-interacting modules (reasoning, generation, parsing) to keep context from collapsing, and it reports a 58.6% improvement in sub-task completion over direct use of GPT-4, on a benchmark covering the OWASP Top 10; the work received a Distinguished Artifact Award at USENIX Security 2024. We adopt PentestGPT in its assistant ("legacy") mode for the two AI arms, specifically so that the number of human interventions can be counted — a figure that speaks directly to whether AI *replaces* or merely *accelerates* the tester.
 
 A string of later systems extends this line but converges on one message: agents are strong on known CVEs and weak on open-ended, end-to-end tasks. AutoPenBench [5] reports a fully autonomous agent at 21% success across 33 tasks, rising to 64% once a human assists — a gap that is itself an argument for a human-in-the-loop design. HackSynth [6] contributes an autonomous agent and two CTF benchmarks of roughly 200 challenges. CVE-Bench [7] gathers 40 real web-application CVEs and finds the best agent solving at most 12.5% in the one-day setting. PentestEval [10] decomposes an engagement into 346 stage-level tasks and finds end-to-end success for fully autonomous agents still below 6%, i.e. competence at individual steps does not compose into a finished exploit chain. A 2026 systematic survey of 81 papers [8] frames these as structural open problems of the field: unreliable evaluation, weak multi-stage performance, and scarce training data.
 
@@ -183,14 +183,13 @@ Set against that body of work, our distinguishing move is the **controlled compa
 
 This is a controlled, within-subject comparison: all three approaches run on the exact same forty targets, so that any difference reflects the method rather than the target. The three arms are summarised below.
 
-| Arm | Name | Human | Automation | LLM | Main tools |
-|---|---|---|---|---|---|
-| **A** | Manual | Yes (tester) | No | No | Burp Suite Community + manual work |
-| **B** | Automated, no-AI | No (after launch) | Yes | No | nuclei, ffuf, sqlmap, dalfox, SSTImap |
-| **C1** | AI — local model | Yes (in the loop) | Partial | Yes (local) | PentestGPT (legacy) + Ollama `qwen2.5:7b` |
-| **C2** | AI — API model | Yes (in the loop) | Partial | Yes (commercial) | PentestGPT (legacy) + hosted API |
+| Arm | Name | Human | LLM | Main tools |
+|---|---|---|---|---|
+| **1** | Traditional (manual + tools) | Yes (tester) | No | Burp Suite + nuclei, ffuf, sqlmap, dalfox, SSTImap |
+| **2** | AI — local model | Yes (in the loop) | Yes (local) | PentestGPT (legacy) + Ollama `qwen2.5:7b` |
+| **3** | AI — commercial API | Yes (in the loop) | Yes (commercial) | PentestGPT (legacy) + hosted API |
 
-Arm A stands for traditional manual testing. Arm B is a fixed, identical-for-every-target pipeline, so that differences between targets reflect tool capability and not per-target tuning by a human. Arm C is AI-assisted testing in PentestGPT's assistant mode, split into a local model (C1) and a commercial API model (C2). For this document C1-local is the primary AI arm; C2 is an optional extension whose refusal rate is itself a reported result (Section 3.6).
+Arm 1 is traditional penetration testing as practised in the field: a human tester working by hand through Burp and a browser, free to invoke the standard non-AI tools (vulnerability scanners and exploiters), but with no language model anywhere in the loop. We measure this arm in two layers that are kept as separate labels in the data (`A_manual` for the human, `B_auto` for the tools): the *automation layer* is a fixed, identical-for-every-target pipeline whose result is the "automation ceiling" — what classic tooling reaches on its own, used also to quantify the detection-versus-capture gap (Section 4) — and the *human layer* is the tester who may use those same tools. A target counts as solved for the traditional arm if the human or the tooling captures the flag. Arms 2 and 3 are AI-assisted testing in PentestGPT's assistant mode, differing only in the model behind it: a local model (Arm 2) and a commercial hosted model (Arm 3). Arm 2 (local) is the primary AI arm here; Arm 3 is an extension whose task-refusal rate is itself a reported result (Section 3.6).
 
 ## 3.2. Data Collection Methods
 
@@ -198,11 +197,11 @@ Arm A stands for traditional manual testing. Arm B is a fixed, identical-for-eve
 
 Targets come from the XBOW validation benchmarks — 104 Docker-packaged web CTF challenges, each with one planted vulnerability and a secret flag. Each flag follows a deterministic formula, `FLAG{sha256(UPPER(benchmark-id))}`, which we verified against the benchmark's own build pipeline. A target counts as **solved** only when the captured flag matches that string exactly; there is no partial credit.
 
-To deal with saturation we prepare two variants of every challenge: the **original**, and a **hint-removed** fork (from the KeygraphHQ copy [3]) that strips solution hints — comments, suggestive names, README text — while leaving the vulnerability and flag intact. Arm C runs on both variants; arms A and B run on the original only, since a scanner and a human tester do not "read" source hints the way a trained model might have memorised them.
+To deal with saturation we prepare two variants of every challenge: the **original**, and a **hint-removed** fork (from the KeygraphHQ copy [3]) that strips solution hints — comments, suggestive names, README text — while leaving the vulnerability and flag intact. The AI arms run on both variants; the traditional arm (both its human and its tooling layers) runs on the original only, since a scanner and a human tester do not "read" source hints the way a trained model might have memorised them.
 
 ### Protocol
 
-Every arm is capped at **30 minutes per target**. Arm B enforces this as a cumulative budget across its tool steps. Arm C follows the assistant loop: the model proposes a step, the human runs it and pastes the result back. We separate the mechanical act of running a proposed command from a genuine *course-correction* (rejecting a wrong step, refusing a hallucinated endpoint, supplying reconnaissance the model should have found, or pulling it back on task) and count only the latter as an intervention (Section 3.4). Arm A is a human working through Burp and recording time and steps by hand.
+Every arm is capped at **30 minutes per target**. The automated tooling enforces this as a cumulative budget across its tool steps. The AI arms follow the assistant loop: the model proposes a step, the human runs it and pastes the result back. We separate the mechanical act of running a proposed command from a genuine *course-correction* (rejecting a wrong step, refusing a hallucinated endpoint, supplying reconnaissance the model should have found, or pulling it back on task) and count only the latter as an intervention (Section 3.4). The human layer of the traditional arm is a tester working through Burp and the same tools, recording time and steps by hand.
 
 ### Infrastructure and reproducibility
 
@@ -212,11 +211,11 @@ All targets are built by an automated harness (`build_target.py`) that compiles 
 
 From the 104 challenges we draw a **stratified sample of forty** by difficulty, with a fixed seed (42) for reproducibility: 14 easy, 18 medium, and 8 hard (all eight hard challenges are taken, since there are only eight). Each target is tagged with one or more vulnerability classes from the benchmark metadata.
 
-Each run writes one row to `results.csv` with these fields: solved, time, number of steps, tokens used, manual interventions, LLM-refused, and a free-text note. For arm B we additionally record a **detection** flag — whether the tools signalled a vulnerability at all, even when they could not reach the flag — because that distinction turns out to be central (Chapter 4). Analysis is automated with pandas in `analyze.py`, which produces a per-arm summary, breakdowns by difficulty and by vulnerability class, an arm-B detection-versus-capture table, and the memorisation table for arm C. Rows that have not been run (blank `solved`) are dropped, not counted as failures. For the AI arm we compute the memorisation delta as `solve_rate(original) − solve_rate(hint-removed)`: a large delta signals reliance on having *seen* the solution rather than *finding* it.
+Each run writes one row to `results.csv` with these fields: solved, time, number of steps, tokens used, manual interventions, LLM-refused, and a free-text note. For the automated tooling we additionally record a **detection** flag — whether the tools signalled a vulnerability at all, even when they could not reach the flag — because that distinction turns out to be central (Chapter 4). Analysis is automated with pandas in `analyze.py`, which produces a per-arm summary, breakdowns by difficulty and by vulnerability class, a detection-versus-capture table for the automated tooling, and the memorisation table for the AI arms. Rows that have not been run (blank `solved`) are dropped, not counted as failures. For the AI arm we compute the memorisation delta as `solve_rate(original) − solve_rate(hint-removed)`: a large delta signals reliance on having *seen* the solution rather than *finding* it.
 
 ## 3.4. Limitations of the Methodology
 
-The sample is forty CTF-style challenges, which are not identical to production web applications; the AI arm rests on one model family; and arm A carries grader subjectivity. The detection metric for arm B is a string-matching heuristic over tool output, so it can both over- and under-count and should be read as an *optimistic upper bound* on automated recognition, applicable to arm B only. Only 21 of the 40 targets have a dedicated non-AI exploiter (the rest rely on nuclei+ffuf), so part of arm B's low capture rate on IDOR/logic/deserialisation classes is a *tool* limitation rather than a property of "automation" in general. The 30-minute cap may cut short the hardest targets, though it does so equally for every arm. Finally, the compatibility patches are an environmental change that we declare rather than hide.
+The sample is forty CTF-style challenges, which are not identical to production web applications; the AI arms rest on one model family; and the human layer of the traditional arm carries grader subjectivity. The detection metric for the automated tooling is a string-matching heuristic over tool output, so it can both over- and under-count and should be read as an *optimistic upper bound* on automated recognition, applicable to that tooling only. Only 21 of the 40 targets have a dedicated non-AI exploiter (the rest rely on nuclei+ffuf), so part of the tooling's low capture rate on IDOR/logic/deserialisation classes is a *tool* limitation rather than a property of "automation" in general. The 30-minute cap may cut short the hardest targets, though it does so equally for every arm. Finally, the compatibility patches are an environmental change that we declare rather than hide.
 
 ---
 
@@ -226,15 +225,15 @@ The sample is forty CTF-style challenges, which are not identical to production 
 
 ## 4.1. Introduction
 
-This chapter reports the data collected so far. The non-AI baseline (arm B) is complete across all forty original targets; the AI arm (C) is reported as a validated pilot run, with the full campaign still in progress; the manual arm (A) is pending. We present the completed baseline first and in full, then the pilot evidence from the AI arm, and we are explicit about what is measured versus what remains to be collected.
+This chapter reports the data collected so far. The automated tooling of the traditional arm is complete across all forty original targets; the AI arm is reported from the sessions run so far, with the campaign still in progress; the human layer of the traditional arm is in progress. We present the completed tooling baseline first and in full, then the evidence from the AI arm, and we are explicit about what is measured versus what remains to be collected.
 
 ## 4.2. Presentation of Data
 
-### Arm B — non-AI automation (complete, 40/40)
+### Traditional arm — automated tooling (complete, 40/40)
 
 We report two numbers that must be kept apart: **capture** (the flag was obtained) and **detection** (the tools flagged a vulnerability, even if no flag followed).
 
-**Table 1 (arm B).** Over 40 targets, arm B **captures the flag in 2/40 (5.0%)** while **detecting a vulnerability in 11/40 (27.5%)**. Mean time was 2.7 minutes per target.
+**Table 1 (automated tooling).** Over 40 targets, the non-AI tooling **captures the flag in 2/40 (5.0%)** while **detecting a vulnerability in 11/40 (27.5%)**. Mean time was 2.7 minutes per target.
 
 | Metric | Result |
 |---|---|
@@ -247,32 +246,32 @@ We report two numbers that must be kept apart: **capture** (the flag was obtaine
 
 > ⚙️ HƯỚNG DẪN: chèn Figure 1 (fig_solve_rate), Figure 2 (fig_by_difficulty), Figure 3 (fig_detect_vs_capture) ở đây; dán Table 3 từ table_detection.csv.
 
-### Arm C — AI-assisted, local model (pilot run)
+### AI arm — local model (sessions so far)
 
 > ⚙️ HƯỚNG DẪN: đây là 1 phiên mẫu đã chạy thật (nhật ký đầy đủ: docs/report_C.md). Dùng làm case study minh hoạ phương pháp + một quan sát định tính; con số tổng hợp nhánh C chờ chạy đủ mẫu rồi điền `[[…]]`.
 
-As a first, fully logged run we took **XBEN-061-24** (an LFI challenge, easy) with PentestGPT driving the local `qwen2.5:7b` model. The session is instructive. After one weak probe the model prematurely declared the LFI "not exploitable" and drifted toward SQL injection; a single on-task correction from the operator brought it back. Once the operator fed it the real page content, the model produced a working vector — reading `/etc/passwd` through `post.php?id=../../../../etc/passwd` — which **confirmed a genuine exploit, something arm B's scanners never achieved on this target**. It then stalled at the final step: reading the PHP source of the flag file. It tried direct inclusion (executed, nothing shown), a meaningless parameter, and an obsolete null-byte trick, never recalling the correct source-read technique, and finally lapsed into defensive remediation advice and an unrelated file-upload task. The run ended unsolved at twenty-five minutes — inside the thirty-minute budget — after four operator course-corrections (alongside seven mechanical runs of model-proposed commands).
+As a first, fully logged run we took **XBEN-061-24** (an LFI challenge, easy) with PentestGPT driving the local `qwen2.5:7b` model. The session is instructive. After one weak probe the model prematurely declared the LFI "not exploitable" and drifted toward SQL injection; a single on-task correction from the operator brought it back. Once the operator fed it the real page content, the model produced a working vector — reading `/etc/passwd` through `post.php?id=../../../../etc/passwd` — which **confirmed a genuine exploit, something the automated tooling's scanners never achieved on this target**. It then stalled at the final step: reading the PHP source of the flag file. It tried direct inclusion (executed, nothing shown), a meaningless parameter, and an obsolete null-byte trick, never recalling the correct source-read technique, and finally lapsed into defensive remediation advice and an unrelated file-upload task. The run ended unsolved at twenty-five minutes — inside the thirty-minute budget — after four operator course-corrections (alongside seven mechanical runs of model-proposed commands).
 
 | XBEN-061 (LFI, easy) | Outcome |
 |---|---|
-| Arm B (automated, no-AI) | detected ✓ · **captured ✗** |
-| Arm C1 (`qwen2.5:7b`) | **working LFI exploit ✓** (read `/etc/passwd`) · captured ✗ · drifted off-task |
+| Traditional — automated tooling (no-AI) | detected ✓ · **captured ✗** |
+| AI — local (`qwen2.5:7b`) | **working LFI exploit ✓** (read `/etc/passwd`) · captured ✗ · drifted off-task |
 
 > ⚙️ HƯỚNG DẪN: điền bảng tổng hợp nhánh C khi đủ mẫu —
-> [[Table: arm C1/C2 — solve-rate overall; by difficulty; by class; avg time; avg steps; avg tokens; avg manual_interventions; refusal rate.]]
+> [[Table: AI arms (local / commercial-API) — solve-rate overall; by difficulty; by class; avg time; avg steps; avg tokens; avg manual_interventions; refusal rate.]]
 > [[Table 4: memorisation — solve_rate(original) vs solve_rate(hint-free) + delta, cho C1 và C2.]]
 
-### Arm A — manual (pending)
+### Traditional arm — human tester (in progress)
 
 > ⚙️ HƯỚNG DẪN: [[chưa có dữ liệu]]. Khi chạy xong điền: solve-rate tổng, theo độ khó, theo loại, thời gian TB, số bước TB.
 
 ## 4.3. Analysis of Results
 
-The dominant pattern in the completed baseline is the distance between detection (27.5%) and capture (5%) — a roughly five-fold gap. Automation without AI *sees* a vulnerability in only two situations: reflected XSS, which dalfox flags in 8 of 10 targets yet never turns into a captured flag, and SQLi, where sqlmap both detects and captures because it automates the entire chain. Classes that need several context-dependent steps — SSTI, IDOR, deserialisation — are not even detected by the off-the-shelf tools: SSTImap, run unaided, found no injection point in any of the six SSTI targets. [[Khi có arm A/C: so sánh solve-rate ba nhánh theo cùng cách trình bày.]]
+The dominant pattern in the completed baseline is the distance between detection (27.5%) and capture (5%) — a roughly five-fold gap. Automation without AI *sees* a vulnerability in only two situations: reflected XSS, which dalfox flags in 8 of 10 targets yet never turns into a captured flag, and SQLi, where sqlmap both detects and captures because it automates the entire chain. Classes that need several context-dependent steps — SSTI, IDOR, deserialisation — are not even detected by the off-the-shelf tools: SSTImap, run unaided, found no injection point in any of the six SSTI targets. [[Khi có đủ số nhánh người (traditional) và nhánh AI: so sánh solve-rate ba nhánh theo cùng cách trình bày.]]
 
 ## 4.4. Interpretation of Results
 
-Read this way, the 5% figure does not mean the scanner is blind to 95% of the targets; it means the scanner *sees but cannot reach*. The pilot AI session sharpens the same point from the other side: the local model closed part of the detection-to-exploitation gap that defeated arm B — it actually exploited the LFI — but it could not finish, and it wandered off task without a human steering it. Both observations point at the same bottleneck: the multi-step exploitation that sits between recognising a vulnerability and capturing a flag.
+Read this way, the 5% figure does not mean the scanner is blind to 95% of the targets; it means the scanner *sees but cannot reach*. The pilot AI session sharpens the same point from the other side: the local model closed part of the detection-to-exploitation gap that defeated the automated tooling — it actually exploited the LFI — but it could not finish, and it wandered off task without a human steering it. Both observations point at the same bottleneck: the multi-step exploitation that sits between recognising a vulnerability and capturing a flag.
 
 ## 4.5. Comparison with Literature
 
@@ -286,7 +285,7 @@ For a practitioner, the practical reading is that a scanner is a good *triage* i
 
 # CHAPTER 5. DISCUSSION
 
-> ⚙️ HƯỚNG DẪN: Report 5 (15%). Trả lời từng RQ bằng số liệu + diễn giải rộng, nêu rõ giới hạn. Phần dưới đã viết dựa trên dữ liệu hiện có; mở rộng khi có arm A/C.
+> ⚙️ HƯỚNG DẪN: Report 5 (15%). Trả lời từng RQ bằng số liệu + diễn giải rộng, nêu rõ giới hạn. Phần dưới đã viết dựa trên dữ liệu hiện có; mở rộng khi có đủ số nhánh người (traditional) và nhánh AI.
 
 ## 5.1. Restate the Research Problem or Objectives
 
@@ -314,7 +313,7 @@ Third, this low result is consistent with the published literature rather than a
 
 Stated at its proper scope, the conclusion is therefore that a small, locally hosted language model used as an assistant does not, on this CTF web benchmark, close the detection-to-exploitation gap that the non-AI baseline also leaves open, and that the human supervision cost remains substantial. This claim rests on the evidence above and does not depend on whether the other two arms have been run.
 
-Two questions are deliberately left outside this claim, and we do not prejudge them. Whether a larger hosted model would close the gap is a question for Arm C2; we do not assert that artificial intelligence cannot perform penetration testing, only that a small local model does not do so here. Whether humans outperform both automated arms is a question for Arm A; should the manual arm solve substantially more while Arms B and C remain near zero, the claim strengthens from "the local model does not close the gap" to "within this setting, only humans do." Arm A is therefore pursued to widen the conclusion, not to rescue the AI result.
+Two questions are deliberately left outside this claim, and we do not prejudge them. Whether a larger hosted model would close the gap is a question for the commercial-API AI arm; we do not assert that artificial intelligence cannot perform penetration testing, only that a small local model does not do so here. Whether a human outperforms both the automated tooling and the AI is a question for the human layer of the traditional arm; should the human solve substantially more while the automated tooling and the local AI remain near zero, the claim strengthens from "the local model does not close the gap" to "within this setting, only the human does." The human layer is therefore pursued to widen the conclusion, not to rescue the AI result.
 
 ## 5.4. Threats to Validity
 
@@ -322,11 +321,11 @@ Two questions are deliberately left outside this claim, and we do not prejudge t
 
 **Construct and measurement.** The non-AI detection figure is produced by a keyword heuristic over tool output and is read as an *optimistic upper bound* on automated recognition, not a precise rate; an earlier version over-counted it at 55% through three substring artefacts — the tool name "SSTImap" matching the token "ssti", generic version-EOL nuclei banners, and the token "injectable" matching the *negative* phrase "not injectable" — which we traced in the raw logs, corrected to class-specific positive signals, and re-scored to the 27.5% reported here. Capture, by contrast, is exact-match against the ground-truth flag and is not subject to this noise. Vulnerability classes come from the benchmark's first metadata tag and are approximate; where a target carries several tags the non-AI exploiter runs all of them, but the per-class breakdown should be read with that labelling caveat.
 
-**Internal validity — the AI arm.** Three threats are specific to Arm C and bear directly on how far its results can be pushed. (i) *Sample size.* Arm C runs on a purposive subset of twelve targets, not all forty, so it is reported as a paired, per-class analysis and an existence proof of capability rather than a population solve-rate; we do not claim a percentage that generalises. (ii) *Information parity and the human boundary.* Arm C is told the vulnerability *class* — the same information the non-AI pipeline uses to select its exploiter — but must discover the endpoint, parameter and technique itself; the operator never supplies the exploit payload, and any session where that line is crossed is scored unsolved and flagged. We also separate mechanical command execution from genuine *redirects* and count only the latter as interventions, though that split retains some grader subjectivity. (iii) *Operator leakage.* Because Arm C is compared against Arm B on the same targets, an operator who ran B first already knows the target; we mitigate by running C before reading the B log for that target, or by assigning a different operator, and acknowledge the residual risk.
+**Internal validity — the AI arm.** Three threats are specific to the AI arm and bear directly on how far its results can be pushed. (i) *Sample size.* The AI arm runs on a purposive subset of twelve targets, not all forty, so it is reported as a paired, per-class analysis and an existence proof of capability rather than a population solve-rate; we do not claim a percentage that generalises. (ii) *Information parity and the human boundary.* The AI arm is told the vulnerability *class* — the same information the non-AI pipeline uses to select its exploiter — but must discover the endpoint, parameter and technique itself; the operator never supplies the exploit payload, and any session where that line is crossed is scored unsolved and flagged. We also separate mechanical command execution from genuine *redirects* and count only the latter as interventions, though that split retains some grader subjectivity. (iii) *Operator leakage.* Because the AI arm is compared against the automated tooling on the same targets, an operator who ran the tooling first already knows the target; we mitigate by running the AI session before reading the tooling log for that target, or by assigning a different operator, and acknowledge the residual risk.
 
 **The memorisation measure.** The original-versus-hint-free delta is our handle on benchmark saturation, but it conflates two effects: removing hints visible in the page over HTTP, and genuine training-set memorisation. It reduces the saturation problem without eliminating it. Hint-free runs should use a different operator or order from the original runs to limit cross-contamination, and the cleaner long-term fix is freshly generated post-cutoff targets (Section 6.2).
 
-**External validity.** Targets are forty CTF-style web applications, not production systems, and the Arm C subset is deliberately skewed toward easy targets to give a small local model its best chance — so failures there are strong negative evidence, but successes do not extend to hard targets. The AI arm is anchored on one 4-bit-quantised 7B local model, which is a conservative lower bound on "AI-assisted" performance, not a ceiling; a hosted model (Arm C2, deferred) would likely raise it. Only 21 of 40 targets have a dedicated non-AI exploiter, so Arm B's weakness on IDOR, logic and deserialisation classes reflects a *tooling* limit, not automation in general.
+**External validity.** Targets are forty CTF-style web applications, not production systems, and the AI-arm subset is deliberately skewed toward easy targets to give a small local model its best chance — so failures there are strong negative evidence, but successes do not extend to hard targets. The AI arm is anchored on one 4-bit-quantised 7B local model, which is a conservative lower bound on "AI-assisted" performance, not a ceiling; a hosted model (the commercial-API arm, deferred) would likely raise it. Only 21 of 40 targets have a dedicated non-AI exploiter, so the automated tooling's weakness on IDOR, logic and deserialisation classes reflects a *tooling* limit, not automation in general.
 
 **Reproducibility.** All Docker-compatibility patches are environment-only and logged in `patches.log`; none alters a vulnerability or flag. The manual arm carries the usual human-grader subjectivity, bounded by the fixed 30-minute budget and exact-match scoring shared across all arms.
 
@@ -379,7 +378,7 @@ Several extensions follow naturally. Widen the sample and add **authorised real-
 > ⚙️ HƯỚNG DẪN: đính kèm hoặc trỏ tới dữ liệu thô để hội đồng kiểm chứng (tăng độ tin cậy, chống nghi ngờ bịa số).
 
 - **Appendix A — Raw results.** `project/results/results.csv` (one row per run).
-- **Appendix B — Arm C session log.** `docs/report_C.md` (turn-by-turn reproduction of the pilot AI session).
+- **Appendix B — AI-arm session log.** `docs/report_C.md` (turn-by-turn reproduction of the AI sessions).
 - **Appendix C — Analysis code.** `project/analysis/analyze.py`.
 - **Appendix D — Reproducibility.** Build harness and compatibility log: `project/harness/build_target.py`, `project/harness/patches.log`. Operator guide: `docs/RUNBOOK.md`.
 - **Appendix E — Repository.** https://github.com/VuNguyenBinh/KLTN-FA26
