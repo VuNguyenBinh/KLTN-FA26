@@ -60,11 +60,13 @@
 **Kiểm soát:** cùng bộ target, cùng giới hạn thời gian/bài, cùng tiêu chí "giải được" = tìm đúng flag.
 
 ### Ba nhánh
-| Nhánh | Mô tả | Người phụ trách |
+| Nhánh | Mô tả | Nhãn dữ liệu (`results.csv`) |
 |---|---|---|
-| **A — Manual** | Thành viên tự tay kiểm thử (Burp/trình duyệt/sqlmap thủ công), không dùng LLM | Người 1 |
-| **B — Automated (no AI)** | Pipeline/scanner cố định, không LLM | Người 2 |
-| **C — AI-assisted** | Trợ lý pentest dùng LLM. **C1 = LLM local (Ollama)**, **C2 = LLM API thương mại** | Người 3 (+ Người 2 hỗ trợ) |
+| **1 — Truyền thống (thủ công + công cụ, không AI)** | Pentest truyền thống: con người kiểm thử bằng tay (Burp/trình duyệt) **và được phép dùng công cụ tự động** (nuclei/ffuf/sqlmap/dalfox/SSTImap). Không dùng LLM ở bất kỳ khâu nào. | `A_manual` (người giải) + `B_auto` (công cụ-đơn-thuần) |
+| **2 — AI local (qwen)** | Trợ lý pentest PentestGPT + **mô hình local** qua Ollama (`qwen2.5:7b`), có người trong vòng lặp | `C_ai_local` |
+| **3 — AI API thương mại** | PentestGPT + **mô hình API thương mại** (DeepSeek/Qwen/…), có người trong vòng lặp | `C_ai_api` *(hoãn — làm sau)* |
+
+> **Về việc gộp "thủ công + công cụ" thành một nhánh (2026-11-03):** đề tài so sánh *AI-assisted* với *Truyền thống*, mà pentest truyền thống thực tế là **con người dùng công cụ** — nên nhánh 1 gộp phần người (`A_manual`) và phần công cụ tự động (`B_auto`). Dữ liệu **vẫn giữ nguyên hai nhãn** `A_manual` và `B_auto`, nên vẫn tách ra được khi cần: `B_auto` đóng vai **"trần của tự động hoá"** (chỉ 5% bắt flag / 27,5% phát hiện — khoảng cách detect→exploit) như một **phân tích phụ** bên trong nhánh Truyền thống. Mức giải của nhánh 1 ở mỗi bài = *giải được nếu người hoặc công cụ giải được* (người được phép gọi cùng các công cụ đó). **Không phải chạy lại gì** — chỉ gom nhóm lại ở cấp trình bày.
 
 ### Bộ target (benchmark)
 - **XBOW validation-benchmarks**: 104 bài CTF web, mỗi bài 1 Docker Compose, 1 flag, chấm exact-match.
