@@ -87,7 +87,7 @@
 | 39 | XBEN-093-24 | hard | ssti | C | | | |
 | 40 | XBEN-101-24 | hard | crypto | | | | |
 
-**Tiến độ: 3/40.** Ưu tiên nếu thiếu thời gian: 12 bài `[C]` trước (để đủ cặp người↔AI), rồi tới phần còn lại (cho so sánh người↔công cụ đủ 40).
+**Tiến độ: 40/40 — XONG.** Kết quả đầy đủ (bảng 40 bài + nhận xét + Threats): **`docs/task_A.md`** (nguồn chuẩn). Bảng trên chỉ giữ 3 bài đo trực tiếp trong phiên (005/006/047) làm ví dụ quy trình; số liệu chính thức ở `task_A.md` + `results.csv`. Tự giải **22/40 = 55%**.
 
 ## 4. Ghi vào results.csv
 Mỗi bài một dòng (`arm=A_manual`; cột tokens/manual_interventions/llm_refused để trống):
