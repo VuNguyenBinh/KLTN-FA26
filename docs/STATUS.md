@@ -32,7 +32,7 @@
 |---|---|---|---|
 | Truyền thống — người (`A_manual`) | **40/40** | **55%** tự giải (22/40) | `docs/task_A.md` + `docs/report_A.md` |
 | Truyền thống — công cụ (`B_auto`) | 40/40 | 5% (2/40) · phát hiện 27,5% | §5 + `docs/ARM_B.md` |
-| AI local (`C_ai_local`) | **6/12** | **33%** (2/6) | `docs/task_C1.md` + `docs/report_C.md` |
+| AI local (`C_ai_local`) | **7/12** | **28,6%** (2/7) | `docs/task_C1.md` + `docs/report_C.md` |
 | AI API (`C_ai_api`) | 0 | — | hoãn |
 
 **Gộp nhánh Truyền thống (người HOẶC công cụ):** 22 + 2 (SQLi sqlmap) = **24/40 = 60%**.
