@@ -32,6 +32,6 @@
 - **So con người:** người tự giải **22/40 = 55%** (`task_A.md`); trên 6 bài chung với AI: người giải 041+064 (2/6), AI giải 041+083 (2/6) — 083 thì người không giải (SQLi) nhưng AI + công cụ giải được.
 
 ## Còn lại
-- Bài AI local còn lại trong bộ 12: **093, 011, 014** (041, 083 đã xong).
+- **Người điều phối nhánh AI tách biệt hoàn toàn với người giải nhánh A** (không rò rỉ) → cả 6 bài còn lại của bộ 12 đều chạy được: **093, 011, 014, 005, 006, 032**. (041, 061, 064, 080, 037, 083 đã xong.)
 - Cần **≥4 bài bản hint-free** (061, 064 + 2 bài khác) để đo Δ "học thuộc".
 - **AI API (API thương mại)** làm sau — điểm đối chiếu model mạnh (xem khung lập luận đầu `report_C.md`).

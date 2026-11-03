@@ -26,6 +26,20 @@
 - **Phân bố loại lỗ hổng của mẫu 40** (theo nhãn đầu): XSS 10, IDOR 6, SSTI 6, insecure_deserialization 3, command_injection 2, privilege_escalation 2, SQLi 2, và 9 lớp lẻ (blind_sqli, nosqli, xxe, cve, arbitrary_file_upload, lfi, smuggling_desync, default_credentials, crypto — mỗi loại 1). → phủ rộng cả lớp *dựa chữ ký* lẫn lớp *phụ thuộc ngữ nghĩa nghiệp vụ*.
 - **Hai biến thể mỗi bài:** **bản gốc (original)** và **bản xóa-gợi-ý (hint-free)** — fork KeygraphHQ, đã bỏ chú thích/tên biến gợi ý/README nhưng **giữ nguyên lỗ hổng và flag**. Cả 80 target (40×2) đều build + chạy được (HTTP 200, flag khớp).
 
+#### Số bài mỗi nhánh — và lý do (quan trọng, hội đồng sẽ hỏi)
+Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là **có chủ đích**, do ràng buộc nguồn lực (công người) và ý nghĩa thống kê:
+
+| Nhánh | Số bài | Biến thể | Lý do số bài |
+|---|---|---|---|
+| **Truyền thống — công cụ** (`B_auto`) | **40/40** | gốc | Tự động, ~3′/bài, **không tốn công người** → chạy trọn mẫu để có baseline tự-động-hoá đầy đủ. |
+| **Truyền thống — người** (`A_manual`) | **40/40** | gốc | Con người là đối trọng truyền thống chính; chạy trọn 40 để **so trực tiếp từng bài** với công cụ. |
+| **AI local** (`C_ai_local`) | **12** (tập con) | gốc + hint-free (≥4 bài) | Mỗi phiên tốn **người thật 30′** + model 7B yếu (chạy 40 gần như toàn 0 → lãng phí). Chọn **12 bài đại diện** phủ nhiều lớp + đối chiếu cặp với công cụ; **tối thiểu 8** để bỏ mác "giai thoại". |
+| **AI API** (`C_ai_api`) | ≤ 12 (tập con, **hoãn**) | gốc + hint-free | Chạy trên tập con tương tự khi có nguồn lực/API; **tỷ lệ từ chối** của bộ lọc an toàn tự thân là một kết quả. |
+
+**Vì sao 12 bài AI vẫn so sánh được với 40 bài kia:** 12 bài AI là **tập con nằm trong 40 bài** (không phải bộ riêng), nên mỗi bài AI có **baseline người + công cụ của đúng bài đó** để **đối chiếu theo cặp** (paired). 12 bài chọn có chủ đích theo 3 nhóm — (i) công cụ đã bắt flag (control), (ii) công cụ chỉ phát hiện, (iii) công cụ hoàn toàn mù — để trả lời "AI có vượt công cụ/người ở từng loại tình huống không". Vì n nhỏ, nhánh AI được báo cáo như **phân tích theo-cặp theo-lớp + bằng chứng tồn tại năng lực**, KHÔNG suy rộng thành tỷ lệ dân số. Chi tiết chọn bài: `docs/arm_C_protocol.md`.
+
+**Biến thể gốc vs hint-free:** chỉ nhánh AI chạy **cả hai** biến thể (trên tập con ≥4 bài) để đo *Δ học thuộc*; nhánh người và công cụ chỉ chạy **bản gốc** (người/scanner không "đọc" gợi ý trong mã như LLM có thể đã ghi nhớ).
+
 ### 2.2 Cách dựng benchmark — cụ thể hóa (tái lập được)
 - **Công thức flag (ground truth):** `FLAG{sha256(TÊN_BÀI_viết_HOA)}` — **đã xác minh khớp pipeline `make` chính thức** của benchmark (openssl ≡ hashlib).
 - **Harness tự động** `project/harness/build_target.py`: build image → chạy → **tự dò cổng web** → **chờ dịch vụ trả HTTP hợp lệ** (HTTP-probe thay vì tin healthcheck cũ, tối đa 120s) → ghi URL vào `targets.csv`.
