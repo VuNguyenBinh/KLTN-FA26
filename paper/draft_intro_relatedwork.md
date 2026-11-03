@@ -1,6 +1,8 @@
 # Nháp — Introduction (mục 1) & Related Work (mục 2)
 
 > Bản nháp để ghép vào `OUTLINE.md` mục 1–2. **Lưu ý trích dẫn:** các mã/đường link dưới đây lấy từ tra cứu web (tháng 11/2026) và **phải được xác minh lại** trước khi nộp — đặc biệt mã arXiv và số trang (snippet web có thể sai). Nguồn chắc chắn nhất: PentestGPT (USENIX Security 2024) và XBOW validation-benchmarks (blog XBOW 11/2024).
+>
+> ⚠️ **Cấu trúc 3 nhánh (2026-11-03) — bản chốt ở `THESIS_FULL.md`:** Truyền thống (người `A_manual` + công cụ `B_auto`) / AI local (`C_ai_local`) / AI API (`C_ai_api`). Trong văn dưới: "nhánh B/baseline tự-động" = tầng công cụ của nhánh Truyền thống; "nhánh C" = nhánh AI.
 
 ---
 

@@ -1,6 +1,8 @@
 # Dàn bài báo (cũng dùng làm xương sống báo cáo KLTN)
 **Tiêu đề:** Comparative Study of AI-assisted and Traditional Web Application Penetration Testing Techniques
 
+> ⚠️ **Cấu trúc 3 nhánh (2026-11-03) — bản chốt ở `THESIS_FULL.md`:** (1) **Truyền thống** = người (`A_manual`) + công cụ (`B_auto`); (2) **AI local** (`C_ai_local`); (3) **AI API** (`C_ai_api`). Trong dàn bài dưới, "nhánh A" = tầng người, "nhánh B" = tầng công cụ (của nhánh Truyền thống), "nhánh C" = nhánh AI.
+
 > Lưu ý về "SCI 2027": bài hội nghị thường được index trong **CPCI (Conference Proceedings Citation Index)** của Web of Science hoặc **Scopus**, không phải SCIE/SCI (vốn dành cho tạp chí). Khi chọn hội nghị, kiểm tra proceedings của nó đã *thực sự được index* ở các kỳ trước chưa (đừng tin chữ "submitted to"). Đây là điều cần xác minh sớm khi chọn nơi gửi.
 
 ---
@@ -25,7 +27,7 @@ Vấn đề → khoảng trống (thiếu so sánh có kiểm soát giữa pente
 - Chỉ ra: các điểm số công bố không đồng nhất (khác model, white/black-box, có/không bỏ gợi ý) → củng cố lý do cần nghiên cứu có kiểm soát của bạn.
 
 ## 3. Methodology
-- 3.1 Ba nhánh A/B/C (C1 local, C2 API) — bảng.
+- 3.1 Ba nhánh: Truyền thống (người+công cụ) / AI local / AI API — bảng.
 - 3.2 Bộ target: mẫu 40 bài XBOW, phân tầng độ khó, gán loại lỗ hổng.
 - 3.3 Giao thức: giới hạn thời gian 30′/bài, tiêu chí giải = flag exact-match, cách ghi số liệu.
 - 3.4 Chỉ số: solve rate, time, steps, tokens/cost, manual interventions, refusal rate.
