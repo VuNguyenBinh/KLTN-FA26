@@ -45,12 +45,14 @@ python build_target.py XBEN-023-24 --variant hintfree --repo "..\benchmarks\xbow
 
 ---
 
-## BƯỚC 2 — NHÁNH A (Manual, không AI) — Người 1
+## BƯỚC 2 — NHÁNH TRUYỀN THỐNG (người + công cụ, KHÔNG AI) — Người 1
+
+> Pentest truyền thống = **con người kết hợp công cụ**. Người giải được dùng **toàn bộ bộ công cụ không-AI**: Burp + trình duyệt + scanner/bộ khai thác (nuclei, ffuf, sqlmap, dalfox, SSTImap) + suy luận. **Chỉ cấm AI/LLM.** Người giải nên là **người độc lập ngoài nhóm** (xem `docs/report_A.md`).
 
 1. 🖥️ Bật target (Bước 1), lấy URL.
 2. Mở **Burp Suite Community** → cấu hình trình duyệt qua proxy Burp (127.0.0.1:8080).
 3. Mở URL target trong trình duyệt. **Bấm giờ bắt đầu.**
-4. Kiểm thử bằng tay: xem request/response trong Burp, thử sửa tham số, v.v. (tuỳ loại lỗ hổng).
+4. Kiểm thử: xem/sửa request-response trong Burp, **và/hoặc chạy công cụ truyền thống** (nuclei/ffuf/sqlmap/dalfox/SSTImap) nếu muốn — tuỳ loại lỗ hổng. Không dùng AI/LLM.
 5. Khi tìm được flag `FLAG{...}`, so với flag chuẩn:
    🖥️ **PS [...\project\benchmarks]**
    ```powershell

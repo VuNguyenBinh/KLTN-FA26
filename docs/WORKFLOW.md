@@ -41,8 +41,8 @@ Mỗi bài build xong được ghi một dòng vào `project/benchmarks/targets.
 
 ## 2. Ba nhánh — chạy thế nào
 
-### Nhánh Truyền thống (người) — Manual (Người 1)
-Mở `url` của bài → dùng trình duyệt + Burp Suite + công cụ tay. Bấm giờ. Khi tìm được flag, so với `targets.csv`. Ghi vào `results.csv`: solved, time_minutes, num_steps, notes. **Không dùng LLM.**
+### Nhánh Truyền thống — người + công cụ (Người 1)
+Mở `url` của bài → **người kết hợp công cụ truyền thống không-AI**: trình duyệt + Burp Suite + scanner/bộ khai thác (nuclei/ffuf/sqlmap/dalfox/SSTImap) + suy luận. Bấm giờ. Khi tìm được flag, so với `targets.csv`. Ghi vào `results.csv` (`arm=A_manual`): solved, time_minutes, num_steps, notes. **Chỉ cấm AI/LLM.**
 
 ### Công cụ tự động — Automated no-AI (Người 2)
 Pipeline cố định (cùng cấu hình mọi bài), ví dụ:
