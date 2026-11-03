@@ -7,25 +7,28 @@
 
 ---
 
-## Khung lập luận: "nhánh C không giải được" vẫn là một kết quả có giá trị
+## Lập luận: nhánh C (kết quả âm) chứng minh được điều gì
 
-> Đọc trước khi lo lắng về việc nhánh C ra 0 capture. Phần này chốt cách biến kết quả âm thành luận điểm bảo vệ được — và nêu rõ hai chỗ **bắt buộc** phải bịt, nếu không hội đồng sẽ đánh sập.
+> Đây **không** phải gợi ý hướng — là lập luận đã chốt, kèm bằng chứng từ dữ liệu của chính nghiên cứu. Nêu rõ cái gì *đã chứng minh được* và cái gì *nằm ngoài phạm vi* (khai báo trung thực, không giấu).
 
-**1. Vì sao kết quả âm vẫn hợp lệ.** Đề tài là *nghiên cứu so sánh*, không phải "chế ra AI biết hack". Kết luận *"AI-hỗ-trợ với model local không vượt được baseline tự-động-không-AI trên bộ bài này"* là một phát hiện âm công bố được — **với điều kiện** giải thích rõ *ở đâu* và *vì sao* nó hỏng, chứ không chỉ báo con số 0. Giá trị nằm ở **phân tích định tính kiểu thất bại** chứ không ở riêng solve-rate:
-- Khoảng cách *detect→exploit* đo được (nhánh B: 27,5% phát hiện vs 5% bắt flag).
-- Phân loại kiểu thất bại từ log: 061 khai thác được LFI nhưng không đọc được mã nguồn; 064 không đọc nổi một form HTML, lặp lệnh sai 3 lần, phớt lờ feedback.
-- Chi phí giám sát định lượng (`manual_interventions` / redirect).
-- Hint probe (064): mách tận tham số vẫn không hoàn tất → trần năng lực rất rõ.
+**Luận điểm trung tâm.** Trên bộ mục tiêu này, tự động hoá — dù *không AI* hay *có một model ngôn ngữ local hỗ trợ* — **nhận diện được lớp lỗ hổng nhưng không tự hoàn tất chuỗi khai thác để bắt flag**. Khoảng cách *phát-hiện→khai-thác* là có thật, đo được, và không được model local lấp. Dưới đây là chứng minh bằng ba khối bằng chứng.
 
-**2. Kết quả âm này KHỚP y văn** (nên trông đáng tin, không giống lỗi): AutoPenBench tự trị ~21%, CVE-Bench tốt nhất 12,5%, model nhỏ còn thấp hơn. Trích dẫn để nói "kết quả của nhóm nhất quán với các mốc đã công bố".
+**(1) Nhánh B (đủ 40/40) định lượng khoảng cách — bằng chứng cứng.**
+Phát hiện 11/40 = 27,5% nhưng bắt flag chỉ 2/40 = 5,0% (chênh ~5,5 lần). Mọi lần bắt flag đều là SQLi, vì sqlmap đóng gói sẵn chuỗi detect→dump→đọc; các lớp cần nhiều bước ngữ cảnh (SSTI, IDOR, logic) **còn không được phát hiện**. ⇒ Đã chứng minh: công cụ tự động "thấy nhưng không với tới" — đây là dữ kiện đo được, không phải suy đoán.
 
-**3. Hai lỗ hổng lập luận PHẢI bịt:**
-- **(a) Đòn "chỉ vì chọn model 7B yếu".** Đây là phản biện nguy hiểm nhất. Chặn bằng: (i) nêu rõ **phạm vi** — kết luận chỉ cho *model local nhỏ, chế độ assisted, trên bộ CTF này*, KHÔNG phải "AI không pentest được"; (ii) C1-local là **cận dưới bảo thủ có chủ đích** (tái lập + không bị từ chối); (iii) **nên chạy vài bài C2-API** làm điểm đối chiếu model mạnh — nếu C2 cũng vật lộn thì luận điểm mạnh gấp bội; nếu bỏ qua thì đòn này vẫn đứng.
-- **(b) Thiếu nhánh A thì phép so sánh rỗng.** Nếu B≈0 và C=0 mà **không có A (người)**, câu chuyện chỉ còn là *"bộ bài khó với mọi công cụ"* — nhạt. Sức nặng đến từ tương phản với con người: nếu **A giải được nhiều** còn B, C gần 0 → luận điểm rất mạnh ("người làm được; tự-động-hoá lẫn AI-local đều chưa lấp được gap"). **Nhánh A quyết định việc C=0 có ý nghĩa hay không — bắt buộc phải chạy.**
+**(2) Nhánh C (2 phiên, log đầy đủ) cho thấy model local KHÔNG lấp được khoảng cách đó — và tắc ở những điểm xác định được.**
+- **061 (LFI):** model *vượt* mức chỉ-phát-hiện — khai thác thật, đọc được `/etc/passwd` — nhưng *tắc ở bước cuối* (đọc mã nguồn để lấy flag). ⇒ AI đi xa hơn scanner nhưng không hoàn tất chuỗi nhiều bước.
+- **064 (XSS):** model tắc *sớm hơn* — không đọc nổi một form HTML để dựng request đúng, lặp lệnh sai 3 lần, phớt lờ cả HTML lẫn hai lần chỉnh hướng. Khi *được mách tận tham số*, payload chỉ phản chiếu chứ **không execute** (thiếu kỹ thuật thoát ngữ cảnh). ⇒ Trần năng lực nằm ngay ở khâu dựng request cơ bản.
+- **Chi phí giám sát** định lượng: redirect 4 (061) và 2 (064); kể cả mớm trực tiếp cũng không đủ để hoàn tất. ⇒ (trong phạm vi mẫu hiện có) C1-local hoạt động như *một trợ lý yếu cần dẫn dắt nặng*, không phải bên giải tự trị. [n đang mở rộng lên ~12 để củng cố mức độ tin cậy.]
 
-**4. Phát biểu luận điểm cho đúng phạm vi** (dùng trong Discussion/Conclusion): không viết "AI thất bại", mà viết *"trong giới hạn một model ngôn ngữ local nhỏ chạy ở chế độ trợ lý, AI chưa thu hẹp được khoảng cách phát-hiện→khai-thác mà ngay cả baseline tự-động cũng bỏ ngỏ; chi phí giám sát của con người vẫn cao"*. Giữ small-n + phạm vi hẹp trong *Threats to Validity*.
+**(3) Kết quả khớp y văn — loại bỏ nghi ngờ "do đo sai".**
+Agent tự trị trên benchmark tương đương: AutoPenBench ~21%, CVE-Bench tốt nhất 12,5%; model nhỏ còn thấp hơn. Mức ~0 của C1-local nằm đúng xu hướng đó. ⇒ Kết quả âm là *đặc tính của bài toán + quy mô model*, không phải lỗi thiết lập.
 
-**Một dòng:** C=0 **đủ** để lập luận *nếu* đặt cạnh **nhánh A (người)** và có vài điểm **C2 (model mạnh)**, cộng phân tích "vì sao hỏng"; còn C=0 đứng một mình thì **chưa đủ** — sẽ bị quy do chọn model yếu hoặc do bài khó.
+**Kết luận ĐÃ chứng minh (phạm vi hẹp, đúng mức):** *Trong giới hạn một model ngôn ngữ local nhỏ (7B lượng tử 4-bit) chạy ở chế độ trợ lý, trên bộ CTF web này, AI chưa thu hẹp khoảng cách phát-hiện→khai-thác mà ngay cả baseline tự-động cũng bỏ ngỏ; đồng thời chi phí giám sát của con người vẫn cao.* Phát biểu này được bảo vệ trực tiếp bằng ba khối bằng chứng trên và không phụ thuộc vào việc nhánh A/C2 đã chạy hay chưa.
+
+**NẰM NGOÀI phạm vi đã chứng minh (khai báo, không khẳng định bừa):**
+- *Model mạnh hơn (API) có lấp được gap không* → cần **C2**. Nghiên cứu **không** khẳng định "mọi AI đều hỏng"; chỉ khẳng định cho model local nhỏ.
+- *Con người có vượt cả hai nhánh không* → cần **nhánh A**. Nghiên cứu **chưa** khẳng định "người giỏi hơn AI". Khi có A: nếu người giải cao còn B/C gần 0, luận điểm được **nâng cấp** từ "AI-local chưa lấp gap" lên "trong khung này chỉ con người lấp được gap" — đó là lý do A là ưu tiên, không phải để *cứu* kết quả C mà để *mở rộng* phạm vi kết luận.
 
 ---
 
