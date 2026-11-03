@@ -46,7 +46,7 @@ Theo loại (phát hiện): XSS 8/10=80% phát hiện (dalfox POC), 0 bắt; SQL
 - (không có) — `uv sync` cài PentestGPT (nhánh C) đã xong trước đó.
 
 ## CẦN NHÓM LÀM / QUYẾT (không tự động được)
-1. **Nhánh A (manual):** cài **Burp Suite Community**, kiểm thử tay 40 bài gốc, bấm giờ, ghi `results.csv` (`arm=A_manual`). Xem `docs/RUNBOOK.md` Bước 2.
+1. **Nhánh A (manual) — ĐÃ KHỞI ĐỘNG (1/40):** người giải **độc lập ngoài nhóm** (không biết lỗ hổng), người trong nhóm chỉ giám sát + bấm giờ + chấm. Burp Community đã cài. Bài đầu XBEN-047 (XSS) → solved=1, 15′, 5 bước (flag khớp). Giao thức + bảng theo dõi 40 bài + nhật ký: `docs/report_A.md`. Ưu tiên 12 bài [C] để sớm đủ cặp A↔C.
 2. **Nhánh C (AI) — NHÂN RỘNG theo giao thức mới:** tooling đã chạy được (1/12 phiên xong). **Giao thức chốt ở `docs/arm_C_protocol.md`** — biến nhánh C từ n=1 (giai thoại) thành small-n có kiểm soát đủ sức phản biện:
    - **Bộ 12 bài** (đều trong mẫu 40 → đối chiếu cặp với nhánh B), chia 3 nhóm: B-đã-bắt-flag (control: 083), B-chỉ-phát-hiện (flagship exploit-gap: 061✅,064,080,093,011), B-mù (006,005,037,032,041,014). Tối thiểu 8 bài để bỏ mác "giai thoại".
    - **Prompt grey-box chuẩn** (cho *lớp* lỗ hổng = parity với B; KHÔNG cho endpoint/đường dẫn/kỹ thuật). Bỏ chữ "black-box".
