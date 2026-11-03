@@ -7,7 +7,7 @@
 
 CÁCH DÙNG:
 1. Mỗi khối "> ⚙️ HƯỚNG DẪN:" là chỉ dẫn cho nhóm — XOÁ hết trước khi nộp.
-2. Mỗi "[[... ]]" là chỗ CHỜ SỐ LIỆU (nhánh A thủ công + nhánh C mở rộng).
+2. Mỗi "[[... ]]" là chỗ CHỜ SỐ LIỆU (nhánh Truyền thống — tầng người + nhánh AI).
    Chạy `python analyze.py ../results/results.csv` để lấy số rồi điền vào.
 3. 6 Report của FPT ánh xạ 1-1 với 6 chương:
    Report 1 = Ch.1 Introduction | Report 2 = Ch.2 Literature Review
@@ -23,7 +23,7 @@ CÁCH DÙNG:
    - Chạy qua Turnitin/AI-checker của trường TRƯỚC hạn, sửa chỗ bị gắn cờ.
 5. Chuyển sang Word: dán từng chương, dùng Heading styles để tạo mục lục tự động
    (template FPT yêu cầu TOC/List of Figures/Tables tự động).
-6. Dữ liệu thật: project/results/results.csv ; log nhánh C: docs/report_C.md ;
+6. Dữ liệu thật: project/results/results.csv ; log nhánh AI: docs/report_C.md ;
    mã phân tích: project/analysis/analyze.py ; repo: github.com/VuNguyenBinh/KLTN-FA26
 ==============================================================================
 -->
@@ -48,7 +48,7 @@ MINISTRY OF EDUCATION AND TRAINING — FPT UNIVERSITY
 
 # ABSTRACT
 
-> ⚙️ HƯỚNG DẪN: Abstract phải tự đứng một mình: KHÔNG viết tắt chưa định nghĩa, KHÔNG URL, KHÔNG trích dẫn. Giữ 200–300 từ. Điền `[[…]]` khi có số nhánh A/C. Giữ 4 ý ẩn (Background/Methods/Results/Conclusions) nhưng KHÔNG in tiêu đề.
+> ⚙️ HƯỚNG DẪN: Abstract phải tự đứng một mình: KHÔNG viết tắt chưa định nghĩa, KHÔNG URL, KHÔNG trích dẫn. Giữ 200–300 từ. Điền `[[…]]` khi có số nhánh người (traditional) và nhánh AI. Giữ 4 ý ẩn (Background/Methods/Results/Conclusions) nhưng KHÔNG in tiêu đề.
 
 Automated security tools that use large language models now report high success rates on penetration-testing benchmarks, yet those numbers are rarely obtained under the same conditions as a human tester or a classic scanner, which makes them hard to trust. This study tackles that gap with a controlled, three-arm comparison on a single target set. We run forty web capture-the-flag challenges, drawn by stratified sampling from the XBOW validation benchmarks, through three arms under identical rules: a **traditional** arm in which a human tester works by hand with the standard non-AI tools, and two **AI-assisted** arms that pair a human operator with a language model, one local and one a commercial API. Every run is scored by exact-match flag capture and logged for time, number of steps, human interventions, and tool-refusal events; the AI arms are additionally run against a hint-removed copy of each target so that we can estimate how much of their performance is memorisation rather than reasoning. Within the traditional arm, the automated tooling on its own detects a vulnerability in 11 of 40 targets (27.5%) but captures the flag in only 2 (5%), a gap that exposes where automation stalls: recognising a vulnerability class is far easier than chaining a multi-step exploit to the flag, and several classes are not even recognised. [[Điền kết quả nhánh người (traditional) và nhánh AI: solve-rate, Δ memorisation, refusal rate.]] The findings suggest that, with a small local model, AI functions as an accelerating assistant rather than a replacement for the human tester, and they make the practical cost of that assistance visible.
 
@@ -83,7 +83,7 @@ Automated security tools that use large language models now report high success 
 - Figure 1. Overall solve rate by method (`fig_solve_rate.png`).
 - Figure 2. Solve rate by difficulty (`fig_by_difficulty.png`).
 - Figure 3. Automated tooling — detection vs capture by difficulty (`fig_detect_vs_capture.png`).
-- Figure 4. Memorisation effect: original vs hint-free for the AI arm (`fig_memorization.png`, sau khi có số nhánh C).
+- Figure 4. Memorisation effect: original vs hint-free for the AI arm (`fig_memorization.png`, sau khi có số nhánh AI).
 
 # LIST OF TABLES
 
@@ -177,7 +177,7 @@ Set against that body of work, our distinguishing move is the **controlled compa
 
 # CHAPTER 3. METHODOLOGY
 
-> ⚙️ HƯỚNG DẪN: Report 3 (20%). Phần này mô tả thiết kế — viết ở thì hiện tại, đã khớp đúng những gì nhóm chạy. Nhánh A/C mô tả ở mức giao thức; khi chạy xong chỉ bổ sung số vào Ch.4, KHÔNG sửa Ch.3.
+> ⚙️ HƯỚNG DẪN: Report 3 (20%). Phần này mô tả thiết kế — viết ở thì hiện tại, đã khớp đúng những gì nhóm chạy. Nhánh người (traditional) và nhánh AI mô tả ở mức giao thức; khi chạy xong chỉ bổ sung số vào Ch.4, KHÔNG sửa Ch.3.
 
 ## 3.1. Research Design
 
@@ -221,7 +221,7 @@ The sample is forty CTF-style challenges, which are not identical to production 
 
 # CHAPTER 4. EXPERIMENTAL AND RESULTS
 
-> ⚙️ HƯỚNG DẪN: Report 4 (25%, trọng số CAO). Hiện CHỈ nhánh B đủ 40/40. Nhánh C mới 1 phiên mẫu (XBEN-061). Nhánh A chưa chạy. Phần dưới trình bày TRUNG THỰC đúng hiện trạng; điền `[[…]]` khi có thêm dữ liệu. TUYỆT ĐỐI không bịa số nhánh A/C.
+> ⚙️ HƯỚNG DẪN: Report 4 (25%, trọng số CAO). Hiện tầng công cụ tự động (của nhánh Truyền thống) đủ 40/40. Nhánh AI đã có 4 phiên. Tầng người (traditional) đang chạy. Phần dưới trình bày TRUNG THỰC đúng hiện trạng; điền `[[…]]` khi có thêm dữ liệu. TUYỆT ĐỐI không bịa số nhánh người / nhánh AI.
 
 ## 4.1. Introduction
 
@@ -248,7 +248,7 @@ We report two numbers that must be kept apart: **capture** (the flag was obtaine
 
 ### AI arm — local model (sessions so far)
 
-> ⚙️ HƯỚNG DẪN: đây là 1 phiên mẫu đã chạy thật (nhật ký đầy đủ: docs/report_C.md). Dùng làm case study minh hoạ phương pháp + một quan sát định tính; con số tổng hợp nhánh C chờ chạy đủ mẫu rồi điền `[[…]]`.
+> ⚙️ HƯỚNG DẪN: đây là 1 phiên mẫu đã chạy thật (nhật ký đầy đủ: docs/report_C.md). Dùng làm case study minh hoạ phương pháp + một quan sát định tính; con số tổng hợp nhánh AI chờ chạy đủ mẫu rồi điền `[[…]]`.
 
 As a first, fully logged run we took **XBEN-061-24** (an LFI challenge, easy) with PentestGPT driving the local `qwen2.5:7b` model. The session is instructive. After one weak probe the model prematurely declared the LFI "not exploitable" and drifted toward SQL injection; a single on-task correction from the operator brought it back. Once the operator fed it the real page content, the model produced a working vector — reading `/etc/passwd` through `post.php?id=../../../../etc/passwd` — which **confirmed a genuine exploit, something the automated tooling's scanners never achieved on this target**. It then stalled at the final step: reading the PHP source of the flag file. It tried direct inclusion (executed, nothing shown), a meaningless parameter, and an obsolete null-byte trick, never recalling the correct source-read technique, and finally lapsed into defensive remediation advice and an unrelated file-upload task. The run ended unsolved at twenty-five minutes — inside the thirty-minute budget — after four operator course-corrections (alongside seven mechanical runs of model-proposed commands).
 
@@ -257,9 +257,9 @@ As a first, fully logged run we took **XBEN-061-24** (an LFI challenge, easy) wi
 | Traditional — automated tooling (no-AI) | detected ✓ · **captured ✗** |
 | AI — local (`qwen2.5:7b`) | **working LFI exploit ✓** (read `/etc/passwd`) · captured ✗ · drifted off-task |
 
-> ⚙️ HƯỚNG DẪN: điền bảng tổng hợp nhánh C khi đủ mẫu —
+> ⚙️ HƯỚNG DẪN: điền bảng tổng hợp nhánh AI khi đủ mẫu —
 > [[Table: AI arms (local / commercial-API) — solve-rate overall; by difficulty; by class; avg time; avg steps; avg tokens; avg manual_interventions; refusal rate.]]
-> [[Table 4: memorisation — solve_rate(original) vs solve_rate(hint-free) + delta, cho C1 và C2.]]
+> [[Table 4: memorisation — solve_rate(original) vs solve_rate(hint-free) + delta, cho AI local và AI API.]]
 
 ### Traditional arm — human tester (in progress)
 
@@ -275,7 +275,7 @@ Read this way, the 5% figure does not mean the scanner is blind to 95% of the ta
 
 ## 4.5. Comparison with Literature
 
-These results sit comfortably beside the prior work. The detection-heavy, capture-poor profile of non-AI tooling mirrors the field's finding that step-level competence does not compose into end-to-end success [10]. The AI arm getting further than the scanner yet stalling on the final technique echoes the assisted-versus-autonomous gap in AutoPenBench [5] and the "strong on known patterns, weak on open-ended chaining" summary of the survey [8]. [[Khi có số: so sánh trực tiếp solve-rate nhánh C của nhóm với các mốc đã công bố, vd AWE trên XBOW [8].]]
+These results sit comfortably beside the prior work. The detection-heavy, capture-poor profile of non-AI tooling mirrors the field's finding that step-level competence does not compose into end-to-end success [10]. The AI arm getting further than the scanner yet stalling on the final technique echoes the assisted-versus-autonomous gap in AutoPenBench [5] and the "strong on known patterns, weak on open-ended chaining" summary of the survey [8]. [[Khi có số: so sánh trực tiếp solve-rate nhánh AI của nhóm với các mốc đã công bố, vd AWE trên XBOW [8].]]
 
 ## 4.6. Implications of the Results
 
@@ -295,7 +295,7 @@ The study set out to separate the effect of automation from the effect of a lang
 
 **On RQ1 and RQ3 (method and vulnerability class).** The firmest result is from the non-AI baseline: the tools detect a vulnerability in 27.5% of targets but capture the flag in only 5%, and every capture is a SQLi handled by a single packaged exploiter. The gap *is* the finding. The pilot AI session adds a complementary observation — the local model reached a genuine exploit that the scanner could not, which is where the AI's value appears to lie, but it failed to close and lost task focus, which is where its limits appear. [[Củng cố bằng solve-rate ba nhánh khi đủ dữ liệu; trả lời RQ2 theo độ khó.]]
 
-**On RQ4 (memorisation and deployment barriers).** [[Điền Δ memorisation gốc–hint-free của nhánh C.]] On deployment friction, two things already surfaced in practice and belong in the discussion: the local model repeatedly drifted into defensive advice and unrelated tasks, so a human had to keep it on task (four course-corrections on a single easy target); and the assistant workflow is only as smooth as its tooling, which in our runs required several non-obvious fixes (console compatibility, the `curl.exe` alias trap, a hanging selector dialog) documented in the project runbook. [[Nếu chạy C2-API: báo cáo refusal rate như một kết quả riêng.]]
+**On RQ4 (memorisation and deployment barriers).** [[Điền Δ memorisation gốc–hint-free của nhánh AI.]] On deployment friction, two things already surfaced in practice and belong in the discussion: the local model repeatedly drifted into defensive advice and unrelated tasks, so a human had to keep it on task (four course-corrections on a single easy target); and the assistant workflow is only as smooth as its tooling, which in our runs required several non-obvious fixes (console compatibility, the `curl.exe` alias trap, a hanging selector dialog) documented in the project runbook. [[Nếu chạy nhánh AI API: báo cáo refusal rate như một kết quả riêng.]]
 
 **Interpretation.** Taken together, the evidence so far is consistent with viewing AI as an *accelerating, human-in-the-loop assistant* rather than a replacement for the tester, at least for a small local model on classes that need contextual reasoning. This lines up with the broader literature [5], [8], [10] and is exactly why the design counts human interventions rather than assuming autonomy.
 
@@ -317,7 +317,7 @@ Two questions are deliberately left outside this claim, and we do not prejudge t
 
 ## 5.4. Threats to Validity
 
-> ⚙️ HƯỚNG DẪN: giữ văn phong thẳng, mỗi mối đe doạ kèm cách giảm thiểu. Khi có đủ số nhánh C, rà lại các con số trong mục này.
+> ⚙️ HƯỚNG DẪN: giữ văn phong thẳng, mỗi mối đe doạ kèm cách giảm thiểu. Khi có đủ số nhánh AI, rà lại các con số trong mục này.
 
 **Construct and measurement.** The non-AI detection figure is produced by a keyword heuristic over tool output and is read as an *optimistic upper bound* on automated recognition, not a precise rate; an earlier version over-counted it at 55% through three substring artefacts — the tool name "SSTImap" matching the token "ssti", generic version-EOL nuclei banners, and the token "injectable" matching the *negative* phrase "not injectable" — which we traced in the raw logs, corrected to class-specific positive signals, and re-scored to the 27.5% reported here. Capture, by contrast, is exact-match against the ground-truth flag and is not subject to this noise. Vulnerability classes come from the benchmark's first metadata tag and are approximate; where a target carries several tags the non-AI exploiter runs all of them, but the per-class breakdown should be read with that labelling caveat.
 
