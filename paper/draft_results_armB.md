@@ -1,6 +1,8 @@
-# Nháp — Results & Discussion (phần nhánh B)
+# Nháp — Results & Discussion (phần công cụ tự động của nhánh Truyền thống)
 
-> Bản nháp để ghép vào `OUTLINE.md` mục 4 (Results) và 5 (Discussion). Số liệu lấy từ `project/results/results.csv` (nhánh B, 40 bài gốc, chạy 2026-11-02) và `analyze.py` (Bảng 1, 2, 3, 3b). Chỗ `[[chờ A/C]]` là nơi điền số nhánh A và C khi có — hiện chỉ có nhánh B nên các câu so sánh để ở dạng khung.
+> Bản nháp để ghép vào `OUTLINE.md` mục 4 (Results) và 5 (Discussion). Số liệu lấy từ `project/results/results.csv` (nhãn `B_auto`, 40 bài gốc) và `analyze.py` (Bảng 1, 2, 3, 3b).
+>
+> ⚠️ **Cấu trúc 3 nhánh (2026-11-03) — bản chốt ở `THESIS_FULL.md`:** "nhánh B" trong văn dưới = **tầng công cụ tự động của nhánh Truyền thống** (`B_auto`, trần tự-động-hoá); "nhánh A" = tầng người; "nhánh C" = nhánh AI. Chỗ `[[chờ A/C]]` = chờ số nhánh người và nhánh AI.
 
 ---
 

@@ -1,6 +1,8 @@
 # Nháp — Abstract (mục 0) & Conclusion (mục 7)
 
-> Khung để ghép vào `OUTLINE.md`. Viết **cuối cùng**, sau khi có số nhánh A/C. Chỗ `[[…]]` là số/khoảng cần điền; số nhánh B đã có nên điền sẵn (bắt flag 5%, phát hiện 27,5%). Giữ Abstract ~200 từ.
+> Khung để ghép vào `OUTLINE.md`. Viết **cuối cùng**, sau khi có số nhánh người và nhánh AI. Chỗ `[[…]]` là số/khoảng cần điền; số công cụ tự động đã có nên điền sẵn (bắt flag 5%, phát hiện 27,5%). Giữ Abstract ~200 từ.
+>
+> ⚠️ **Cấu trúc 3 nhánh (2026-11-03) — bản chốt ở `THESIS_FULL.md`:** Truyền thống (người `A_manual` + công cụ `B_auto`) / AI local (`C_ai_local`) / AI API (`C_ai_api`). Trong văn dưới: "nhánh B/tự-động-không-AI" = tầng công cụ của nhánh Truyền thống; "nhánh C" = nhánh AI.
 
 ---
 

@@ -1,6 +1,8 @@
 # Nháp — Methodology (mục 3)
 
-> Bản nháp để ghép vào `OUTLINE.md` mục 3. Mô tả thiết kế và giao thức đúng như đã triển khai trên máy. Nhánh B đã chạy thật (40/40); nhánh A và C mô tả ở mức *giao thức đã chốt* — khi chạy xong chỉ cần bổ sung số, không phải đổi thiết kế. Các hằng số (seed, phiên bản công cụ, model) lấy từ `project/` và `docs/`.
+> Bản nháp để ghép vào `OUTLINE.md` mục 3. Mô tả thiết kế và giao thức đúng như đã triển khai trên máy. Các hằng số (seed, phiên bản công cụ, model) lấy từ `project/` và `docs/`.
+>
+> ⚠️ **Cấu trúc đã gộp còn 3 nhánh (2026-11-03) — bản chốt ở `THESIS_FULL.md`:** (1) **Truyền thống** = người (`A_manual`) + công cụ (`B_auto`); (2) **AI local** (`C_ai_local`); (3) **AI API** (`C_ai_api`). Mục 3.1 dưới đã cập nhật; phần văn còn lại dùng thuật ngữ cũ — ánh xạ: *"nhánh A"* = tầng người, *"nhánh B"* = tầng công cụ (của nhánh Truyền thống), *"nhánh C/C1/C2"* = nhánh AI (local/API).
 
 ---
 
@@ -8,18 +10,16 @@
 
 Nghiên cứu so sánh **ba cách tiếp cận kiểm thử xâm nhập ứng dụng web** trên cùng một bộ mục tiêu, cùng tiêu chí chấm và cùng giới hạn tài nguyên, nhằm cô lập đóng góp của (i) tự động hóa và (ii) hỗ trợ bằng mô hình ngôn ngữ lớn (LLM). Thiết kế là *within-subject*: mọi nhánh chạy trên đúng cùng 40 mục tiêu.
 
-### 3.1 Ba nhánh A / B / C
+### 3.1 Ba nhánh: Truyền thống / AI local / AI API
 
-| Nhánh | Tên | Con người | Tự động hóa | LLM | Công cụ chính |
+| Nhánh | Tên | Con người | LLM | Công cụ chính | Nhãn dữ liệu |
 |---|---|---|---|---|---|
-| **A** | Thủ công | Có (chuyên viên) | Không | Không | Burp Suite Community + thao tác tay |
-| **B** | Tự động, không AI | Không (sau khi phát lệnh) | Có | Không | nuclei, ffuf, sqlmap, dalfox, SSTImap |
-| **C1** | AI — mô hình local | Có (vòng lặp người) | Một phần | Có (local) | PentestGPT (legacy) + Ollama `qwen2.5:7b` |
-| **C2** | AI — mô hình API | Có (vòng lặp người) | Một phần | Có (thương mại) | PentestGPT (legacy) + API |
+| **1** | Truyền thống (người + công cụ) | Có (chuyên viên) | Không | Burp Suite + nuclei, ffuf, sqlmap, dalfox, SSTImap | `A_manual` (người) + `B_auto` (công cụ) |
+| **2** | AI — mô hình local | Có (vòng lặp người) | Có (local) | PentestGPT (legacy) + Ollama `qwen2.5:7b` | `C_ai_local` |
+| **3** | AI — mô hình API thương mại | Có (vòng lặp người) | Có (thương mại) | PentestGPT (legacy) + API | `C_ai_api` |
 
-- **Nhánh A** đại diện pentest truyền thống: chuyên viên tự quan sát request/response qua proxy và thao tác tay, không dùng scanner tự động và không dùng AI.
-- **Nhánh B** là baseline *tự động hóa thuần* (không AI): một pipeline **cố định, giống hệt nhau cho mọi bài**, để khác biệt giữa các bài chỉ phản ánh năng lực công cụ chứ không phải tinh chỉnh của người.
-- **Nhánh C** là pentest *có AI hỗ trợ* dùng PentestGPT ở chế độ *legacy* (trợ lý đề xuất, con người thực thi lệnh). Tách thành **C1 (mô hình local)** và **C2 (mô hình thương mại qua API)** để so sánh năng lực và, quan trọng hơn, để đo **tỷ lệ từ chối tác vụ** của bộ lọc an toàn thương mại. Trong phạm vi báo cáo này, C1-local được ưu tiên chạy trước; C2-API là tùy chọn mở rộng (xem 3.6).
+- **Nhánh 1 (Truyền thống)** đại diện pentest truyền thống đúng như thực tế: chuyên viên tự quan sát request/response qua proxy và thao tác tay, **được phép dùng các công cụ không-AI** (scanner + bộ khai thác), nhưng **không dùng LLM** ở bất kỳ khâu nào. Nhánh này đo ở **hai tầng giữ nhãn riêng trong dữ liệu**: tầng *công cụ* (`B_auto`) là một pipeline **cố định, giống hệt nhau cho mọi bài** — cho ra "trần của tự động hoá" và dùng để đo khoảng cách *phát hiện → khai thác* (mục 4); tầng *con người* (`A_manual`) là chuyên viên có thể gọi chính các công cụ đó. Một bài tính là giải được cho nhánh 1 nếu **người HOẶC công cụ** bắt được flag.
+- **Nhánh 2 và 3** là pentest *có AI hỗ trợ* dùng PentestGPT ở chế độ *legacy* (trợ lý đề xuất, con người thực thi lệnh), chỉ khác nhau ở mô hình đứng sau: **local (nhánh 2)** và **API thương mại (nhánh 3)**. Tách hai nhánh để so sánh năng lực và, quan trọng hơn, để đo **tỷ lệ từ chối tác vụ** của bộ lọc an toàn thương mại. Trong phạm vi báo cáo này, nhánh 2 (local) được ưu tiên chạy trước; nhánh 3 (API) là mở rộng (xem 3.6).
 
 Việc chọn PentestGPT ở chế độ trợ lý (thay vì chế độ agent tự trị) là có chủ đích: nó cho phép đo `manual_interventions` — số lần con người phải can thiệp — vốn là một chỉ số trung tâm để trả lời câu hỏi "AI *thay thế* hay *tăng tốc*".
 
