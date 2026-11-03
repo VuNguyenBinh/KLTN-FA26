@@ -9,7 +9,7 @@
 **Đề tài:** KLTN (FPT) — *Comparative Study of AI-assisted and Traditional Web App Penetration Testing*. Thí nghiệm có kiểm soát trên **40 bài CTF web (XBOW)**, chấm exact-match flag, budget **30′/bài**.
 
 **Cấu trúc 3 nhánh (đã chốt):**
-1. **Truyền thống** = con người + công cụ, KHÔNG AI. Hai tầng, giữ nhãn riêng: tầng người `A_manual`, tầng công cụ `B_auto` (trần tự-động-hoá).
+1. **Truyền thống** = **con người dùng công cụ truyền thống** (Burp + scanner/bộ khai thác không-AI: nuclei, ffuf, sqlmap, dalfox, SSTImap), KHÔNG AI. Nhãn `A_manual` = người-dùng-công-cụ; `B_auto` = scanner chạy **tự động một mình, không người** (trần tự-động-hoá, baseline đối chiếu).
 2. **AI local** = PentestGPT + Ollama `qwen2.5:7b` → nhãn `C_ai_local`.
 3. **AI API** = PentestGPT + model thương mại → nhãn `C_ai_api` (hoãn).
 
@@ -40,8 +40,8 @@
 
 ## 2. CÁCH TIẾP TỤC TỪNG NHÁNH
 
-### 2a. Nhánh Truyền thống — phần người (manual)
-- Người giải độc lập + Burp. Giao thức + bảng 40 bài + nhật ký: **`docs/report_A.md`**.
+### 2a. Nhánh Truyền thống — phần người
+- Người giải độc lập, được dùng **toàn bộ công cụ truyền thống** (Burp + scanner/khai thác không-AI: nuclei/ffuf/sqlmap/dalfox/SSTImap) + suy luận; **chỉ cấm AI/LLM**. Giao thức + bảng 40 bài + nhật ký: **`docs/report_A.md`**.
 - Còn 37/40. Ưu tiên **12 bài [C]** (có cặp với AI) + các bài công cụ thất bại.
 - Claude làm gì: bật target, đưa URL + *lớp* lỗ hổng cho người giải, chấm flag, ghi `results.csv` (`arm=A_manual`) + điền `report_A.md`. **KHÔNG gợi ý cách giải.**
 

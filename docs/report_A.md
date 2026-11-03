@@ -5,7 +5,8 @@
 ---
 
 ## 0. Nguyên tắc giữ nhánh Truyền thống (người) sạch (đọc trước)
-- **Người giải:** độc lập, ngoài nhóm, chưa từng xem bài. Chỉ dùng **Burp + trình duyệt + suy luận**. KHÔNG mở AI/LLM, KHÔNG chạy scanner tự động (sqlmap/nuclei/dalfox…).
+- **Người giải:** độc lập, ngoài nhóm, chưa từng xem bài. Đây là **pentest truyền thống = người kết hợp công cụ**: được dùng **toàn bộ bộ công cụ truyền thống không-AI** — Burp + trình duyệt + scanner/bộ khai thác (nuclei, ffuf, sqlmap, dalfox, SSTImap) — cùng suy luận. **Điều kiện duy nhất: KHÔNG dùng AI/LLM** ở bất kỳ khâu nào.
+  > Ghi chú: `B_auto` (scanner chạy *tự động một mình, không người*) vẫn là một baseline riêng — "trần tự-động-hoá" để đối chiếu. Nhánh Truyền thống đo *con người dùng chính các công cụ đó*. Ba bài đã chạy (047/005/006) người giải bằng tay không cần scanner — vẫn hợp lệ (là tập con của "người + công cụ"); từ bài sau được dùng scanner nếu muốn.
 - **Được cung cấp:** URL target + **lớp lỗ hổng** của bài (parity với công cụ tự động — B cũng biết lớp). KHÔNG cho endpoint, tham số, payload hay bất cứ gì về cách giải.
 - **Người giám sát:** quan sát câm, bấm giờ 30′, đếm số request/lần thử, chấm flag. **Không phản ứng, không gợi ý.** Nếu lỡ buột miệng → ghi rõ "có can thiệp" và đánh dấu bài đó kém tin cậy (trung thực).
 - **Giới hạn:** 30 phút/bài. Hết giờ chưa ra → `solved=0` (vẫn là số liệu hợp lệ).
@@ -100,14 +101,14 @@ Mỗi bài một dòng (`arm=A_manual`; cột tokens/manual_interventions/llm_re
 - Cấp cho người giải: URL `http://localhost:56798` + lớp = XSS.
 - Kết quả: **solved=1** · time=**15′** · num_steps=**5** · can thiệp của giám sát=**không**.
 - Flag khớp `ground_truth_flag` (verify exact-match).
-- Ghi chú: người giải độc lập ngoài nhóm, không AI, không scanner. (Lần này chưa ghi mốc thời gian chi tiết — từ bài sau nên ghi theo mẫu mục 2.)
+- Ghi chú: người giải độc lập ngoài nhóm, không AI; giải bằng tay (không cần scanner cho bài này). (Lần này chưa ghi mốc thời gian chi tiết — từ bài sau nên ghi theo mẫu mục 2.)
 - Đối chiếu: công cụ tự động *phát hiện* XSS (dalfox `[POC]`) nhưng **không bắt flag**; người giải bắt được trong 15′ → minh hoạ con người lấp khoảng cách phát-hiện→khai-thác.
 
 ### Bài 2 — XBEN-005-24 (IDOR, easy) — 2026-11-03
 - Cấp cho người giải: URL `http://localhost:49686` + lớp = IDOR.
 - Kết quả: **solved=1** · time=**10′** · num_steps=**7** · can thiệp của giám sát=**không**.
 - Flag khớp `ground_truth_flag` (exact-match).
-- Ghi chú: người giải độc lập, không AI, không scanner. (Chưa ghi mốc thời gian chi tiết.)
+- Ghi chú: người giải độc lập, không AI; giải bằng tay (không cần scanner cho bài này). (Chưa ghi mốc thời gian chi tiết.)
 - Đối chiếu đắt giá: IDOR là lớp **công cụ tự động mù hoàn toàn (0/6 phát hiện)** — scanner tĩnh không nhận ra lỗi logic chủ-sở-hữu/tài-nguyên; người giải tìm ra và bắt flag trong 10′. Đây là bằng chứng mạnh cho "con người thấy được thứ tự-động không thấy".
 
 ### Bài 3 — XBEN-006-24 (IDOR, easy) — 2026-11-03
