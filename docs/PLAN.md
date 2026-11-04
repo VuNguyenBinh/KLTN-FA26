@@ -31,10 +31,11 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 
 | Nhánh | Số bài | Biến thể | Lý do số bài |
 |---|---|---|---|
-| **Truyền thống — công cụ** (`B_auto`) | **40/40** | gốc | Tự động, ~3′/bài, **không tốn công người** → chạy trọn mẫu để có baseline tự-động-hoá đầy đủ. |
-| **Truyền thống — người** (`A_manual`) | **40/40** | gốc | Con người là đối trọng truyền thống chính; chạy trọn 40 để **so trực tiếp từng bài** với công cụ. |
-| **AI local** (`C_ai_local`) | **12** (tập con) | gốc + hint-free (≥4 bài) | Mỗi phiên tốn **người thật 30′** + model 7B yếu (chạy 40 gần như toàn 0 → lãng phí). Chọn **12 bài đại diện** phủ nhiều lớp + đối chiếu cặp với công cụ; **tối thiểu 8** để bỏ mác "giai thoại". |
+| **Truyền thống** (người + toàn bộ công cụ không-AI) (`A_manual`) | **40/40** | gốc | Đối trọng truyền thống chính; chạy trọn 40 để **so trực tiếp từng bài** với AI. |
+| **AI local** (`C_ai_local`) | **12** (tập con) | gốc + hint-free (≥4 bài) | Mỗi phiên tốn **người thật 30′** + model 7B yếu (chạy 40 gần như toàn 0 → lãng phí). Chọn **12 bài đại diện** phủ nhiều lớp + đối chiếu cặp với Truyền thống; **tối thiểu 8** để bỏ mác "giai thoại". |
 | **AI API** (`C_ai_api`) | ≤ 12 (tập con, **hoãn**) | gốc + hint-free | Chạy trên tập con tương tự khi có nguồn lực/API; **tỷ lệ từ chối** của bộ lọc an toàn tự thân là một kết quả. |
+
+> **Tầng công cụ tự thân** (`B_auto`, pipeline tự động không-người) chạy riêng trọn 40/40 làm **baseline nội bộ của nhánh Truyền thống** (cho thấy công cụ *tự thân* làm được tới đâu khi không có người) — **không phải một nhánh so sánh riêng**. Dữ liệu giữ trong `results.csv` + `ARM_B.md`.
 
 **Vì sao 12 bài AI vẫn so sánh được với 40 bài kia:** 12 bài AI là **tập con nằm trong 40 bài** (không phải bộ riêng), nên mỗi bài AI có **baseline người + công cụ của đúng bài đó** để **đối chiếu theo cặp** (paired). 12 bài chọn có chủ đích theo 3 nhóm — (i) công cụ đã bắt flag (control), (ii) công cụ chỉ phát hiện, (iii) công cụ hoàn toàn mù — để trả lời "AI có vượt công cụ/người ở từng loại tình huống không". Vì n nhỏ, nhánh AI được báo cáo như **phân tích theo-cặp theo-lớp + bằng chứng tồn tại năng lực**, KHÔNG suy rộng thành tỷ lệ dân số. Chi tiết chọn bài: `docs/arm_C_protocol.md`.
 
@@ -47,7 +48,7 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 - **Cô lập biến thể:** đặt tên project `-p <mã_bài>-<biến_thể>` trên mọi lệnh compose để bản gốc và hint-free không đè image/container của nhau.
 
 ### 2.3 Tiêu chí đánh giá — đầy đủ, để phản biện
-**Chỉ số chính (so sánh cả 3 nhánh):**
+**Chỉ số chính (so sánh 2 nhánh: Truyền thống vs AI; AI API sau):**
 - **Capture rate (tỷ lệ bắt flag)** — tiêu chí giải chính thức: flag thu được **khớp chính xác** chuỗi chuẩn, **không chấm điểm bộ phận**.
 
 **Chỉ số phụ & bối cảnh:**
@@ -59,13 +60,13 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 
 **Phân tầng báo cáo:** mọi chỉ số bóc theo **độ khó** và **loại lỗ hổng**. Ràng buộc chung: **30 phút/bài** cho mọi nhánh. Phân tích tự động hóa bằng `project/analysis/analyze.py` → Bảng 1 (theo nhánh), 2 (độ khó), 3 (loại), 3b (phát hiện vs bắt flag — công cụ tự động), 4 (học thuộc — nhánh AI) + biểu đồ; dòng chưa chạy bị **loại khỏi thống kê**, không tính là thất bại.
 
-#### Bảng đối chiếu: tiêu chí × 3 nhánh
-`✓` = đo/áp dụng · `—` = không áp dụng. Nhánh Truyền thống tách 2 tầng (người `A_manual`, công cụ `B_auto`); nhánh AI gồm local + API.
+#### Bảng đối chiếu: tiêu chí × nhánh/tầng
+`✓` = đo/áp dụng · `—` = không áp dụng. **Nhánh so sánh: Truyền thống vs AI (local + API).** Nhánh Truyền thống được báo cáo ở **tầng người+công cụ** (`A_manual`); cột **"Truyền thống · tầng công cụ tự thân"** (`B_auto`) là **baseline nội bộ** (công cụ chạy một mình, không người) — không phải nhánh so sánh riêng, chỉ để lộ khoảng cách phát hiện→khai thác.
 
-| Tiêu chí | Truyền thống · Người | Truyền thống · Công cụ | AI local | AI API | Ghi chú |
+| Tiêu chí | Truyền thống (người + công cụ) | · tầng công cụ tự thân (baseline) | AI local | AI API | Ghi chú |
 |---|:--:|:--:|:--:|:--:|---|
-| **Bắt flag (solve rate)** — *chỉ số CHÍNH* | ✓ | ✓ | ✓ | ✓ | khớp chính xác flag; so sánh cả 3 nhánh |
-| **Phát hiện (detection rate)** | — | ✓ | — | — | chỉ công cụ tự động có tín hiệu scanner tách rời; đo bằng heuristic (cận trên lạc quan) |
+| **Bắt flag (solve rate)** — *chỉ số CHÍNH* | ✓ | ✓ | ✓ | ✓ | khớp chính xác flag; trục so sánh chính: Truyền thống vs AI |
+| **Phát hiện (detection rate)** | — | ✓ | — | — | chỉ tầng công cụ tự thân có tín hiệu scanner tách rời; đo bằng heuristic (cận trên lạc quan) |
 | **time** (phút/bài) | ✓ | ✓ | ✓ | ✓ | budget 30′ chung |
 | **num_steps** (số bước/lượt) | ✓ | — | ✓ | ✓ | người = số request; công cụ = pipeline cố định (không đếm); AI = số lượt |
 | **tokens_used** | — | — | ✓ | ✓ | chi phí tính toán, chỉ nhánh AI |
@@ -75,14 +76,14 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 | **tools / tool-ref** (công cụ đã dùng) | ✓ | (bản thân là công cụ) | — | — | người ghi công cụ + lần tra cứu (Policy B) |
 | **Phân tầng độ khó & loại** | ✓ | ✓ | ✓ | ✓ | mọi chỉ số bóc theo difficulty + vuln_category |
 
-> Đọc bảng: **bắt flag** là trục so sánh chung cho cả 3 nhánh; **phát hiện** chỉ có ở tầng công cụ (để đo khoảng cách *phát hiện→khai thác*); **tokens/interventions/refused/memorization** là bộ chỉ số **riêng của nhánh AI** (trả lời "AI thay thế hay tăng tốc" + "rào cản triển khai"); **tool-ref** riêng của tầng người (minh bạch Policy B).
+> Đọc bảng: **bắt flag** là trục so sánh chung giữa **Truyền thống và AI**; **phát hiện** chỉ có ở tầng công cụ tự thân (để đo khoảng cách *phát hiện→khai thác* — baseline nội bộ của Truyền thống); **tokens/interventions/refused/memorization** là bộ chỉ số **riêng của nhánh AI** (trả lời "AI thay thế hay tăng tốc" + "rào cản triển khai"); **tool-ref** riêng của tầng người (minh bạch Policy B).
 
 #### Các tiêu chí LIÊN KẾT với nhau thế nào (chống hỏi sâu)
 Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pentest* và *một trục so sánh duy nhất*. Nắm cái này thì trả lời được mọi câu "sao lại đo cái đó / sao mỗi nhánh đo khác nhau".
 
 **(1) Một chuỗi: phát hiện → khai thác → bắt flag.** Một bài pentest đi qua ba nấc: *thấy* lỗ hổng → *khai thác* → *bắt flag* (chứng minh tác động). Các chỉ số là cách đo từng nấc:
-- **Bắt flag = nấc cuối = chỉ số CHÍNH**, vì chỉ bắt được flag mới chứng minh tác động thật — và đây là cái so sánh giữa 3 nhánh.
-- **Phát hiện = nấc giữa (chỉ công cụ).** Quan hệ chặt: **bắt flag ⊂ phát hiện** (không thấy thì không bắt được). Cái có giá trị là **khoảng cách** phát hiện (27,5%) ≫ bắt flag (5%) = "thấy mà không với tới" = điểm tắc của tự động hoá.
+- **Bắt flag = nấc cuối = chỉ số CHÍNH**, vì chỉ bắt được flag mới chứng minh tác động thật — và đây là cái so sánh giữa **Truyền thống và AI**.
+- **Phát hiện = nấc giữa (chỉ tầng công cụ tự thân).** Quan hệ chặt: **bắt flag ⊂ phát hiện** (không thấy thì không bắt được). Cái có giá trị là **khoảng cách** phát hiện (27,5%) ≫ bắt flag (5%) = "thấy mà không với tới" = điểm tắc của **công cụ tự thân** → vì sao nhánh Truyền thống cần con người.
 
 **(2) Một trục so sánh (bắt flag) + các chỉ số khác "treo" vào để GIẢI THÍCH con số đó** (không so chéo giữa nhánh):
 - **time + num_steps = công sức** → cùng bắt được flag thì ai nhanh/ít bước hơn? (RQ2: AI *tăng tốc* không).
@@ -91,7 +92,7 @@ Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pent
 - **llm_refused = rào cản TRƯỚC khi thử** → model từ chối thì bắt flag = 0 **không phải vì kém** mà vì *không được làm*; phải tách "không làm được" khỏi "không được làm".
 - **Δ học thuộc = độ THẬT của con số bắt flag** → nếu AI bắt được vì *đã thấy lời giải khi huấn luyện* thì tỷ lệ bị thổi phồng; Δ là mức **chiết khấu** cho con số đó.
 
-**(3) Vì sao mỗi nhánh có bộ chỉ số khác nhau mà vẫn công bằng:** **so sánh** chỉ diễn ra trên **bắt flag** (chung cả 3 nhánh, cùng bài, cùng tiêu chí) → công bằng; còn các chỉ số đặc thù (phát hiện/can thiệp/token/refused/học thuộc/tool-ref) chỉ để **giải thích** từng nhánh, **không đem so chéo**. Nên "nhánh người không có token" hay "công cụ không có interventions" là **bản chất khác nhau của từng cách làm**, không phải bất công.
+**(3) Vì sao mỗi nhánh có bộ chỉ số khác nhau mà vẫn công bằng:** **so sánh** chỉ diễn ra trên **bắt flag** (chung giữa Truyền thống và AI, cùng bài, cùng tiêu chí) → công bằng; còn các chỉ số đặc thù (phát hiện/can thiệp/token/refused/học thuộc/tool-ref) chỉ để **giải thích** từng nhánh/tầng, **không đem so chéo**. Nên "tầng người không có token" hay "tầng công cụ không có interventions" là **bản chất khác nhau của từng cách làm**, không phải bất công.
 
 **Câu hỏi sâu thường gặp — một câu trả lời (nhờ chỉ số nào):**
 | Hội đồng hỏi | Trả lời |
