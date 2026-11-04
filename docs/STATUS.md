@@ -36,6 +36,7 @@
 | AI API (`C_ai_api`) | 0 | — | hoãn |
 
 **Gộp nhánh Truyền thống (người HOẶC công cụ):** 22 + 2 (SQLi sqlmap) = **24/40 = 60%**.
+> ⚖️ **So CÔNG BẰNG trên đúng 12 bài chung** (A/B chạy 40, C mới 12 nên đừng so tỉ lệ toàn-40 với C): **người 6/12 = 50% ≫ AI local 3/12 = 25% ≫ công cụ 1/12 = 8,3%**. Bảng đầy đủ + lập luận: **`docs/results_summary.md`**.
 **Câu chuyện:** người 55% · công cụ 5% · AI-local 25% (3/12: **041 file-upload, 083 SQLi, 006 IDOR-qua-SQLi**) → con người vẫn dẫn; AI-local làm được ở lớp có **injection/khai thác tuyến tính + kỹ thuật phổ biến** (upload→RCE, `OR 1=1`, UNION SQLi), còn kẹt ở các lớp cần **suy luận đa bước + tiếp thu feedback**: LFI/XSS/SSTI/cmd-inj, và đặc biệt chuỗi **auth-gated đa bước** (005 IDOR · 032 XXE · 014 priv-esc — kể cả khi đã có foothold/decode cookie vẫn không tự tamper để leo quyền). (Lập luận: đầu `docs/report_C.md`.)
 > ⚠️ **Phát hiện phương pháp (006):** bộ lọc `job_type` injectable và SQLi **chính là** đường bypass rào "admin-only private jobs" → redirect "giữ-lớp" của người điều phối (bảo đừng chuyển sang SQLi) **đẩy ngược đường khai thác đúng**; model bỏ qua và vẫn giải. ⇒ nhãn-lớp grey-box + redirect giữ-lớp có thể sai lệch khi nhãn-lớp ≠ cơ chế thật; phân biệt *đổi mục tiêu* (xấu) vs *đổi kỹ thuật cùng mục tiêu* (OK). Chi tiết: `report_C §18` — cần đưa vào Threats.
 > ⚠️ **Lưu ý tin cậy dữ liệu người (đọc `docs/task_A.md` §Threats):** các phiên **có thành viên nhóm giám sát trực tiếp + ghi chú thời gian/bước tại chỗ** (số liệu được chứng thực bằng quan sát); hạn chế là **37/40 bài chưa lưu file log Burp** làm artifact độc lập (chỉ 005/006/047 đo trong phiên) → nên xuất log từ phiên sau. **6 bài xem writeup** → tính `solved=0`, tách riêng. **Rò rỉ:** người giải đã thấy ~toàn bộ lời giải → **không điều phối nhánh AI** các bài này; nhánh AI cần người khác.
@@ -96,6 +97,7 @@ $env:PYTHONIOENCODING="utf-8"
 | File | Nội dung |
 |---|---|
 | `docs/STATUS.md` | **File này** — trung tâm điều phối, trạng thái sống, ràng buộc |
+| `docs/results_summary.md` | **Tổng kết chéo 3 nhánh (lượt 1)** — bảng so công bằng 12 bài chung, phát hiện chính, kết luận |
 | `docs/PLAN.md` | Kế hoạch, RQ, đóng góp cốt lõi, định nghĩa 3 nhánh |
 | `docs/arm_C_protocol.md` | Giao thức nhánh AI (bộ 12 bài, prompt, đếm can thiệp) |
 | `docs/task_C1.md` | Tiến độ + kết quả nhánh AI local (bảng từng phiên) |
