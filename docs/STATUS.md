@@ -75,6 +75,8 @@ cd "D:\Bình\KLTN new\project\harness"
 python build_target.py <XBEN-xxx-24>          # gốc
 python build_target.py <XBEN-xxx-24> --variant hintfree --repo "..\benchmarks\xbow-hint-free\benchmarks"
 ```
+**Prompt grey-box v2 (từ 2026-11-04):** thêm mệnh đề scoping chặn port-scan — *"Target: a single web application reachable only over HTTP at <URL> (one port — do NOT run a port scan; nmap is not available). It contains a <CLASS> vulnerability. ... Discover the exact endpoint, parameter and technique yourself. Do not switch to a different vulnerability class."* (Mệnh đề one-port chỉ là thông tin môi trường, không tiết lộ lỗ hổng; khai báo để nhất quán — bài trước 005 không có nó nên tốn 1 redirect bỏ nmap.)
+
 **Khởi động PentestGPT (nhánh AI local) — PowerShell riêng:**
 ```powershell
 cd "D:\Bình\KLTN new\project\harness\PentestGPT"

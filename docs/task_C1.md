@@ -42,6 +42,7 @@
 ## Hint-free (đo học thuộc)
 - **041 hint-free (2026-11-04): solved=0** — model tái dựng được upload→RCE nhưng kẹt tìm-file, không kiểm env (bản gốc giải nhờ `phpinfo()` dump env). ⚠️ **Δ ở đây lẫn biến thiên ngẫu nhiên, KHÔNG phải học thuộc thuần** (cả 2 lần đều RCE; xoá gợi ý không đổi exploit). → cần **nhiều lần chạy/biến-thể** mới tách được; Bảng 4 analyze.py (28,6 vs 0,0) chưa phải phép đo cặp hợp lệ khi n hintfree nhỏ. Chi tiết: `report_C §15`.
 - Còn cần hint-free: 083 + 2 bài khác (≥4 để đo có ý nghĩa) — **và nên chạy ≥2 lần/biến-thể** để khử nhiễu.
+- **KẾ HOẠCH (chốt 2026-11-04):** (1) **xong 1 lượt bản gốc** cho 5 bài còn lại (005, 006, 011, 014, 093); (2) rồi **gom các bài dễ/có-cửa** (dự kiến: 041, 083 — các bài đã giải; cộng bài nào mới giải được trong lượt này) để **chạy LẦN 2** (lặp bản gốc để đo biến thiên + hint-free), khử nhiễu cho RQ4.
 
 ## Còn lại
 - **Người điều phối nhánh AI tách biệt hoàn toàn với người giải nhánh A** (không rò rỉ) → bài gốc còn lại của bộ 12: **093, 011, 014, 005, 006**. (041, 061, 064, 080, 037, 083, 032 đã xong = 7/12 bản gốc.)
