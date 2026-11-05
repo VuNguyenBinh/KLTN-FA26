@@ -33,13 +33,45 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 |---|---|---|---|
 | **Truyền thống** (người + toàn bộ công cụ không-AI) (`A_manual`) | **40/40** | gốc | Đối trọng truyền thống chính; chạy trọn 40 để **so trực tiếp từng bài** với AI. |
 | **AI local** (`C_ai_local`) | **12** (tập con) | gốc + hint-free (≥4 bài) | Mỗi phiên tốn **người thật 30′** + model 7B yếu (chạy 40 gần như toàn 0 → lãng phí). Chọn **12 bài đại diện** phủ nhiều lớp + đối chiếu cặp với Truyền thống; **tối thiểu 8** để bỏ mác "giai thoại". |
-| **AI API** (`C_ai_api`) | ≤ 12 (tập con, **hoãn**) | gốc + hint-free | Chạy trên tập con tương tự khi có nguồn lực/API; **tỷ lệ từ chối** của bộ lọc an toàn tự thân là một kết quả. |
+| **AI API** (`C_ai_api`) | **24** (12 bài C1 + 12 bài mới), ×2 lần + **8 hint-free** ×2 | gốc + hint-free | Model chính `deepseek-v4-pro` (qua APIVN). Mở 12→24 để **đủ n kiểm định** (±~19%, §Thiết kế so sánh); 12 bài mới nghiêng medium/hard sửa lệch-dễ của bộ 12. Chi tiết: `docs/task_C2.md`. |
+| **AI API — đối chiếu** (`C_ai_api_ref`) | 4–6 (tập con của 24) | gốc, 1 lần | `claude-opus-5-5` — thăm dò **trần model** + so **tỷ lệ từ chối** 2 hãng. Báo cáo tách, **không gộp** vào `C_ai_api`. |
 
 > **Tầng công cụ tự thân** (`B_auto`, pipeline tự động không-người) chạy riêng trọn 40/40 làm **baseline nội bộ của nhánh Truyền thống** (cho thấy công cụ *tự thân* làm được tới đâu khi không có người) — **không phải một nhánh so sánh riêng**. Dữ liệu giữ trong `results.csv` + `ARM_B.md`.
 
 **Vì sao 12 bài AI vẫn so sánh được với 40 bài kia:** 12 bài AI là **tập con nằm trong 40 bài** (không phải bộ riêng), nên mỗi bài AI có **baseline người + công cụ của đúng bài đó** để **đối chiếu theo cặp** (paired). 12 bài chọn có chủ đích theo 3 nhóm — (i) công cụ đã bắt flag (control), (ii) công cụ chỉ phát hiện, (iii) công cụ hoàn toàn mù — để trả lời "AI có vượt công cụ/người ở từng loại tình huống không". Vì n nhỏ, nhánh AI được báo cáo như **phân tích theo-cặp theo-lớp + bằng chứng tồn tại năng lực**, KHÔNG suy rộng thành tỷ lệ dân số. Chi tiết chọn bài: `docs/arm_C_protocol.md`.
 
 **Biến thể gốc vs hint-free:** chỉ nhánh AI chạy **cả hai** biến thể (trên tập con ≥4 bài) để đo *Δ học thuộc*; nhánh người và công cụ chỉ chạy **bản gốc** (người/scanner không "đọc" gợi ý trong mã như LLM có thể đã ghi nhớ).
+
+#### Thiết kế so sánh — bộ bài nào đóng góp gì (gom để trích vào bài báo)
+
+Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so sánh làm **theo cặp trên bài chung**, không so tỉ lệ thô giữa các bộ khác cỡ.
+
+```
+40 bài ─ A (người+công cụ) · B (công cụ tự thân = baseline)
+   └ 24 ─ C2 DeepSeek (C_ai_api)  ×2 + 8 hint-free ×2
+      └ 12 ─ C1 qwen-7B (C_ai_local)
+         └ 4–6 ─ C2 Opus (C_ai_api_ref)
+```
+
+| Bộ | n | Nhánh có mặt | Loại kết luận rút ra |
+|---|---|---|---|
+| 40 | 40 | A, B | Tỉ lệ dân số (±~15%): headline Truyền thống + khoảng cách phát-hiện→khai-thác của công cụ |
+| 24 | 24 | A, B, C2 | So cặp AI **có kiểm định** (±~19%) |
+| 12 | 12 | A, B, C1, C2 | So cặp + phân tích theo lớp; n nhỏ (±~25%) → **không** suy rộng thành tỉ lệ |
+| 4–6 | 4–6 | +C2_ref | Thăm dò trần model + tỉ lệ từ chối (không phải tỉ lệ) |
+
+**Sáu phép so (mỗi phép = bài chung → trả lời gì):**
+
+| # | So | Bài chung | Trả lời |
+|---|---|---|---|
+| 1 | A vs B | 40 | Người có lấp khoảng cách công cụ bỏ ngỏ không (RQ1) |
+| 2 | **C1 vs C2** | 12 | Giữ nguyên scaffold, chỉ đổi model → "AI kém do AI hay do model nhỏ" (thí nghiệm sạch nhất) |
+| 3 | A vs C2 | 24 | AI mạnh có tiệm cận người không, ở lớp nào (RQ1) |
+| 4 | B vs C1 / C2 | 12 / 24 | AI có vượt công cụ tự thân (lấp khoảng cách phát-hiện→khai-thác) không |
+| 5 | DeepSeek vs Opus | 4–6 | Trần model + rào cản an toàn (từ chối) |
+| 6 | gốc vs hint-free | ≥8 cặp (C2), ≥4 (C1) | Δ học thuộc (RQ4) — chỉ nhánh AI |
+
+**Trục so sánh duy nhất = bắt flag** (exact-match, paired); các chỉ số khác chỉ *giải thích* con số của từng nhánh, không so chéo (chi tiết §2.3). Mọi chỉ số bóc theo **độ khó + lớp lỗ hổng**.
 
 ### 2.2 Cách dựng benchmark — cụ thể hóa (tái lập được)
 - **Công thức flag (ground truth):** `FLAG{sha256(TÊN_BÀI_viết_HOA)}` — **đã xác minh khớp pipeline `make` chính thức** của benchmark (openssl ≡ hashlib).
@@ -123,7 +155,7 @@ Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pent
 |---|---|---|
 | **1 — Truyền thống (thủ công + công cụ, không AI)** | Pentest truyền thống: con người kiểm thử bằng tay (Burp/trình duyệt) **và được phép dùng công cụ tự động** (nuclei/ffuf/sqlmap/dalfox/SSTImap). Không dùng LLM ở bất kỳ khâu nào. | `A_manual` (người giải) + `B_auto` (công cụ-đơn-thuần) |
 | **2 — AI local (qwen)** | Trợ lý pentest PentestGPT + **mô hình local** qua Ollama (`qwen2.5:7b`), có người trong vòng lặp | `C_ai_local` |
-| **3 — AI API thương mại** | PentestGPT + **mô hình API thương mại** (DeepSeek/Qwen/…), có người trong vòng lặp | `C_ai_api` *(hoãn — làm sau)* |
+| **3 — AI API thương mại** | PentestGPT + **mô hình API thương mại** qua APIVN, có người trong vòng lặp. Chính: `deepseek-v4-pro`; đối chiếu: `claude-opus-5-5` (4–6 bài) | `C_ai_api` + `C_ai_api_ref` |
 
 > **Về việc gộp "thủ công + công cụ" thành một nhánh (2026-11-03):** đề tài so sánh *AI-assisted* với *Truyền thống*, mà pentest truyền thống thực tế là **con người dùng công cụ** — nên nhánh 1 gộp phần người (`A_manual`) và phần công cụ tự động (`B_auto`). Dữ liệu **vẫn giữ nguyên hai nhãn** `A_manual` và `B_auto`, nên vẫn tách ra được khi cần: `B_auto` đóng vai **"trần của tự động hoá"** (chỉ 5% bắt flag / 27,5% phát hiện — khoảng cách detect→exploit) như một **phân tích phụ** bên trong nhánh Truyền thống. Mức giải của nhánh 1 ở mỗi bài = *giải được nếu người hoặc công cụ giải được* (người được phép gọi cùng các công cụ đó). **Không phải chạy lại gì** — chỉ gom nhóm lại ở cấp trình bày.
 
