@@ -44,7 +44,7 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 
 #### Thiết kế so sánh — bộ bài nào đóng góp gì (gom để trích vào bài báo)
 
-Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so sánh làm **theo cặp trên bài chung**, không so tỉ lệ thô giữa các bộ khác cỡ.
+Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so sánh làm **theo cặp** (paired — so đúng *cùng một bài* giữa các nhánh) **trên bài chung**, không so tỉ lệ thô giữa các bộ khác cỡ. *(Định nghĩa đầy đủ mọi thuật ngữ: bảng "Chú thích thuật ngữ" cuối mục.)*
 
 ```
 40 bài ─ A (người+công cụ) · B (công cụ tự thân = baseline)
@@ -55,17 +55,17 @@ Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so 
 
 | Bộ | n | Nhánh có mặt | Loại kết luận rút ra |
 |---|---|---|---|
-| 40 | 40 | A, B | Tỉ lệ dân số (±~15%): headline Truyền thống + khoảng cách phát-hiện→khai-thác của công cụ |
-| 24 | 24 | A, B, C2 | So cặp AI **có kiểm định** (±~19%) |
-| 12 | 12 | A, B, C1, C2 | So cặp + phân tích theo lớp; n nhỏ (±~25%) → **không** suy rộng thành tỉ lệ |
-| 4–6 | 4–6 | +C2_ref | Thăm dò trần model + tỉ lệ từ chối (không phải tỉ lệ) |
+| 40 | 40 | A, B | Tỉ lệ dân số (population rate — suy rộng cho mọi bài loại này; ±~15%): headline Truyền thống + khoảng cách phát-hiện→khai-thác của công cụ |
+| 24 | 24 | A, B, C2 | So cặp AI **có kiểm định** (khoảng tin cậy ±~19%) |
+| 12 | 12 | A, B, C1, C2 | So cặp + phân tích theo lớp; n nhỏ (ít bài → không suy rộng; ±~25%) |
+| 4–6 | 4–6 | +C2_ref | Thăm dò trần (ceiling — giới hạn trên năng lực) model + tỉ lệ từ chối (không phải tỉ lệ) |
 
 **Sáu phép so (mỗi phép = bài chung → trả lời gì):**
 
 | # | So | Bài chung | Trả lời |
 |---|---|---|---|
 | 1 | A vs B | 40 | Người có lấp khoảng cách công cụ bỏ ngỏ không (RQ1) |
-| 2 | **C1 vs C2** | 12 | Giữ nguyên scaffold, chỉ đổi model → "AI kém do AI hay do model nhỏ" (thí nghiệm sạch nhất) |
+| 2 | **C1 vs C2** | 12 | Giữ nguyên scaffold (khung chạy AI: PentestGPT+prompt+luật đếm), chỉ đổi model → "AI kém do AI hay do model nhỏ" (thí nghiệm sạch nhất) |
 | 3 | A vs C2 | 24 | AI mạnh có tiệm cận người không, ở lớp nào (RQ1) |
 | 4 | B vs C1 / C2 | 12 / 24 | AI có vượt công cụ tự thân (lấp khoảng cách phát-hiện→khai-thác) không |
 | 5 | DeepSeek vs Opus | 4–6 | Trần model + rào cản an toàn (từ chối) |

@@ -1,6 +1,6 @@
 # TASK AI API (C2) — PentestGPT + model API thương mại
 
-> Nhánh **C2** = cùng PentestGPT legacy, cùng prompt grey-box v2, cùng budget 30′ như C1 — **chỉ đổi model** sang API thương mại. Hai nhãn dữ liệu: **`C_ai_api`** (model chính) và **`C_ai_api_ref`** (model đối chiếu — **KHÔNG gộp** vào số liệu model chính). Giao thức chung: `docs/arm_C_protocol.md` (áp nguyên văn). Ràng buộc: `docs/STATUS.md §0`.
+> Nhánh **C2** = cùng PentestGPT legacy, cùng prompt **grey-box** (chỉ cho *lớp* lỗ hổng, không cho endpoint/tham số/payload) v2, cùng budget 30′ như C1 — **chỉ đổi model** sang API thương mại. Hai nhãn dữ liệu: **`C_ai_api`** (model chính) và **`C_ai_api_ref`** (model đối chiếu — **KHÔNG gộp** vào số liệu model chính). Giao thức chung: `docs/arm_C_protocol.md` (áp nguyên văn). Ràng buộc: `docs/STATUS.md §0`. *(Định nghĩa thuật ngữ: bảng "Chú thích thuật ngữ" trong `PLAN.md §Thiết kế so sánh`.)*
 >
 > **Trạng thái (2026-11-05): hạ tầng đã dựng; CHỐT model** — chính `deepseek-v4-pro`, đối chiếu `claude-opus-5-5`, gọi qua cổng **APIVN**. Việc tiếp: điền key vào `c2_config.env` + `claude.env` → smoke test → chạy thử **XBEN-083** → chạy hàng loạt.
 >
@@ -46,7 +46,7 @@ Chỉ dùng thư viện chuẩn Python — không cần `pip install`. `analyze.
 | **Đối chiếu** | `claude-opus-5-5` | `C_ai_api_ref` | 4–6 bài (bản gốc, 1 lần) |
 
 **Vì sao DeepSeek V4 Pro làm chính:** rẻ (~600–1.600đ/phiên) → đủ ngân sách chạy nhiều bài + lặp 2 lần (số bài mới quyết định giá trị thống kê, §5); ít từ chối → tỷ lệ phản ánh **năng lực**; cùng dòng model mở như Qwen (C1) → khác biệt chủ yếu do **quy mô & thế hệ**.
-**Vì sao thêm Opus 5.5 đối chiếu:** DeepSeek không phải mức trần — Opus trên 4–6 bài (vài bài DeepSeek giải được + vài bài trượt) trả lời "model mạnh hơn thì sao" và cho so **tỷ lệ từ chối** giữa 2 hãng.
+**Vì sao thêm Opus 5.5 đối chiếu:** DeepSeek không phải mức trần (ceiling — giới hạn trên năng lực của AI) — Opus trên 4–6 bài (vài bài DeepSeek giải được + vài bài trượt) trả lời "model mạnh hơn thì sao" và cho so **tỷ lệ từ chối** giữa 2 hãng.
 
 **Bảng giá APIVN (VNĐ / 1 triệu token, 2026-11-05):**
 
@@ -152,7 +152,7 @@ Kiểm soát chi phí: tạo **2 khoá** (thử nghiệm / chạy thật) và **
 
 ## 5. Vì sao 24 bài (không phải 12) + câu hỏi C2 trả lời
 
-**Khoảng tin cậy 95% (Wilson) của tỷ lệ giải khi tỷ lệ ~50%:** 12 bài → ±~25% (chỉ mô tả); **24 bài → ±~19%** (so cặp với Truyền thống có ý nghĩa nếu chênh lớn); 40 bài → ±~15%. ⇒ 12 bài C1 là chưa đủ cho kiểm định → C2 mở lên 24. **Giới hạn thật là thời gian người điều phối** (phải chưa thấy lời giải), không phải tiền → chia bài nhiều người.
+**Khoảng tin cậy 95% (Wilson)** — *biên sai số của tỷ lệ; càng rộng thì con số càng không chắc* — **của tỷ lệ giải khi tỷ lệ ~50%:** 12 bài → ±~25% (quá rộng → **chỉ mô tả**, không suy rộng được); **24 bài → ±~19%** (đủ **kiểm định** so cặp với Truyền thống nếu chênh lớn); 40 bài → ±~15%. ⇒ 12 bài C1 là chưa đủ cho kiểm định → C2 mở lên 24. **Giới hạn thật là thời gian người điều phối** (phải chưa thấy lời giải), không phải tiền → chia bài nhiều người.
 
 **Câu hỏi đưa vào Discussion:**
 - **C1 vs C2 trên cùng bài:** lỗi của 7B (phớt lờ 404/405, không đăng nhập ở bài auth-gated, lặp lệnh) có biến mất ở model mạnh không? → "AI kém" là do *AI* hay do *model nhỏ*.
