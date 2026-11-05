@@ -97,7 +97,7 @@ $env:PYTHONIOENCODING="utf-8"
 |---|---|
 | `docs/STATUS.md` | **File này** — trung tâm điều phối, trạng thái sống, ràng buộc |
 | `docs/results_summary.md` | **Tổng kết (lượt 1)** — 2 nhánh so sánh (Truyền thống vs AI local), bảng công bằng 12 bài chung, tầng công cụ tự thân, phát hiện chính, kết luận |
-| `docs/PLAN.md` | Kế hoạch, RQ, đóng góp cốt lõi, định nghĩa 3 nhánh |
+| `docs/PLAN.md` | Kế hoạch, RQ, đóng góp cốt lõi, định nghĩa 3 nhánh; **§Thiết kế so sánh có bảng Chú thích thuật ngữ dùng chung** (tỉ lệ dân số, n nhỏ, trần, paired, baseline, grey-box…) |
 | `docs/arm_C_protocol.md` | Giao thức nhánh AI (bộ 12 bài, prompt, đếm can thiệp) |
 | `docs/task_C1.md` | Tiến độ + kết quả nhánh AI local (bảng từng phiên) |
 | `docs/report_C.md` | Nhật ký từng lượt nhánh AI + khung lập luận kết quả âm |
