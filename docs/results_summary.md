@@ -6,7 +6,7 @@
 1. **Truyền thống** (`A_manual`): **con người + toàn bộ công cụ không-AI có thể dùng** (Burp + scanner/khai thác tự động: nuclei/ffuf/sqlmap/dalfox/SSTImap…). **Chỉ cấm AI/LLM.** Có giám sát + ghi chú tại chỗ.
 2. **AI local** (`C_ai_local`): PentestGPT (legacy) + mô hình local `qwen2.5:7b` qua Ollama; người đóng vai "tay và mắt" chạy lệnh, prompt grey-box (chỉ cho *lớp* lỗ hổng).
 
-**AI API** (`C_ai_api`, model thương mại) **hoãn** — điểm đối chiếu model mạnh, làm sau.
+**AI API** (`C_ai_api`, `deepseek-v4-pro` qua APIVN) **đang chạy** (1/24, XBEN-083 ✅) — điểm đối chiếu model mạnh. Chạy trên **tập con purposive 24 bài** (12 bài C1 + 12 bài mới chọn có chủ đích, lệch hard) → báo cáo **paired + theo lớp/độ khó** như C1, **KHÔNG** suy tỉ lệ dân số (xem `task_C2.md §4–5`, `arm_C_protocol §D.1`).
 
 > **Về tầng công cụ tự động:** pipeline quét/khai thác tự động hoàn toàn (không người, không AI) là **một tầng BÊN TRONG nhánh Truyền thống**, không phải nhánh so sánh riêng. Kết quả chạy độc lập của nó (nhãn nội bộ `B_auto` trong `results.csv`) được giữ lại và dùng ở **§6** để cho thấy *giới hạn của công cụ khi KHÔNG có người* — tức vì sao nhánh Truyền thống cần con người.
 
