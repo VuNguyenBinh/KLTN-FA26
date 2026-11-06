@@ -2,6 +2,8 @@
 
 > Sơ đồ toàn bộ pipeline thí nghiệm, từ chọn bài → chạy 2 nhánh → chấm → phân tích → so sánh. Mermaid (GitHub tự render). Chi tiết lệnh từng bước: `docs/WORKFLOW.md`. Định nghĩa nhánh + 6 phép so + thuật ngữ: `docs/PLAN.md §Thiết kế so sánh`.
 >
+> 🖊️ **Bản draw.io sửa được (vẽ bằng drawio-skill):** `docs/workflow.drawio` — mở bằng draw.io desktop hoặc extension VS Code `hediet.vscode-drawio`. Đã qua `validate.py` (0 lỗi, 0 giao cắt/chồng lấp).
+>
 > **Khung nhánh:** **Truyền thống** = người + *mọi* công cụ không-AI (gồm scanner); **tầng công cụ tự thân** (`B_auto`) là *baseline nội bộ* của Truyền thống (không phải nhánh so sánh riêng); **AI** = C1 local (qwen) / C2 API (DeepSeek + Opus đối chiếu).
 
 ```mermaid
