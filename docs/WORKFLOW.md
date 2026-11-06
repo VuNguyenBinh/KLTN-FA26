@@ -1,5 +1,8 @@
 # Quy trình chạy thí nghiệm (ĐÃ KIỂM CHỨNG trên máy)
 
+> 📊 **Sơ đồ tổng thể (flowchart):** `docs/workflow_image.md`.
+
+
 Trạng thái hạ tầng (tính đến 2026-11-01, Claude đã dựng & test):
 - Docker Desktop: chạy (engine 29.8.1). ✓
 - Git, Ollama: đã cài. Model `qwen2.5:7b` (4.7GB) đã pull. ✓
