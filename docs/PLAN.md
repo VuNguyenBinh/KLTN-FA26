@@ -100,6 +100,7 @@ Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so 
 | **Scaffold** | Bộ khung chạy AI (PentestGPT + prompt + luật đếm). C1↔C2 **giữ nguyên scaffold, chỉ đổi model** → khác biệt là do model, không do khung. |
 | **Grey-box** | Cho AI/người biết **lớp** lỗ hổng (vd "SQLi") nhưng **không** cho endpoint/tham số/payload — ngang thông tin mà công cụ tự động có. |
 | **Phát hiện vs Bắt flag** (detection vs capture) | *Phát hiện* = công cụ báo "có lỗ hổng"; *bắt flag* = khai thác tới cùng lấy được flag. Khoảng cách giữa 2 cái = "thấy mà không với tới". |
+| **Biến thể original / hint-free** | *original* = bài gốc; *hint-free* (bản xóa gợi ý, fork KeygraphHQ) = đã bỏ chú thích/tên biến gợi ý/README **nhưng giữ nguyên lỗ hổng + flag**. Chỉ nhánh AI chạy cả hai (người/scanner không "đọc" gợi ý như LLM). |
 | **Δ học thuộc** (memorization delta) | `tỉ lệ(gốc) − tỉ lệ(hint-free)`. Lớn = AI dựa vào *đã thấy lời giải khi huấn luyện* thay vì tự suy luận. |
 | **redirect / exec** (nhánh AI) | *redirect* = số lần người **chỉnh hướng** khi AI đi sai (chi phí giám sát); *exec* = số lệnh **chạy máy móc** theo AI đề xuất. |
 | **auth-gated** | Lỗ hổng **nằm sau đăng nhập** — phải login (hoặc vượt xác thực) trước mới chạm tới; chuỗi đa bước, 7B hay kẹt. |
