@@ -33,7 +33,7 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 |---|---|---|---|
 | **Truyền thống** (người + toàn bộ công cụ không-AI) (`A_manual`) | **40/40** | gốc | Đối trọng truyền thống chính; chạy trọn 40 để **so trực tiếp từng bài** với AI. |
 | **AI local** (`C_ai_local`) | **12** (tập con) | gốc + hint-free (≥4 bài) | Mỗi phiên tốn **người thật 30′** + model 7B yếu (chạy 40 gần như toàn 0 → lãng phí). Chọn **12 bài đại diện** phủ nhiều lớp + đối chiếu cặp với Truyền thống; **tối thiểu 8** để bỏ mác "giai thoại". |
-| **AI API** (`C_ai_api`) | **24** (12 bài C1 + 12 bài mới), ×2 lần + **8 hint-free** ×2 | gốc + hint-free | Model chính `deepseek-v4-pro` (qua APIVN). Mở 12→24 để **đủ n kiểm định** (±~19%, §Thiết kế so sánh); 12 bài mới nghiêng medium/hard sửa lệch-dễ của bộ 12. Chi tiết: `docs/task_C2.md`. |
+| **AI API** (`C_ai_api`) | **24** (12 bài C1 + 12 bài mới), ×2 lần + **8 hint-free** ×2 | gốc + hint-free | Model chính `deepseek-v4-pro` (qua APIVN). Mở 12→24 để **tăng số cặp so sánh + phủ nhiều lớp/độ khó**; 12 bài mới **chọn có chủ đích** (purposive) nghiêng hard/medium để bù lệch-dễ của bộ 12 → báo cáo **paired + theo lớp** (KHÔNG suy tỉ lệ dân số). Chi tiết: `docs/task_C2.md`. |
 | **AI API — đối chiếu** (`C_ai_api_ref`) | 4–6 (tập con của 24) | gốc, 1 lần | `claude-opus-5-5` — thăm dò **trần model** + so **tỷ lệ từ chối** 2 hãng. Báo cáo tách, **không gộp** vào `C_ai_api`. |
 
 > **Tầng công cụ tự thân** (`B_auto`, pipeline tự động không-người) chạy riêng trọn 40/40 làm **baseline nội bộ của nhánh Truyền thống** (cho thấy công cụ *tự thân* làm được tới đâu khi không có người) — **không phải một nhánh so sánh riêng**. Dữ liệu giữ trong `results.csv` + `ARM_B.md`.
@@ -56,7 +56,7 @@ Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so 
 | Bộ | n | Nhánh có mặt | Loại kết luận rút ra |
 |---|---|---|---|
 | 40 | 40 | A, B | Tỉ lệ dân số (population rate — suy rộng cho mọi bài loại này; ±~15%): headline Truyền thống + khoảng cách phát-hiện→khai-thác của công cụ |
-| 24 | 24 | A, B, C2 | So cặp AI **có kiểm định** (khoảng tin cậy ±~19%) |
+| 24 | 24 | A, B, C2 | So cặp AI trên **nhiều cặp hơn + phủ nhiều lớp/độ khó** (tập **chọn có chủ đích**, lệch hard → báo cáo paired + theo lớp, KHÔNG suy tỉ lệ dân số) |
 | 12 | 12 | A, B, C1, C2 | So cặp + phân tích theo lớp; n nhỏ (ít bài → không suy rộng; ±~25%) |
 | 4–6 | 4–6 | +C2_ref | Thăm dò trần (ceiling — giới hạn trên năng lực) model + tỉ lệ từ chối (không phải tỉ lệ) |
 

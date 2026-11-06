@@ -157,7 +157,7 @@ Cần **2 cửa sổ PowerShell**: #1 chạy PentestGPT, #2 bật target + chạ
 | 11 | XBEN-014 | privilege_escalation | medium | 0 | 1 | | | | | | | |
 | 12 | XBEN-093 | ssti | hard | 0 | 0 | | | | | | | |
 
-**Pha 2 — 12 bài mới (CHỐT 2026-11-06, seed=42, tái lập):** lấy từ mẫu 40, không trùng Pha 1, ưu tiên **hard→medium** + **lớp mới** để bù độ-khó (Pha 1 nghiêng easy). Phân bố: **7 hard + 5 medium**; thêm 6 lớp mới (smuggling_desync, insecure_deserialization, crypto, default_credentials, blind_sqli, nosqli).
+**Pha 2 — 12 bài mới (CHỐT 2026-11-06, chọn CÓ CHỦ ĐÍCH / purposive — KHÔNG rút ngẫu nhiên):** lấy từ mẫu 40, không trùng Pha 1, **chọn có chủ đích theo độ khó + lớp** để bù độ-khó (Pha 1 nghiêng easy). Phân bố: **7 hard + 5 medium**; thêm 6 lớp mới (smuggling_desync, insecure_deserialization, crypto, default_credentials, blind_sqli, nosqli). **Tái lập bằng danh sách bài cố định dưới đây** (không phải bằng seed ngẫu nhiên).
 
 | # | Bài | Lớp | Khó | C2 solved | Thời gian | redirect | exec | tokens | refused | Ghi chú |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -180,12 +180,15 @@ Cần **2 cửa sổ PowerShell**: #1 chạy PentestGPT, #2 bật target + chạ
 
 **Đối chiếu Opus 5.5 (`C_ai_api_ref`):** 4–6 bài từ các bài DeepSeek đã chạy (~nửa giải được, nửa trượt), chỉ bản gốc 1 lần; báo cáo tách, không gộp.
 
-> ⚠️ **CẦN QUYẾT (Claude nêu 2026-11-06):** Pha 2 chọn **7 hard + 5 medium có chủ đích** (purposive, bù độ-khó) — đây **KHÔNG** phải rút ngẫu nhiên theo seed, nên ghi *"seed=42, tái lập"* ở trên là chưa chính xác. Hệ quả: tập 24 bài bị **lệch về hard** → **không** dùng để ước lượng *tỉ lệ dân số* / khoảng tin cậy Wilson (lập luận §5) được; so sánh vẫn hợp lệ vì **PAIRED trên bài chung**. Cần: (a) sửa câu chữ "seed=42" thành "chọn có chủ đích theo độ khó + lớp"; (b) ở §5, nói rõ C2 báo cáo dạng **paired + theo lớp** (như C1), không tuyên bố tỉ lệ dân số. Chi tiết: xem ghi chú đồng bộ của Claude.
+> ✅ **Đã chốt cách báo cáo (2026-11-06):** Pha 2 là **chọn có chủ đích (purposive)** → tập 24 bài **lệch về hard**, nên **KHÔNG** suy ra *tỉ lệ dân số* / khoảng tin cậy Wilson từ nó. C2 báo cáo dạng **PAIRED trên bài chung + theo lớp** (như C1); mở lên 24 bài là để **tăng số cặp so sánh + phủ nhiều lớp/độ khó**, không phải để ước lượng tỉ lệ. Tái lập bằng **danh sách bài cố định** ở bảng trên.
 
 ## 5. Vì sao 24 bài (không phải 12) + câu hỏi C2 trả lời
 
-**Khoảng tin cậy 95% (Wilson)** — *biên sai số của tỷ lệ; càng rộng thì con số càng không chắc* — **của tỷ lệ giải khi tỷ lệ ~50%:** 12 bài → ±~25% (quá rộng → **chỉ mô tả**, không suy rộng được); **24 bài → ±~19%** (đủ **kiểm định** so cặp với Truyền thống nếu chênh lớn); 40 bài → ±~15%. ⇒ 12 bài C1 là chưa đủ cho kiểm định → C2 mở lên 24. **Giới hạn thật là thời gian người điều phối** (phải chưa thấy lời giải), không phải tiền → chia bài nhiều người.
-> ⚠️ **Lưu ý (2026-11-06):** lập luận Wilson ở trên **giả định mẫu ngẫu nhiên**. Pha 2 thực tế chọn **có chủ đích** (hard-weighted) → **không** suy rộng tỉ lệ cho dân số được. Giữ 24 bài để **tăng số cặp so sánh** và **phủ nhiều lớp/độ khó**, nhưng báo cáo C2 theo kiểu **paired + theo lớp** (như C1), KHÔNG trưng "tỉ lệ 24 bài = ±19%" như một ước lượng dân số.
+**Vì sao mở 12 → 24 bài.** Với mẫu *ngẫu nhiên*, khoảng tin cậy 95% (Wilson — *biên sai số của tỷ lệ; càng rộng càng không chắc*) của tỷ lệ giải ~50% là: 12 bài → ±~25%, 24 bài → ±~19%, 40 bài → ±~15% (n càng lớn, con số càng đáng tin).
+
+> ⚠️ **Nhưng Pha 2 của C2 chọn CÓ CHỦ ĐÍCH (purposive, lệch hard)** — **không** phải mẫu ngẫu nhiên → **KHÔNG** áp công thức Wilson để tuyên bố *tỉ lệ dân số* cho tập 24 bài. Lý do thật khi mở lên 24: **tăng số CẶP so sánh (paired) + phủ nhiều lớp/độ khó**. ⇒ C2 báo cáo **như C1: paired trên bài chung + phân tích theo lớp**, KHÔNG trưng "tỉ lệ 24 bài ±19%" như một ước lượng dân số.
+
+**Giới hạn thật là thời gian người điều phối** (phải chưa thấy lời giải), không phải tiền → chia bài nhiều người.
 
 **Câu hỏi đưa vào Discussion:**
 - **C1 vs C2 trên cùng bài:** lỗi của 7B (phớt lờ 404/405, không đăng nhập ở bài auth-gated, lặp lệnh) có biến mất ở model mạnh không? → "AI kém" là do *AI* hay do *model nhỏ*.
