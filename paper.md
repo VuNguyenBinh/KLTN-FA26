@@ -50,7 +50,8 @@
 - **Tác giả:** Y. Zhu, A. Kellermann, D. Bowman, P. Li, A. Gupta, A. Danda, R. Fang, C. Jensen, E. Ihli, J. Benn, et al.
 - **Tổ chức:** **University of Illinois Urbana-Champaign (UIUC), Hoa Kỳ** — lab của Daniel Kang (`uiuc-kang-lab`). *(Xác nhận qua Illinois Experts + GitHub org.)*
 - **Nơi đăng:** ICML 2025 (spotlight), PMLR vol. 267, pp. 79850–79867 (arXiv:2503.17332).
-- **Đóng góp cho đồ án:** benchmark lỗ hổng web thật với **tỉ lệ thành công thấp** của tác tử (≈13% zero-day, ≈25% one-day) → dùng để **định vị kết quả thấp của nhánh AI local** là *phù hợp xu hướng tài liệu*, không phải lỗi bố trí thí nghiệm. ⚠️ **Lưu ý:** `THESIS_FULL.md` đang trích "tốt nhất 12,5%" cho CVE-Bench — **đối chiếu lại** với con số web (13%/25%) trước khi nộp (có thể là setting/model cụ thể khác).
+- **Đóng góp cho đồ án:** benchmark lỗ hổng web thật với **tỉ lệ thành công thấp** của tác tử — bản gốc báo **~10,0% zero-day · ~12,5% one-day (success@5)** (tác tử mạnh nhất T-Agent ~13% one-day) → dùng để **định vị kết quả thấp của nhánh AI local** là *phù hợp xu hướng tài liệu*, không phải lỗi bố trí thí nghiệm.
+- ✅ **Con số "12,5% one-day" trong `THESIS_FULL.md`/draft là ĐÚNG** (khớp success@5 bản gốc). Con số "25% one-day" từ vài trang tóm tắt thứ cấp **không khớp bản gốc → không dùng**.
 
 ---
 
@@ -81,4 +82,5 @@
 - **Nhóm B** = động lực + con số đối chiếu (21%, 12,5%) → trích ở Chương 2 + Chương 5 (Thảo luận, định vị kết quả).
 - **Nhóm C** = định vị học thuật + so sánh thiết kế → trích ở Chương 2 (Related Work).
 - **Đã tra web (2026-11-06):** affiliation chính của [1][5][6][7][9][10] + Gelei Deng ([8]) đã xác nhận. Còn **cần xác minh**: các đồng tác giả lẻ của [8] (Ting Chen, Xiapu Luo, Yuanlong Cao…), Junjie Wang ([10]), phân bổ NEC của [5].
-- ⚠️ **Sửa khi dùng:** [5] AutoPenBench là **University of Turin** (KHÔNG phải Politecnico) — kiểm xem `THESIS_FULL.md`/draft có ghi nhầm không. [7] CVE-Bench: đối chiếu con số 12,5% (THESIS) với 13%/25% (web).
+- ⚠️ **Sửa khi dùng:** [5] AutoPenBench là **University of Turin** (KHÔNG phải Politecnico) — đã kiểm `paper/`, không chỗ nào ghi nhầm.
+- ✅ **[7] CVE-Bench đã chốt:** "12,5% one-day" trong THESIS/draft **đúng** (success@5 bản gốc: ~10% zero-day / ~12,5% one-day). Bỏ con số "25%".
