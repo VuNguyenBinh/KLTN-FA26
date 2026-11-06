@@ -32,7 +32,8 @@
 |---|---|---|---|
 | Truyền thống (người + công cụ, gồm scanner) (`A_manual`) | **40/40** | **60%** (24/40; tầng người tự giải 22) | `docs/task_A.md` + `docs/report_A.md` |
 | AI local (`C_ai_local`) | ✅ **12/12** (lượt 1 xong) | **25%** (3/12) | `docs/task_C1.md` + `docs/report_C.md` |
-| AI API (`C_ai_api`) | 0 | — | hoãn |
+| AI API (`C_ai_api`, deepseek-v4-pro) | **1/24** (đang chạy) | XBEN-083 ✅ (083 solved=1, 28′) | `docs/task_C2.md` + `docs/report_C.md` |
+| AI API đối chiếu (`C_ai_api_ref`, opus-5-5) | 0 | — | tùy chọn 4–6 bài |
 
 > ⚖️ **So CÔNG BẰNG trên đúng 12 bài chung** (Truyền thống chạy 40, AI local mới 12 nên đừng so tỉ lệ toàn-40 với AI local): **Truyền thống 7/12 = 58,3% (người HOẶC công cụ) / 6/12 = 50% (chỉ tầng người) ≫ AI local 3/12 = 25%**. Bảng đầy đủ + lập luận: **`docs/results_summary.md`**.
 > 🛠️ **Tầng công cụ tự thân (không người, nền cho Truyền thống):** chạy riêng pipeline tự động trên 40 bài → **phát hiện 27,5% · bắt flag 5%** (khoảng cách ~5,5×; 2 lần bắt đều SQLi/sqlmap). ⇒ trong nhánh Truyền thống **chính con người** lấp khoảng cách này (5% → 55%). Dữ liệu: `results.csv` (nhãn nội bộ `B_auto`) + `ARM_B.md`. **Đây là quan sát phụ, KHÔNG phải nhánh so sánh riêng.**
