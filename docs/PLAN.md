@@ -85,9 +85,9 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 **Vì sao 12 bài AI vẫn so sánh được với 40 bài kia:** 12 bài AI là **tập con nằm trong 40 bài** (không phải bộ riêng), nên mỗi bài AI có **baseline người + công cụ của đúng bài đó** để **đối chiếu theo cặp** (paired). 12 bài chọn có chủ đích theo 3 nhóm — (i) công cụ đã bắt flag (control), (ii) công cụ chỉ phát hiện, (iii) công cụ hoàn toàn mù — để trả lời "AI có vượt công cụ/người ở từng loại tình huống không". Vì n nhỏ, nhánh AI được báo cáo như **phân tích theo-cặp theo-lớp + bằng chứng tồn tại năng lực**, KHÔNG suy rộng thành tỷ lệ dân số. Chi tiết chọn bài: `docs/arm_C_protocol.md`.
 
 **12 bài chọn THẾ NÀO để tín hiệu cao (mỗi bài = một câu hỏi phản biện riêng, không trùng):** chỉ lấy **các bài công cụ tự động đã chạy** (để có baseline cùng bài), rồi chia **3 nhóm phân-biệt-được**:
-- **Nhóm 1 — control (1 bài: 083, công cụ đã bắt flag):** AI có *ít nhất bằng* công cụ ở bài công cụ đã thắng không?
-- **Nhóm 2 — flagship (5 bài công cụ chỉ phát-hiện: 061/064/080/093/011):** AI có *chuyển phát-hiện → khai-thác* ở nơi scanner tắc không?
-- **Nhóm 3 (6 bài công cụ hoàn toàn mù: 006/005/037/032/041/014):** AI có *thấy lỗ hổng logic* (IDOR/priv-esc/upload) mà pipeline cố định bỏ sót không?
+- **Nhóm 1 — bài ĐỐI CHỨNG (1 bài: 083):** bài này **công cụ tự động đã tự giải được** (lấy được flag). Dùng làm mốc kiểm tra: *AI có làm được **ít nhất NGANG** công cụ không?* — nếu đến bài mà một công cụ máy móc còn giải được mà AI lại thua, thì đó là tín hiệu rất đáng chú ý.
+- **Nhóm 2 — bài CHỦ LỰC (5 bài: 061/064/080/093/011):** ở các bài này công cụ **chỉ PHÁT HIỆN ra "có lỗ hổng" nhưng KHÔNG khai thác được tới flag** (tức "thấy mà không với tới"). Câu hỏi: *AI có đi nốt bước còn lại — biến "phát hiện" thành "khai thác lấy được flag" — đúng ngay chỗ công cụ bị kẹt không?* Đây là nhóm **quan trọng nhất**, vì nó đo thẳng việc AI có **lấp được khoảng cách phát-hiện → khai-thác** hay không.
+- **Nhóm 3 — bài công cụ MÙ HOÀN TOÀN (6 bài: 006/005/037/032/041/014):** công cụ **không hề nhận ra có lỗ hổng** (thường là lỗi logic/phân quyền như IDOR, leo quyền, tải file độc hại). Câu hỏi: *AI có tự tìm ra và khai thác được lỗ hổng mà công cụ bỏ sót hoàn toàn không?*
 
 Bộ 12 **phủ 9 lớp lỗ hổng** (để phân tích theo từng lớp). "Lớp lỗ hổng" = kiểu lỗ bảo mật của bài; 9 lớp đó, nói mộc cho người chưa quen:
 - **SQLi (SQL Injection)** — chèn mã truy vấn vào ô nhập để đánh lừa *cơ sở dữ liệu*, moi ra dữ liệu không được phép (vd nhập `' OR '1'='1`).
