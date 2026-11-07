@@ -48,6 +48,15 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 
 **Vì sao 12 bài AI vẫn so sánh được với 40 bài kia:** 12 bài AI là **tập con nằm trong 40 bài** (không phải bộ riêng), nên mỗi bài AI có **baseline người + công cụ của đúng bài đó** để **đối chiếu theo cặp** (paired). 12 bài chọn có chủ đích theo 3 nhóm — (i) công cụ đã bắt flag (control), (ii) công cụ chỉ phát hiện, (iii) công cụ hoàn toàn mù — để trả lời "AI có vượt công cụ/người ở từng loại tình huống không". Vì n nhỏ, nhánh AI được báo cáo như **phân tích theo-cặp theo-lớp + bằng chứng tồn tại năng lực**, KHÔNG suy rộng thành tỷ lệ dân số. Chi tiết chọn bài: `docs/arm_C_protocol.md`.
 
+**12 bài chọn THẾ NÀO để tín hiệu cao (mỗi bài = một câu hỏi phản biện riêng, không trùng):** chỉ lấy **các bài công cụ tự động đã chạy** (để có baseline cùng bài), rồi chia **3 nhóm phân-biệt-được**:
+- **Nhóm 1 — control (1 bài: 083, công cụ đã bắt flag):** AI có *ít nhất bằng* công cụ ở bài công cụ đã thắng không?
+- **Nhóm 2 — flagship (5 bài công cụ chỉ phát-hiện: 061/064/080/093/011):** AI có *chuyển phát-hiện → khai-thác* ở nơi scanner tắc không?
+- **Nhóm 3 (6 bài công cụ hoàn toàn mù: 006/005/037/032/041/014):** AI có *thấy lỗ hổng logic* (IDOR/priv-esc/upload) mà pipeline cố định bỏ sót không?
+
+Bộ 12 **phủ 9 lớp lỗ hổng** (để phân tích theo lớp). **Độ khó cố ý nghiêng easy (8/3/1)** để cho model 7B cơ hội tốt nhất — nếu vẫn trượt ở easy thì đó là **bằng chứng âm mạnh**, không phải do ta chọn bài khó. ⇒ mỗi suất-người-30′ đổi lấy **một câu trả lời so-sánh riêng**, không lãng phí vào bài dư thừa.
+
+**Số bài nhánh AI API (C2 = 24 bài):** model thương mại **mạnh hơn → giải được nhiều hơn**, nên chạy nhiều bài **không còn "toàn 0 lãng phí"** như 7B → mở rộng **12 → 24** cho **đủ số CẶP so sánh + phủ thêm lớp/độ khó**. 24 bài = **12 bài của C1** (để so cặp C1↔C2 trên *đúng* bài — tách "AI kém do AI hay do model nhỏ") **+ 12 bài mới chọn CÓ CHỦ ĐÍCH** (ưu tiên hard→medium + lớp mới) để **bù lệch-easy** của bộ 12. Mỗi biến thể chạy **×2 lần** (khử nhiễu) + **8 bài hint-free ×2** + **Opus 5.5 đối chiếu 4–6 bài** (thăm dò trần + tỉ lệ từ chối). **Chi phí KHÔNG phải giới hạn** (API rẻ ~600–1.600đ/bài → cả kế hoạch ~150k); **giới hạn vẫn là thời gian người** (30′/bài) → chia nhiều người. Tập con vẫn purposive → báo cáo **paired + theo lớp**, không suy tỉ lệ dân số. Chi tiết: `docs/task_C2.md`.
+
 **Biến thể gốc vs hint-free:** chỉ nhánh AI chạy **cả hai** biến thể (trên tập con ≥4 bài) để đo *Δ học thuộc*; nhánh người và công cụ chỉ chạy **bản gốc** (người/scanner không "đọc" gợi ý trong mã như LLM có thể đã ghi nhớ).
 
 #### Thiết kế so sánh — bộ bài nào đóng góp gì (gom để trích vào bài báo)
