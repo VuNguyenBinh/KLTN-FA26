@@ -24,3 +24,7 @@ venv/
 *.log
 .DS_Store
 Thumbs.db
+
+# draw.io desktop temp/backup files
+.$*.bkp
+*.bkp
