@@ -53,7 +53,18 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 - **Nhóm 2 — flagship (5 bài công cụ chỉ phát-hiện: 061/064/080/093/011):** AI có *chuyển phát-hiện → khai-thác* ở nơi scanner tắc không?
 - **Nhóm 3 (6 bài công cụ hoàn toàn mù: 006/005/037/032/041/014):** AI có *thấy lỗ hổng logic* (IDOR/priv-esc/upload) mà pipeline cố định bỏ sót không?
 
-Bộ 12 **phủ 9 lớp lỗ hổng** (để phân tích theo lớp). **Độ khó cố ý nghiêng easy (8/3/1)** để cho model 7B cơ hội tốt nhất — nếu vẫn trượt ở easy thì đó là **bằng chứng âm mạnh**, không phải do ta chọn bài khó. ⇒ mỗi suất-người-30′ đổi lấy **một câu trả lời so-sánh riêng**, không lãng phí vào bài dư thừa.
+Bộ 12 **phủ 9 lớp lỗ hổng** (để phân tích theo từng lớp). "Lớp lỗ hổng" = kiểu lỗ bảo mật của bài; 9 lớp đó, nói mộc cho người chưa quen:
+- **SQLi (SQL Injection)** — chèn mã truy vấn vào ô nhập để đánh lừa *cơ sở dữ liệu*, moi ra dữ liệu không được phép (vd nhập `' OR '1'='1`).
+- **XSS (Cross-Site Scripting)** — nhét mã JavaScript vào trang để nó **chạy trong trình duyệt** của người dùng khác (đánh cắp phiên, mạo danh…).
+- **SSTI (Server-Side Template Injection)** — chèn mã vào *khuôn mẫu trang* phía máy chủ khiến **server thực thi mã** của kẻ tấn công.
+- **IDOR (Insecure Direct Object Reference)** — đổi số/ID trên URL hay form để **xem dữ liệu của người khác** (lỗi phân quyền; vd đổi `id=1` thành `id=2`).
+- **Command Injection** — chèn **lệnh hệ điều hành** vào tham số để chạy lệnh ngay trên máy chủ.
+- **LFI (Local File Inclusion)** — ép ứng dụng **đọc/nạp file nội bộ** trên server (vd đọc file mật khẩu hệ thống).
+- **XXE (XML External Entity)** — lợi dụng bộ đọc **XML** để moi file hoặc gọi tài nguyên nội bộ của server.
+- **Arbitrary File Upload** — **tải lên file độc hại** (vd file `.php`) rồi gọi chạy → chiếm quyền điều khiển server.
+- **Privilege Escalation** — **leo thang đặc quyền**: từ tài khoản thường vươn lên **quyền cao hơn** (vd admin).
+
+**Độ khó cố ý nghiêng easy (8/3/1)** để cho model 7B cơ hội tốt nhất — nếu vẫn trượt ở easy thì đó là **bằng chứng âm mạnh**, không phải do ta chọn bài khó. ⇒ mỗi suất-người-30′ đổi lấy **một câu trả lời so-sánh riêng**, không lãng phí vào bài dư thừa.
 
 **Số bài nhánh AI API (C2 = 24 bài):** model thương mại **mạnh hơn → giải được nhiều hơn**, nên chạy nhiều bài **không còn "toàn 0 lãng phí"** như 7B → mở rộng **12 → 24** cho **đủ số CẶP so sánh + phủ thêm lớp/độ khó**. 24 bài = **12 bài của C1** (để so cặp C1↔C2 trên *đúng* bài — tách "AI kém do AI hay do model nhỏ") **+ 12 bài mới chọn CÓ CHỦ ĐÍCH** (ưu tiên hard→medium + lớp mới) để **bù lệch-easy** của bộ 12. Mỗi biến thể chạy **×2 lần** (khử nhiễu) + **8 bài hint-free ×2** + **Opus 5.5 đối chiếu 4–6 bài** (thăm dò trần + tỉ lệ từ chối). **Chi phí KHÔNG phải giới hạn** (API rẻ ~600–1.600đ/bài → cả kế hoạch ~150k); **giới hạn vẫn là thời gian người** (30′/bài) → chia nhiều người. Tập con vẫn purposive → báo cáo **paired + theo lớp**, không suy tỉ lệ dân số. Chi tiết: `docs/task_C2.md`.
 
