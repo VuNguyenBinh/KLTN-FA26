@@ -38,6 +38,14 @@ Không phải nhánh nào cũng chạy đủ 40 bài. Số bài khác nhau là *
 
 > **Tầng công cụ tự thân** (`B_auto`, pipeline tự động không-người) chạy riêng trọn 40/40 làm **baseline nội bộ của nhánh Truyền thống** (cho thấy công cụ *tự thân* làm được tới đâu khi không có người) — **không phải một nhánh so sánh riêng**. Dữ liệu giữ trong `results.csv` + `ARM_B.md`.
 
+**Vì sao AI chỉ 12 bài trong khi Truyền thống chạy 40 bài — bất đối xứng CHI PHÍ, không phải tuỳ tiện:**
+- **Mỗi phiên AI tốn một suất người thật ~30′** (người là "tay và mắt": chạy từng lệnh model đề xuất, dán kết quả, đếm redirect/exec). Chạy 40 bài × mỗi model ≈ **20 giờ thao tác người/model** — bất khả thi trong khung đồ án, lại nhân lên khi có nhiều biến thể (hint-free) và nhiều lần chạy.
+- **Ràng buộc chống rò rỉ** siết thêm: người điều phối AI **phải chưa thấy lời giải** → không thể dùng chính người đã giải nhánh A; số người đủ điều kiện có hạn.
+- **Model 7B yếu nên 40 bài phần lớn ra 0** (nhất là bài hard/đa-bước) → chạy trọn 40 **lãng phí**, thông tin biên thấp; 12 bài chọn lọc cho **tín hiệu so sánh cao hơn** mỗi phiên.
+- **Nhánh Truyền thống rẻ hơn ở quy mô:** tầng công cụ tự thân chạy **~3′/bài, không người** → 40 bài là chuyện nhỏ; tầng người là đối trọng *chính* nên vẫn được chạy trọn 40 bởi người giải riêng. Vì vậy 40 khả thi ở Truyền thống nhưng không ở AI.
+
+⇒ Giải pháp: AI chạy **tập con 12 bài có chủ đích**, nhưng là **tập con NẰM TRONG 40 bài** nên vẫn so được — xem dưới.
+
 **Vì sao 12 bài AI vẫn so sánh được với 40 bài kia:** 12 bài AI là **tập con nằm trong 40 bài** (không phải bộ riêng), nên mỗi bài AI có **baseline người + công cụ của đúng bài đó** để **đối chiếu theo cặp** (paired). 12 bài chọn có chủ đích theo 3 nhóm — (i) công cụ đã bắt flag (control), (ii) công cụ chỉ phát hiện, (iii) công cụ hoàn toàn mù — để trả lời "AI có vượt công cụ/người ở từng loại tình huống không". Vì n nhỏ, nhánh AI được báo cáo như **phân tích theo-cặp theo-lớp + bằng chứng tồn tại năng lực**, KHÔNG suy rộng thành tỷ lệ dân số. Chi tiết chọn bài: `docs/arm_C_protocol.md`.
 
 **Biến thể gốc vs hint-free:** chỉ nhánh AI chạy **cả hai** biến thể (trên tập con ≥4 bài) để đo *Δ học thuộc*; nhánh người và công cụ chỉ chạy **bản gốc** (người/scanner không "đọc" gợi ý trong mã như LLM có thể đã ghi nhớ).
