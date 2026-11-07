@@ -5,11 +5,47 @@
 
 ---
 
+## 0. ĐỌC TRƯỚC — dự án này là gì (cho người chưa biết gì về bảo mật)
+
+Hãy hình dung mỗi **"bài"** là một **trang web được dựng sẵn, bên trong cài đúng một lỗ hổng bảo mật**, và giấu một **chuỗi mật mã bí mật (gọi là "flag")**. Ai lợi dụng được lỗ hổng để **moi ra đúng chuỗi flag** thì coi như **"giải được"** bài đó. Đây là kiểu thử thách **CTF (Capture The Flag)** — cách phổ biến để luyện và **đo** kỹ năng bảo mật một cách khách quan (giải được hay không là rõ ràng, không cảm tính).
+
+Công việc **chủ động tìm và khai thác lỗ hổng** của một ứng dụng web gọi là **kiểm thử xâm nhập (penetration testing — "pentest")** — làm để biết chỗ yếu mà **vá**, không phải để phá.
+
+Toàn bộ đồ án chỉ nhằm **so sánh 3 cách làm pentest** xem cách nào mạnh hơn, mạnh ở đâu:
+1. **Truyền thống** — **con người** tự dò, có dùng thêm các **phần mềm quét lỗ hổng tự động (scanner)** làm phụ trợ.
+2. **AI chạy tại máy (local)** — một **mô hình ngôn ngữ (AI kiểu ChatGPT nhưng nhỏ, chạy ngay trên máy cá nhân)** đóng vai **trợ lý**: nó gợi ý từng bước tấn công, con người chạy lệnh giúp rồi dán kết quả lại cho nó.
+3. **AI qua dịch vụ (API thương mại)** — như (2) nhưng dùng **mô hình mạnh hơn, trả tiền theo lượng dùng**.
+
+Cả ba chạy trên **cùng một bộ 40 bài** (lấy từ bộ chuẩn công khai *XBOW*; mỗi bài đóng gói bằng **Docker** để bất kỳ ai cũng dựng lại y hệt), **cùng luật** (mỗi bài tối đa **30 phút**; chấm **đúng/sai** bằng việc có lấy đúng flag không). **Mục tiêu KHÔNG phải "tạo ra AI biết hack"**, mà là **đo và so sánh công bằng** để trả lời: *AI giúp được tới đâu so với con người và công cụ truyền thống, và ở loại lỗ hổng nào?*
+
+**Thuật ngữ cơ bản** (giải thích mộc — các từ sẽ gặp xuyên suốt tài liệu):
+
+| Từ | Nghĩa dễ hiểu |
+|---|---|
+| **Pentest** (kiểm thử xâm nhập) | Chủ động tìm + khai thác lỗ hổng của hệ thống để chứng minh nó có thể bị tấn công (làm để vá). |
+| **CTF (Capture The Flag)** | Dạng thử thách bảo mật: mỗi bài giấu một "flag"; khai thác được lỗ hổng thì lấy được flag = giải được. |
+| **Flag** | Chuỗi bí mật giấu trong bài. Lấy đúng flag = bằng chứng đã khai thác thành công. |
+| **Lỗ hổng** (vulnerability) | Điểm yếu trong ứng dụng cho phép kẻ tấn công làm điều không được phép. |
+| **Khai thác** (exploit) | **Thật sự lợi dụng** lỗ hổng để đạt tác động (đọc trộm dữ liệu, chạy lệnh…), chứ không chỉ "phát hiện ra nó". |
+| **Benchmark** (bộ bài chuẩn) | Tập bài chuẩn hoá, công khai, dùng để đo & so sánh công bằng giữa các cách làm. |
+| **Docker** | Công cụ đóng gói một ứng dụng + môi trường của nó thành một "hộp" chạy giống nhau trên mọi máy → tái lập được. |
+| **Scanner / công cụ tự động** | Phần mềm **tự quét** web tìm lỗ hổng (nuclei, sqlmap, ffuf…) — nhanh nhưng máy móc, thiếu suy luận. |
+| **LLM / mô hình ngôn ngữ** | AI kiểu ChatGPT, học từ lượng lớn văn bản; ở đây đóng vai **trợ lý** gợi ý cách tấn công. |
+| **qwen2.5:7b · DeepSeek · Opus** | Tên các mô hình AI. "7b" = 7 tỉ tham số (cỡ **nhỏ**, chạy tại máy); DeepSeek/Opus = mô hình **mạnh** gọi qua dịch vụ. |
+| **Token** | Đơn vị văn bản mô hình xử lý; dịch vụ AI **tính tiền theo số token** → dùng để đo chi phí. |
+| **PentestGPT** | Phần mềm **khung** biến mô hình AI thành "trợ lý pentest": nó gợi ý bước → người chạy lệnh → dán kết quả lại cho nó. |
+| **Ollama / API** | *Ollama* = chạy mô hình **ngay trên máy**; *API* = gọi mô hình **qua mạng** của nhà cung cấp (trả phí). |
+| **Người trong vòng lặp** (human-in-the-loop) | AI không tự động làm hết: con người là "tay và mắt" chạy lệnh và dán kết quả cho AI. |
+
+*(Các thuật ngữ về phương pháp/thống kê — paired, tỉ lệ dân số, baseline, hint-free, Δ học thuộc… — có bảng "Chú thích thuật ngữ" riêng ở cuối §2.1.)*
+
+---
+
 ## 1. Câu hỏi nghiên cứu (RQ) — đây là xương sống, hội đồng sẽ hỏi
 
 - **RQ1.** AI hỗ trợ làm thay đổi *tỷ lệ phát hiện/khai thác lỗ hổng* so với thủ công và tự động-không-AI bao nhiêu?
 - **RQ2.** AI thay đổi *thời gian* và *công sức* (số bước, số lần can thiệp tay) như thế nào?
-- **RQ3.** AI *mạnh/yếu* ở **loại lỗ hổng** nào? (ví dụ injection, auth, IDOR, XSS…)
+- **RQ3.** AI *mạnh/yếu* ở **loại lỗ hổng** nào? (các *loại lỗ hổng* như injection, auth, IDOR, XSS… — 9 lớp được giải thích mộc ở §2.1)
 - **RQ4.** *Chi phí* (token/tiền, hoặc tài nguyên máy với local) so với lợi ích ra sao?
 
 > Đóng góp của luận văn KHÔNG phải là "làm ra AI hack". Đóng góp là **bộ dữ liệu đo + phân tích có kiểm soát** trả lời 4 RQ trên.
@@ -213,7 +249,7 @@ Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pent
 ### Ba nhánh
 | Nhánh | Mô tả | Nhãn dữ liệu (`results.csv`) |
 |---|---|---|
-| **1 — Truyền thống (thủ công + công cụ, không AI)** | Pentest truyền thống: con người kiểm thử bằng tay (Burp/trình duyệt) **và được phép dùng công cụ tự động** (nuclei/ffuf/sqlmap/dalfox/SSTImap). Không dùng LLM ở bất kỳ khâu nào. | `A_manual` (người giải) + `B_auto` (công cụ-đơn-thuần) |
+| **1 — Truyền thống (thủ công + công cụ, không AI)** | Pentest truyền thống: con người kiểm thử bằng tay (**Burp Suite** — công cụ kiểm thử web thủ công phổ biến — + trình duyệt) **và được phép dùng công cụ tự động** (nuclei/ffuf/sqlmap/dalfox/SSTImap). Không dùng LLM ở bất kỳ khâu nào. | `A_manual` (người giải) + `B_auto` (công cụ-đơn-thuần) |
 | **2 — AI local (qwen)** | Trợ lý pentest PentestGPT + **mô hình local** qua Ollama (`qwen2.5:7b`), có người trong vòng lặp | `C_ai_local` |
 | **3 — AI API thương mại** | PentestGPT + **mô hình API thương mại** qua APIVN, có người trong vòng lặp. Chính: `deepseek-v4-pro`; đối chiếu: `claude-opus-5-5` (4–6 bài) | `C_ai_api` + `C_ai_api_ref` |
 
