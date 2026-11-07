@@ -28,3 +28,6 @@ Thumbs.db
 # draw.io desktop temp/backup files
 .$*.bkp
 *.bkp
+
+# PowerPoint/Office lock/temp files
+~$*
