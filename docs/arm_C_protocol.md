@@ -1,6 +1,6 @@
 # GIAO THỨC NHÁNH C — để kết quả AI-hỗ-trợ đủ sức phản biện
 
-> Mục tiêu của file này: biến nhánh AI từ **1 giai thoại (n=1)** thành một **nghiên cứu so sánh small-n có kiểm soát** mà hội đồng không bẻ được ở những điểm hiển nhiên. Chốt 2026-11-02. Đọc trước khi chạy bài C tiếp theo. Dùng kèm `docs/report_C.md` (nhật ký mẫu) và `docs/RUNBOOK.md` Bước 4.
+> Mục tiêu của file này: biến nhánh AI từ **1 giai thoại (n=1)** thành một **nghiên cứu so sánh small-n có kiểm soát** mà hội đồng không bẻ được ở những điểm hiển nhiên. Chốt 2026-11-02. Đọc trước khi chạy bài C tiếp theo. Dùng kèm `docs/report_C1.md` + `docs/report_C2.md` (nhật ký mẫu) và `docs/RUNBOOK.md` Bước 4.
 
 ---
 

@@ -89,7 +89,7 @@ python build_target.py XBEN-023-24 --variant hintfree --repo "..\benchmarks\xbow
 
 ## BƯỚC 4 — NHÁNH AI local (AI local: PentestGPT + Ollama) — Người 3
 
-> 📋 **Giao thức đầy đủ: `docs/arm_C_protocol.md`** — bộ 12 bài nên chạy (có đối chiếu công cụ tự động), prompt grey-box chuẩn, cách đếm can thiệp, checklist "đủ phản biện". Đọc trước. Nhật ký ca mẫu: `docs/report_C.md`.
+> 📋 **Giao thức đầy đủ: `docs/arm_C_protocol.md`** — bộ 12 bài nên chạy (có đối chiếu công cụ tự động), prompt grey-box chuẩn, cách đếm can thiệp, checklist "đủ phản biện". Đọc trước. Nhật ký ca mẫu: `docs/report_C1.md` (AI local) + `docs/report_C2.md` (AI API).
 
 Cần **2 terminal** (một cho PentestGPT tương tác, một để chạy lệnh nó đề xuất).
 

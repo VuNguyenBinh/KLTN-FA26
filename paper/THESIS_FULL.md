@@ -23,7 +23,7 @@ CÁCH DÙNG:
    - Chạy qua Turnitin/AI-checker của trường TRƯỚC hạn, sửa chỗ bị gắn cờ.
 5. Chuyển sang Word: dán từng chương, dùng Heading styles để tạo mục lục tự động
    (template FPT yêu cầu TOC/List of Figures/Tables tự động).
-6. Dữ liệu thật: project/results/results.csv ; log nhánh AI: docs/report_C.md ;
+6. Dữ liệu thật: project/results/results.csv ; log nhánh AI: docs/report_C1.md (AI local) + docs/report_C2.md (AI API) ;
    mã phân tích: project/analysis/analyze.py ; repo: github.com/VuNguyenBinh/KLTN-FA26
 ==============================================================================
 -->
@@ -252,7 +252,7 @@ We report two numbers that must be kept apart: **capture** (the flag was obtaine
 
 ### AI arm — local model (sessions so far)
 
-> ⚙️ HƯỚNG DẪN: đây là 1 phiên mẫu đã chạy thật (nhật ký đầy đủ: docs/report_C.md). Dùng làm case study minh hoạ phương pháp + một quan sát định tính; con số tổng hợp nhánh AI chờ chạy đủ mẫu rồi điền `[[…]]`.
+> ⚙️ HƯỚNG DẪN: đây là 1 phiên mẫu đã chạy thật (nhật ký đầy đủ: docs/report_C1.md nhánh AI local, docs/report_C2.md nhánh AI API). Dùng làm case study minh hoạ phương pháp + một quan sát định tính; con số tổng hợp nhánh AI chờ chạy đủ mẫu rồi điền `[[…]]`.
 
 As a first, fully logged run we took **XBEN-061-24** (an LFI challenge, easy) with PentestGPT driving the local `qwen2.5:7b` model. The session is instructive. After one weak probe the model prematurely declared the LFI "not exploitable" and drifted toward SQL injection; a single on-task correction from the operator brought it back. Once the operator fed it the real page content, the model produced a working vector — reading `/etc/passwd` through `post.php?id=../../../../etc/passwd` — which **confirmed a genuine exploit, something the automated tooling's scanners never achieved on this target**. It then stalled at the final step: reading the PHP source of the flag file. It tried direct inclusion (executed, nothing shown), a meaningless parameter, and an obsolete null-byte trick, never recalling the correct source-read technique, and finally lapsed into defensive remediation advice and an unrelated file-upload task. The run ended unsolved at twenty-five minutes — inside the thirty-minute budget — after four operator course-corrections (alongside seven mechanical runs of model-proposed commands).
 
@@ -384,7 +384,7 @@ Several extensions follow naturally. Widen the sample and add **authorised real-
 > ⚙️ HƯỚNG DẪN: đính kèm hoặc trỏ tới dữ liệu thô để hội đồng kiểm chứng (tăng độ tin cậy, chống nghi ngờ bịa số).
 
 - **Appendix A — Raw results.** `project/results/results.csv` (one row per run).
-- **Appendix B — AI-arm session log.** `docs/report_C.md` (turn-by-turn reproduction of the AI sessions).
+- **Appendix B — AI-arm session log.** `docs/report_C1.md` (AI local) + `docs/report_C2.md` (AI API) — turn-by-turn reproduction of the AI sessions.
 - **Appendix C — Analysis code.** `project/analysis/analyze.py`.
 - **Appendix D — Reproducibility.** Build harness and compatibility log: `project/harness/build_target.py`, `project/harness/patches.log`. Operator guide: `docs/RUNBOOK.md`.
 - **Appendix E — Repository.** https://github.com/VuNguyenBinh/KLTN-FA26

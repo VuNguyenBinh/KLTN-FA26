@@ -1,6 +1,6 @@
 # Kết quả tổng hợp — Lượt 1 (cập nhật 2026-11-04)
 
-> Tổng hợp kết quả nghiên cứu. Số liệu nguồn: `project/results/results.csv`; bảng/biểu đồ do `project/analysis/analyze.py` sinh ra ở `paper/figures/`. Nhật ký chi tiết: `report_A.md` (Truyền thống), `report_C.md` (AI local).
+> Tổng hợp kết quả nghiên cứu. Số liệu nguồn: `project/results/results.csv`; bảng/biểu đồ do `project/analysis/analyze.py` sinh ra ở `paper/figures/`. Nhật ký chi tiết: `report_A.md` (Truyền thống), `report_C1.md` (AI local), `report_C2.md` (AI API).
 
 ## 0. Hai nhánh so sánh
 1. **Truyền thống** (`A_manual`): **con người + toàn bộ công cụ không-AI có thể dùng** (Burp + scanner/khai thác tự động: nuclei/ffuf/sqlmap/dalfox/SSTImap…). **Chỉ cấm AI/LLM.** Có giám sát + ghi chú tại chỗ.
@@ -80,7 +80,7 @@ Chạy riêng pipeline tự động (không người, không AI) trên 40 bài �
 |---|---|---|---|
 | AI local | 25,0% | 0,0% | 25,0 |
 
-> ⚠️ **Chưa phải phép đo hợp lệ:** mới có **1 bài hint-free** (041), và ở bài đó cả hai biến thể đều đạt RCE — Δ phản ánh **biến thiên ngẫu nhiên**, không phải học thuộc thuần (xem `report_C §15`). Cần **≥4 bài hint-free, mỗi bài ≥2 lần chạy** mới kết luận được. Đây là việc chính của **Lượt 2**.
+> ⚠️ **Chưa phải phép đo hợp lệ:** mới có **1 bài hint-free** (041), và ở bài đó cả hai biến thể đều đạt RCE — Δ phản ánh **biến thiên ngẫu nhiên**, không phải học thuộc thuần (xem `report_C1 §15`). Cần **≥4 bài hint-free, mỗi bài ≥2 lần chạy** mới kết luận được. Đây là việc chính của **Lượt 2**.
 
 ---
 
