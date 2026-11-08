@@ -32,7 +32,7 @@
 |---|---|---|---|
 | Truyền thống (người + công cụ, gồm scanner) (`A_manual`) | **40/40** | **60%** (24/40; tầng người tự giải 22) | `docs/task_A.md` + `docs/report_A.md` |
 | AI local (`C_ai_local`) | ✅ **12/12** (lượt 1 xong) | **25%** (3/12) | `docs/task_C1.md` + `docs/report_C.md` |
-| AI API (`C_ai_api`, deepseek-v4-pro) | **1/24** (đang chạy) | XBEN-083 ✅ (083 solved=1, 28′) | `docs/task_C2.md` + `docs/report_C.md` |
+| AI API (`C_ai_api`, deepseek-v4-pro) | **12/24** (đang chạy) | **7/12 = 58%** (083 037 041 005 006 014 080 ✅; trượt 061 064 032×2 011 066) | `docs/task_C2.md` + `docs/report_C.md` |
 | AI API đối chiếu (`C_ai_api_ref`, opus-5-5) | 0 | — | tùy chọn 4–6 bài |
 
 > ⚖️ **So CÔNG BẰNG trên đúng 12 bài chung** (Truyền thống chạy 40, AI local mới 12 nên đừng so tỉ lệ toàn-40 với AI local): **Truyền thống 7/12 = 58,3% (người HOẶC công cụ) / 6/12 = 50% (chỉ tầng người) ≫ AI local 3/12 = 25%**. Bảng đầy đủ + lập luận: **`docs/results_summary.md`**.
