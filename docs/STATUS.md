@@ -8,8 +8,8 @@
 
 **Đề tài:** KLTN (FPT) — *Comparative Study of AI-assisted and Traditional Web App Penetration Testing*. Thí nghiệm có kiểm soát trên **40 bài CTF web (XBOW)**, chấm exact-match flag, budget **30′/bài**.
 
-**Cấu trúc 3 nhánh (đã chốt):**
-1. **Truyền thống** = **con người dùng công cụ truyền thống** (Burp + scanner/bộ khai thác không-AI: nuclei, ffuf, sqlmap, dalfox, SSTImap), KHÔNG AI. Nhãn `A_manual` = người-dùng-công-cụ; `B_auto` = scanner chạy **tự động một mình, không người** (trần tự-động-hoá, baseline đối chiếu).
+**Cấu trúc so sánh: 2 NHÁNH (đã chốt) — Truyền thống (A) vs AI (C1 local, C2 API):**
+1. **Truyền thống (nhánh A)** = **con người + BẤT KỲ công cụ KHÔNG-AI nào** (Burp, nuclei, ffuf, sqlmap, dalfox, SSTImap…), KHÔNG dùng AI. Nhãn `A_manual`. *(Nhãn `B_auto` trong dữ liệu = mốc "công cụ tự chạy MỘT MÌNH, không người" — chỉ là **tham chiếu động-lực** cho thấy vì sao cần con người, **KHÔNG phải một nhánh so sánh**. Nhánh B đã bỏ.)*
 2. **AI local** = PentestGPT + Ollama `qwen2.5:7b` → nhãn `C_ai_local`.
 3. **AI API** = PentestGPT + model thương mại → nhãn `C_ai_api` (hoãn).
 
@@ -104,7 +104,7 @@ $env:PYTHONIOENCODING="utf-8"
 | `docs/report_C1.md` | Nhật ký từng lượt nhánh **AI local** (`C_ai_local`) + môi trường/tiêu chí + khung lập luận kết quả âm |
 | `docs/report_C2.md` | Nhật ký từng lượt nhánh **AI API** (`C_ai_api`) + môi trường/tiêu chí |
 | `docs/report_A.md` | Giao thức + bảng 40 bài + nhật ký nhánh người |
-| `docs/ARM_B.md` | Tầng công cụ tự động (pipeline cố định, kết quả) |
+| `docs/ARM_B.md` | Mốc công cụ tự chạy KHÔNG-người (tham chiếu động-lực, không phải nhánh) — pipeline + kết quả |
 | `docs/RUNBOOK.md` | Hướng dẫn lệnh từng bước |
 | `docs/WORKFLOW.md`, `SETUP.md` | Quy trình + cài đặt |
 | `paper/THESIS_FULL.md` | **Bản thảo thesis hoàn chỉnh (bản chốt, 3 nhánh)** |
@@ -113,7 +113,7 @@ $env:PYTHONIOENCODING="utf-8"
 
 ---
 
-## 5. KẾT QUẢ CÔNG CỤ TỰ ĐỘNG (`B_auto`, 40/40, budget 30′)
+## 5. MỐC CÔNG CỤ TỰ CHẠY (không người) — tham chiếu động-lực, KHÔNG phải nhánh (`B_auto`, 40/40)
 | Chỉ số | Kết quả |
 |---|---|
 | **Bắt flag** | **2/40 = 5%** — XBEN-071, 083 (SQLi, sqlmap dump) |

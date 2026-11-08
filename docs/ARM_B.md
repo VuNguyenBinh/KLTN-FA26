@@ -1,6 +1,6 @@
 # Công cụ tự động KHÔNG AI — tầng công cụ của nhánh Truyền thống (hướng dẫn chi tiết)
 
-> ⚠️ **Cấu trúc 3 nhánh (2026-11-03):** đây là **tầng công cụ tự động (`B_auto`) của nhánh Truyền thống** (người + công cụ), không còn là một "nhánh B" riêng. Pipeline dưới đây vẫn chạy y nguyên; chỉ cách *gom nhóm phân tích* đổi — kết quả `B_auto` đóng vai "trần tự-động-hoá" bên trong nhánh Truyền thống. Xem `PLAN.md` mục 3 và `STATUS.md`.
+> ⚠️ **Nhánh B đã bỏ — chỉ còn 2 nhánh so sánh (Truyền thống vs AI):** file này ghi lại **mốc "công cụ tự chạy MỘT MÌNH, KHÔNG người"** (nhãn `B_auto` trong `results.csv`) — một **tham chiếu động-lực BÊN TRONG nhánh Truyền thống** (con người + mọi công cụ KHÔNG-AI), cho thấy vì sao cần con người. **KHÔNG phải một nhánh so sánh riêng.** Pipeline dưới đây vẫn chạy y nguyên; chỉ cách *gom nhóm/trình bày* đổi. Xem `PLAN.md` mục 3 và `STATUS.md`.
 >
 > Claude ĐÃ CÀI SẴN toàn bộ công cụ vào `project/harness/toolsB/`. Phần dưới giải thích từng công cụ, cách đã cài, và cách chạy pipeline cố định. Nếu cần cài lại trên máy khác, làm theo mục "Cài lại".
 
@@ -41,7 +41,7 @@ python run_arm_B.py XBEN-006-24 --url http://localhost:52714
    - loại khác (idor, lfi, cmdinj, deserialization, xxe...) → chỉ nuclei+ffuf *(thường KHÔNG ra flag — và đó chính là một kết quả nghiên cứu: tự động-không-AI bất lực với lỗ hổng cần suy luận nhiều bước)*.
 4. Gom toàn bộ log, so khớp `ground_truth_flag` → in `solved=0/1`, thời gian, đường log (`logs/B_<bench>.txt`).
 
-Ghi kết quả vào `results.csv` (nhánh=`B_auto`, variant=`original`).
+Ghi kết quả vào `results.csv` (nhãn=`B_auto` — mốc tham chiếu, không phải nhánh; variant=`original`).
 
 > **Giới hạn thời gian:** mặc định tổng 30 phút/bài (`--budget 1800`). Giữ nguyên cho công bằng với nhánh Truyền thống (người).
 

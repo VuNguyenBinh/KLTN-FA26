@@ -111,27 +111,28 @@ Bộ 12 **phủ 9 lớp lỗ hổng** (để phân tích theo từng lớp). "L�
 Các bộ bài **lồng nhau** (tập con của 40, cùng seed=42) → mọi so sánh làm **theo cặp** (paired — so đúng *cùng một bài* giữa các nhánh) **trên bài chung**, không so tỉ lệ thô giữa các bộ khác cỡ. *(Định nghĩa đầy đủ mọi thuật ngữ: bảng "Chú thích thuật ngữ" cuối mục.)*
 
 ```
-40 bài ─ A (người+công cụ) · B (công cụ tự thân = baseline)
+40 bài ─ A: Truyền thống (con người + mọi công cụ KHÔNG-AI)
    └ 24 ─ C2 DeepSeek (C_ai_api)  ×2 + 8 hint-free ×2
       └ 12 ─ C1 qwen-7B (C_ai_local)
          └ 4–6 ─ C2 Opus (C_ai_api_ref)
+(Mốc "công cụ tự chạy, KHÔNG người" = nhãn B_auto trong results.csv — tham chiếu động-lực, KHÔNG phải nhánh. Nhánh B đã bỏ.)
 ```
 
 | Bộ | n | Nhánh có mặt | Loại kết luận rút ra |
 |---|---|---|---|
-| 40 | 40 | A, B | Tỉ lệ dân số (population rate — suy rộng cho mọi bài loại này; ±~15%): headline Truyền thống + khoảng cách phát-hiện→khai-thác của công cụ |
-| 24 | 24 | A, B, C2 | So cặp AI trên **nhiều cặp hơn + phủ nhiều lớp/độ khó** (tập **chọn có chủ đích**, lệch hard → báo cáo paired + theo lớp, KHÔNG suy tỉ lệ dân số) |
-| 12 | 12 | A, B, C1, C2 | So cặp + phân tích theo lớp; n nhỏ (ít bài → không suy rộng; ±~25%) |
+| 40 | 40 | A | Tỉ lệ dân số (population rate — suy rộng cho mọi bài loại này; ±~15%): headline Truyền thống + mốc "công cụ tự chạy" (động-lực) |
+| 24 | 24 | A, C2 | So cặp AI trên **nhiều cặp hơn + phủ nhiều lớp/độ khó** (tập **chọn có chủ đích**, lệch hard → báo cáo paired + theo lớp, KHÔNG suy tỉ lệ dân số) |
+| 12 | 12 | A, C1, C2 | So cặp + phân tích theo lớp; n nhỏ (ít bài → không suy rộng; ±~25%) |
 | 4–6 | 4–6 | +C2_ref | Thăm dò trần (ceiling — giới hạn trên năng lực) model + tỉ lệ từ chối (không phải tỉ lệ) |
 
-**Sáu phép so (mỗi phép = bài chung → trả lời gì):**
+**Các phép so giữa 2 nhánh (bài chung → trả lời gì) + mốc tham chiếu công cụ-tự-chạy:**
 
 | # | So | Bài chung | Trả lời |
 |---|---|---|---|
-| 1 | A vs B | 40 | Người có lấp khoảng cách công cụ bỏ ngỏ không (RQ1) |
+| 1 | *(tham chiếu)* Người vs công-cụ-tự-chạy | 40 | Con người lấp khoảng cách công cụ bỏ ngỏ — **động-lực** cho nhánh A, không phải so giữa 2 nhánh |
 | 2 | **C1 vs C2** | 12 | Giữ nguyên scaffold (khung chạy AI: PentestGPT+prompt+luật đếm), chỉ đổi model → "AI kém do AI hay do model nhỏ" (thí nghiệm sạch nhất) |
 | 3 | A vs C2 | 24 | AI mạnh có tiệm cận người không, ở lớp nào (RQ1) |
-| 4 | B vs C1 / C2 | 12 / 24 | AI có vượt công cụ tự thân (lấp khoảng cách phát-hiện→khai-thác) không |
+| 4 | *(tham chiếu)* AI vs công-cụ-tự-chạy | 12 / 24 | AI có vượt mốc công cụ tự chạy (lấp khoảng cách phát-hiện→khai-thác) không |
 | 5 | DeepSeek vs Opus | 4–6 | Trần model + rào cản an toàn (từ chối) |
 | 6 | gốc vs hint-free | ≥8 cặp (C2), ≥4 (C1) | Δ học thuộc (RQ4) — chỉ nhánh AI |
 
@@ -242,14 +243,14 @@ Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pent
 
 ## 3. Thiết kế thí nghiệm
 
-**Biến độc lập:** phương pháp kiểm thử (3 nhánh).
+**Biến độc lập:** phương pháp kiểm thử — **2 nhánh so sánh**: Truyền thống (A) vs AI (C1 local, C2 API).
 **Biến phụ thuộc:** tỷ lệ giải, thời gian/bài, số bước, chi phí, loại lỗ hổng.
 **Kiểm soát:** cùng bộ target, cùng giới hạn thời gian/bài, cùng tiêu chí "giải được" = tìm đúng flag.
 
-### Ba nhánh
+### Các phương pháp (2 nhánh so sánh: Truyền thống vs AI)
 | Nhánh | Mô tả | Nhãn dữ liệu (`results.csv`) |
 |---|---|---|
-| **1 — Truyền thống (thủ công + công cụ, không AI)** | Pentest truyền thống: con người kiểm thử bằng tay (**Burp Suite** — công cụ kiểm thử web thủ công phổ biến — + trình duyệt) **và được phép dùng công cụ tự động** (nuclei/ffuf/sqlmap/dalfox/SSTImap). Không dùng LLM ở bất kỳ khâu nào. | `A_manual` (người giải) + `B_auto` (công cụ-đơn-thuần) |
+| **1 — Truyền thống (con người + BẤT KỲ công cụ KHÔNG-AI)** | Pentest truyền thống: con người kiểm thử bằng tay (**Burp Suite** — công cụ kiểm thử web thủ công phổ biến — + trình duyệt) **và được phép dùng mọi công cụ tự động không-AI** (nuclei/ffuf/sqlmap/dalfox/SSTImap). Không dùng LLM ở bất kỳ khâu nào. | `A_manual` (nhánh A) + `B_auto` (mốc công cụ-tự-chạy = tham chiếu, **không phải nhánh**) |
 | **2 — AI local (qwen)** | Trợ lý pentest PentestGPT + **mô hình local** qua Ollama (`qwen2.5:7b`), có người trong vòng lặp | `C_ai_local` |
 | **3 — AI API thương mại** | PentestGPT + **mô hình API thương mại** qua APIVN, có người trong vòng lặp. Chính: `deepseek-v4-pro`; đối chiếu: `claude-opus-5-5` (4–6 bài) | `C_ai_api` + `C_ai_api_ref` |
 
@@ -269,11 +270,11 @@ Các chỉ số **không rời rạc** — chúng gắn vào *một chuỗi pent
 - [ ] Clone XBOW benchmarks, build thử 3 bài. *(Người 2)*
 - [ ] Chốt mẫu 40 bài + gán độ khó. *(cả nhóm, 1 buổi)*
 - [ ] Cài PentestGPT cho nhánh AI (local + API). *(Người 3)*
-- [ ] Chạy **pilot 3 bài** đủ cả 3 nhánh để kiểm tra quy trình ghi số liệu. *(cả nhóm)*
+- [ ] Chạy **pilot 3 bài** đủ cả 3 phương pháp (Truyền thống + AI local + AI API) để kiểm tra quy trình ghi số liệu. *(cả nhóm)*
 - [ ] Chốt template ghi dữ liệu (`results/schema`).
 
 ### Tuần 2 (chạy thật) — ngày 8–14
-- [ ] Chạy 40 bài × 3 nhánh (C có 2 biến thể). Ghi log đầy đủ vào `logs/`.
+- [ ] Chạy 40 bài × 3 phương pháp (Truyền thống + AI local + AI API; C có 2 biến thể). Ghi log đầy đủ vào `logs/`.
 - [ ] Mỗi tối: nhập số liệu vào CSV, chạy `harness/score.py` để tổng hợp.
 - [ ] Giữa tuần: kiểm tra tiến độ, loại bỏ bài build lỗi (ghi lý do, không vứt im lặng).
 

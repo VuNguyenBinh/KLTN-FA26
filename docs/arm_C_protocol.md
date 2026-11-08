@@ -10,13 +10,13 @@ Một "comparative study" mà công cụ tự động có n=40, nhánh AI có n=
 2. **"black-box"** ghi trong nhật ký **mâu thuẫn** với việc prompt đã cho sẵn lớp lỗ hổng + đường dẫn `/FLAG.php`.
 3. **Ranh giới "AI giải" vs "người giải"** mờ (6 "can thiệp" gộp cả thao tác máy móc lẫn chỉnh hướng).
 
-File này chốt cách xử lý cả ba: **(A) bộ bài ≥12 có đối chiếu B**, **(B) chính sách prompt grey-box nhất quán**, **(C) quy tắc đếm can thiệp + lằn ranh không-giải-hộ**.
+File này chốt cách xử lý cả ba: **(A) bộ bài ≥12 có đối chiếu mốc công cụ-tự-chạy (cùng bài)**, **(B) chính sách prompt grey-box nhất quán**, **(C) quy tắc đếm can thiệp + lằn ranh không-giải-hộ**. *(Lưu ý: "công cụ-tự-chạy" / nhãn `B_auto` là mốc tham chiếu nội bộ của nhánh Truyền thống, KHÔNG phải một nhánh so sánh — nhánh B đã bỏ.)*
 
 ---
 
 ## A. BỘ BÀI NHÁNH C (12 bài, đều nằm trong mẫu 40 của công cụ tự động → so sánh theo cặp)
 
-Chọn **đúng các bài công cụ tự động đã chạy** để mỗi bài C có một baseline B đối chiếu trực tiếp (paired design). 12 bài chia **3 nhóm lập luận**:
+Chọn **đúng các bài công cụ tự động đã chạy** để mỗi bài C có một mốc công cụ-tự-chạy đối chiếu trực tiếp cùng bài (paired design). 12 bài chia **3 nhóm lập luận**:
 
 | # | Bài | Loại | Khó | Công cụ tự động | Nhóm lập luận |
 |---|---|---|---|---|---|
