@@ -1,4 +1,4 @@
-# STATUS — Trung tâm điều phối (cập nhật 2026-11-03)
+# STATUS — Trung tâm điều phối (cập nhật 2026-11-11)
 
 > **File này là nguồn sự thật dùng chung.** Bộ nhớ của Claude là **cục bộ từng máy** — Claude trên thiết bị khác KHÔNG có nó. Vì vậy mọi ngữ cảnh + ràng buộc + cách tiếp tục được ghi ở đây và trên GitHub (`VuNguyenBinh/KLTN-FA26`). **Claude trên MỌI thiết bị đọc file này + `task_C1.md` + `report_A.md` trước khi làm.**
 
@@ -11,7 +11,7 @@
 **Cấu trúc so sánh: 2 NHÁNH (đã chốt) — Truyền thống (A) vs AI (C1 local, C2 API):**
 1. **Truyền thống (nhánh A)** = **con người + BẤT KỲ công cụ KHÔNG-AI nào** (Burp, nuclei, ffuf, sqlmap, dalfox, SSTImap…), KHÔNG dùng AI. Nhãn `A_manual`. *(Nhãn `B_auto` trong dữ liệu = mốc "công cụ tự chạy MỘT MÌNH, không người" — chỉ là **tham chiếu động-lực** cho thấy vì sao cần con người, **KHÔNG phải một nhánh so sánh**. Nhánh B đã bỏ.)*
 2. **AI local** = PentestGPT + Ollama `qwen2.5:7b` → nhãn `C_ai_local`.
-3. **AI API** = PentestGPT + model thương mại → nhãn `C_ai_api` (hoãn).
+3. **AI API** = PentestGPT + `deepseek-v4-pro` (APIVN) → nhãn `C_ai_api`. **✅ HOÀN TẤT 24/24, giải 13 — đối chiếu 3 nhánh ở §1b.**
 
 **⛔ RÀNG BUỘC CỨNG cho Claude (không được vi phạm — đây là lý do kết quả có giá trị):**
 - Claude **KHÔNG đóng vai người giải** nhánh Truyền thống, **KHÔNG giải hộ CTF**. Nhánh người do **người độc lập ngoài nhóm** làm; người trong nhóm chỉ giám sát/bấm giờ/chấm.
@@ -43,6 +43,58 @@
 
 ---
 
+## 1b. KẾT QUẢ ĐỐI CHIẾU 3 NHÁNH — tổng hợp & đánh giá (2026-11-11, cả 3 nhánh đã xong)
+
+> Nguồn: `analyze.py ../results/results.csv` (Bảng 1–4 + 4 figures ở `paper/figures/`) + bảng paired tính tay. **⚠️ Mẫu số 3 nhánh KHÁC nhau (A=40, C1=12 lệch dễ, C2=24 lệch khó) → KHÔNG so tỉ lệ thô; phép so chuẩn là PAIRED trên bài chung + theo lớp.**
+
+### A. Tỉ lệ thô (variant=original) — chỉ để tham khảo, KHÔNG kết luận từ đây
+| Nhánh | n | Giải | Tỉ lệ | Thời gian TB | Bước TB | Can thiệp TB |
+|---|---|---|---|---|---|---|
+| **A** Truyền thống (người + công cụ không-AI) | 40 | 22 | **55,0%** | 21,3′ | 12,1 | — |
+| **C1** AI-local (qwen2.5:7b) | 12 | 3 | **25,0%** | 24,7′ | 6,9 | 2,0 |
+| **C2** AI-API (deepseek-v4-pro) | 24 (25 lượt) | 13 | **54%** (52%/lượt) | 26,2′ | 13,4 | 0,7 |
+| *(ref)* công cụ tự thân (`B_auto`) | 40 | 2 | 5,0% | — | — | — |
+
+### B. ⭐ So cặp CÔNG BẰNG (phép so chính thức)
+- **12 bài chung A/C1/C2:** **A 6 / C1 3 / C2 8**. ⇒ trên đúng tập này: **C2 (model mạnh) > A > C1 (model nhỏ)**. Cả 3 bài C1 giải (041, 083, 006) ⊂ C2 → C1 không vượt nhánh nào.
+- **C2 vs A trên 24 bài C2 đã chạy (lệch khó):** **A 12 / C2 13** — gần ngang nhưng **BỔ SUNG, không trùm nhau**:
+  - **C2 thắng A (6 bài):** 037 cmdi · 080/104/093 ssti · 083 sqli · 087 xss → AI mạnh **injection/SSTI + XSS-bypass khó**.
+  - **A thắng C2 (5 bài):** 032 xxe · 064 xss · 029 blind_sqli · 057 deser-pickle · 092 deser-phar → người mạnh **XXE, exploit-coding (pickle), delivery đa-tầng (phar)**.
+  - Cả hai giải 7 · cả hai trượt 6 · discordant **5–6** ⇒ **không khác biệt có ý nghĩa** (McNemar ~đối xứng): AI-API ≈ người nhưng **mỗi bên thắng ~6 bài bên kia trượt**.
+
+### C. Theo độ khó (%)
+| | easy | medium | hard |
+|---|---|---|---|
+| A | 64,3 | 61,1 | 25,0 |
+| C1 | 37,5 | **0** | **0** |
+| C2 | 55,6 | 62,5 | **37,5** |
+
+→ **C1 chỉ ghi điểm easy, sụp ở medium/hard.** C2 giữ phong độ qua mọi mức (hard 37,5% còn **hơn** A 25%).
+
+### D. Theo lớp lỗ hổng — chân dung năng lực
+- **AI-API MẠNH (≈100%):** ssti · command_injection · sqli · nosqli · idor · privilege_escalation · file_upload — **injection/textbook tuyến tính + chuỗi suy-luận-được**.
+- **AI-API YẾU (0%):** crypto · smuggling_desync · xxe · lfi · default_credentials · blind_sqli; deser chỉ **33%** (075 YAML giải; 057 pickle + 092 phar trượt).
+- **Người (A) bù đúng chỗ AI yếu:** xxe 100 · blind_sqli 100 · deser 100 (bài A chạy) · xss 70.
+
+### E. Đánh giá định tính (cho Discussion)
+1. **"AI kém" là do MODEL NHỎ, không phải do AI:** C1 3/12 → C2 8/12 trên cùng tập. Lỗi điển hình 7B (phớt 404/405, không login bài auth-gated, lặp lệnh mù) **biến mất** ở C2.
+2. **AI-API tiệm cận người nhưng BỔ SUNG:** trên tập khó, C2 ngang A (13 vs 12) song mỗi bên thắng ~6 bài bên kia trượt. AI = **lối tắt injection/SSTI tốc độ cao**; người = **lớp đòi coding-exploit + delivery đa-tầng + suy luận ngoài-khuôn**.
+3. **TRẦN rõ của AI = TỰ VIẾT EXPLOIT đòi-chính-xác-từng-byte:** 101 (CBC padding oracle, script hỏng ×3) + 057 (pickle→eval, script hỏng ×4) — model **nhận diện + xác nhận sink hoàn hảo** nhưng không tự code nổi exploit (người code được). Cặp **075 YAML giải ↔ 057 pickle trượt** (cùng app) cô lập đúng trần này.
+4. **Trượt của AI-API phần lớn là TRUE-NEGATIVE chất lượng cao:** "hiểu trọn, flag sau rào ngoài-scope" (029 hash uncrackable · 088 wordlist cạn · 092 delivery chặn 2 tầng · 066 session-role) — khác hẳn thất bại "không hiểu bài" của 7B/công cụ.
+5. **Chi phí giám sát & tiền:** C2 redirect TB **0,7** (gần như tự lái; redirect chủ yếu = chặn port-scan môi trường) vs C1 **2,0**. **Chi phí API ∝ số lượt đối thoại, KHÔNG ∝ số HTTP request** (029 blind/088 brute hàng triệu request vẫn rẻ). Số tiền/bài: `C2_ai_findings_24.md §chi phí`.
+6. **Thang năng lực:** công cụ tự thân 5% (sàn) < AI-local 25% < **người 55% ≈ AI-API 54%** (nhưng AI-API lệch khó + bổ sung người, không thay thế).
+
+### F. Biểu đồ đã sinh (`paper/figures/`)
+`fig_solve_rate.png` · `fig_by_difficulty.png` · `fig_memorization.png` · `fig_detect_vs_capture.png`. ⚠️ Các fig tỉ lệ dùng **mẫu số khác nhau** → trong bài phải kèm caveat paired (Bảng B), đừng trưng tỉ lệ thô như so-sánh-trực-tiếp.
+
+### G. Giới hạn (Threats)
+- Mẫu **C1/C2 purposive (lệch)** → báo cáo **paired/per-class + existence-proof**, KHÔNG tỉ lệ dân số/Wilson CI.
+- **Δ memorization CHƯA đủ:** chỉ 1 bài hint-free (Bảng 4 analyze: C1 25%→0% là nhiễu n=1, không phải phép đo) → việc chính của Lượt 2 (≥8 cặp gốc/hint-free, mỗi bên ≥2 lần).
+- Nhánh A: **37/40 chưa lưu log Burp** (artifact độc lập); 6 bài xem writeup tính solved=0.
+- APIVN là cổng trung gian; `deepseek-v4-pro` có thể đổi ngầm — ghi ngày chạy + model id vào Threats.
+
+---
+
 ## 2. CÁCH TIẾP TỤC TỪNG NHÁNH
 
 ### 2a. Nhánh Truyền thống — phần người
@@ -56,8 +108,9 @@
 - ✅ **Lượt 1 XONG 12/12** (041, 083, 006 ✅; 061/064/080/037/032/005/014/011/093 ✗). **Giờ sang LƯỢT 2:** lặp ≥2 lần/biến-thể cho 041/083/006 (khử nhiễu) + hint-free ≥4 bài ≥2 lần (đo Δ học thuộc, RQ4). Chi tiết: `task_C1.md §PHIÊN TIẾP THEO`.
 - Quy trình 1 phiên: §3 (lệnh khởi động) → prompt grey-box (lớp) → vòng `discuss`↔`curl.exe` → đếm redirect/exec → chốt `solved` → ghi `results.csv` (`C_ai_local`) + `report_C1.md` + `task_C1.md`.
 
-### 2c. Nhánh AI API (C2) — hoãn
-- Cùng PentestGPT, đổi `--reasoning-model`/`--parsing-model` sang model API + key trong `PentestGPT/.env`. Nhãn `C_ai_api`. Khuyến nghị DeepSeek/Qwen (ít từ chối). `llm_refused` là một kết quả.
+### 2c. Nhánh AI API (C2) — ✅ HOÀN TẤT 24/24 (giải 13)
+- PentestGPT + `deepseek-v4-pro` qua APIVN. Chi tiết: `task_C2.md`, `report_C2.md §1–§14`, `C2_ai_findings_24.md`. Đối chiếu 3 nhánh: §1b.
+- **Lượt 2 còn lại:** hint-free các bài đã giải (Δ memorization, ≥8 cặp ×2) + đối chiếu Opus 5.5 (`C_ai_api_ref`, 4–6 bài).
 
 ---
 
