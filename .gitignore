@@ -11,7 +11,10 @@
 /project/benchmarks/targets.csv
 /project/benchmarks/*.bak*
 /project/harness/patches.log
-/paper/figures/
+/paper/figures/*
+# nhưng giữ 2 hình dùng trong bài báo (fig_design không tái tạo từ analyze.py)
+!/paper/figures/fig_design.png
+!/paper/figures/fig_detect_vs_capture.png
 # results.csv ĐƯỢC version-control (dữ liệu thí nghiệm, cả nhóm đồng bộ)
 
 # === Python / misc ===
