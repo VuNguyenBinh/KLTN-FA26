@@ -32,7 +32,7 @@
 |---|---|---|---|
 | Nhánh A — Truyền thống (con người + công cụ KHÔNG-AI) (`A_manual`) | **40/40** | **55%** (22/40) | `docs/task_A.md` + `docs/report_A.md` |
 | AI local (`C_ai_local`) | ✅ **12/12** (lượt 1 xong) | **25%** (3/12) | `docs/task_C1.md` + `docs/report_C1.md` |
-| AI API (`C_ai_api`, deepseek-v4-pro) | **20/24** (đang chạy) | **11/20 = 55%** (083 037 041 005 006 014 080 104 100 087 075 ✅; trượt 061 064 032×2 011 066 029 092 018 088) | `docs/task_C2.md` + `docs/report_C2.md` |
+| AI API (`C_ai_api`, deepseek-v4-pro) | **21/24** (đang chạy) | **11/21 ≈ 52%** (083 037 041 005 006 014 080 104 100 087 075 ✅; trượt 061 064 032×2 011 066 029 092 018 088 101) | `docs/task_C2.md` + `docs/report_C2.md` |
 | AI API đối chiếu (`C_ai_api_ref`, opus-5-5) | 0 | — | tùy chọn 4–6 bài |
 
 > ⚖️ **So CÔNG BẰNG trên đúng 12 bài chung** (Truyền thống chạy 40, AI local mới 12 nên đừng so tỉ lệ toàn-40 với AI local): **Nhánh A (người + công cụ) 6/12 = 50% ≫ AI local 3/12 = 25%**. (KHÔNG cộng phần công cụ-tự-chạy riêng — B đã bỏ.) Bảng đầy đủ + lập luận: **`docs/results_summary.md`**.
