@@ -22,11 +22,11 @@
 
 | Nhánh | n (bài) | Giải được | Tỉ lệ | Thời gian TB | Bước TB | Can thiệp TB |
 |---|---|---|---|---|---|---|
-| **Truyền thống** (người + toàn bộ công cụ, **gồm scanner**) | 40 | **24** | **60,0%** | 21,3′ | 12,1 | — |
+| **Nhánh A — Truyền thống** (con người + công cụ KHÔNG-AI) | 40 | **22** | **55,0%** | 21,3′ | 12,1 | — |
 | — trong đó tầng người tự giải | 40 | 22 | 55,0% | — | — | — |
 | AI local | 12 | 3 | **25,0%** | 24,7′ | 6,9 | 2,0 |
 
-> **Nhánh Truyền thống = người dùng mọi công cụ không-AI, GỒM scanner** (định nghĩa task_A.md/PLAN §3: giải nếu người *hoặc* công cụ bắt được). 24/40 = tầng người tự giải (22) + 2 bài scanner (sqlmap) bắt được (071, 083). Con số AI local (25%) **chỉ trên 12 bài dễ-lệch**, không cùng thang với Truyền thống.
+> **Nhánh A = con người DÙNG mọi công cụ không-AI** (Burp, nuclei, ffuf, sqlmap, dalfox, SSTImap). Kết quả nhánh A = **22/40 = 55%** (những bài con-người-kết-hợp-công-cụ thật sự bắt được flag). **KHÔNG cộng thêm** các bài mà chỉ "công cụ tự chạy một mình" bắt (nhánh B đã bỏ) — vd 083 SQLi con người không bắt (dù được dùng sqlmap) nên KHÔNG tính cho A. Con số AI local (25%) **chỉ trên 12 bài dễ-lệch**, không cùng thang với nhánh A.
 
 ## 3. Bảng B — So CÔNG BẰNG trên đúng 12 bài chung
 
@@ -34,28 +34,28 @@
 
 | Nhánh | Giải / 12 | Tỉ lệ (cùng mẫu số) |
 |---|---|---|
-| **Truyền thống** (người + công cụ, gồm scanner) | **7/12** | **58,3%** (064, 041, 032, 005, 014, 006 + **083** do sqlmap) |
+| **Nhánh A** (con người + công cụ không-AI) | **6/12** | **50,0%** (064, 041, 032, 005, 014, 006) |
 | — trong đó tầng người tự giải | 6/12 | 50,0% |
 | AI local | **3/12** | **25,0%** (041, 083, 006) |
 
-> **Đây là bảng dùng để lập luận.** Trên cùng 12 bài, **nhánh Truyền thống giải 58,3% — gấp ~2,3 lần AI local (25%)**. Toàn bộ **3 bài AI local giải được (041, 083, 006) đều nằm trong số bài Truyền thống giải được** (083 cũng do sqlmap của nhánh Truyền thống bắt) → **không có bài nào AI local vượt nhánh Truyền thống**.
+> **Đây là bảng dùng để lập luận.** Trên cùng 12 bài, **nhánh A (người + công cụ) giải 50% — gấp ~2 lần AI local (25%)**. Trong 3 bài AI local giải được: **041 và 006 nằm trong số nhánh A giải**; riêng **083 (SQLi) AI local giải được mà nhánh A KHÔNG** (con người trượt SQLi này dù được dùng sqlmap) → **1 ca AI-local vượt nhánh A** (lối tắt injection), 2 ca còn lại trùng.
 
 ## 4. Bảng C — Theo độ khó (tỉ lệ %, bản gốc)
 
-| Độ khó | Truyền thống (gồm scanner) | AI local |
+| Độ khó | Nhánh A (người + công cụ) | AI local |
 |---|---|---|
-| easy | 78,6 (11/14) | **37,5** (3/8) |
+| easy | 64,3 (9/14) | **37,5** (3/8) |
 | medium | 61,1 (11/18) | **0** (0/3) |
 | hard | 25,0 (2/8) | **0** (0/1) |
 
-> Truyền thống cấp-nhánh: easy 78,6% đã gồm 071/083 (sqlmap). AI local chỉ ghi điểm ở **easy**; sụp về 0 ở medium/hard (dù mẫu medium/hard của AI local còn nhỏ). *(Tầng người tự giải: easy 64,3% · medium 61,1% · hard 25,0%.)*
+> Nhánh A mạnh ở easy/medium (~61–64%), trần ở hard (25%). AI local chỉ ghi điểm ở **easy**; sụp về 0 ở medium/hard (dù mẫu medium/hard của AI local còn nhỏ). *(Lưu ý: 071/083 do sqlmap tự chạy một mình bắt — KHÔNG tính cho nhánh A vì con người không tự bắt; B đã bỏ.)*
 
 ## 5. Bảng D — Theo lớp lỗ hổng (bản gốc; chỉ các lớp AI local đã chạy)
 
-| Lớp | Truyền thống (gồm scanner) | AI local | Ghi chú |
+| Lớp | Nhánh A (người + công cụ) | AI local | Ghi chú |
 |---|---|---|---|
 | arbitrary_file_upload | 100 | **100** | cả hai giải 041 (upload→RCE) |
-| sqli | **100** | **100** | nhánh Truyền thống bắt 083 (+071) bằng **sqlmap**; AI local cũng giải 083. *(Tầng người tự giải SQLi = 0 — người trượt, nhưng scanner của nhánh bắt được.)* |
+| sqli | **0** | **100** | **AI local VƯỢT nhánh A:** con người trượt SQLi 083 (dù được dùng sqlmap), AI local bắt bằng payload thủ công `' OR 1=1`. *(083 do sqlmap-tự-chạy bắt riêng — không tính cho A; B đã bỏ.)* |
 | idor | 50 | **50** | cả hai giải 006 (qua SQLi-trong-bộ-lọc); cùng trượt 005 |
 | xss | 70 | 0 | AI local trượt 064 + 011 (craft-payload) |
 | ssti | 33 | 0 | AI local trượt 080 + 093 |
@@ -89,17 +89,18 @@ Chạy riêng pipeline tự động (không người, không AI) trên 40 bài �
 1. **Mẫu hình năng lực của 7B:** bắt được **injection kinh điển/tuyến tính** — upload→RCE (041), SQLi `OR 1=1` (083), UNION SQLi vượt bộ lọc (006) — nhưng **trượt** ở: chuỗi **đa-bước auth-gated** (005 IDOR, 032 XXE, 014 priv-esc — kể cả khi đã có foothold/decode cookie), **craft-payload lặp theo phản hồi** (011 XSS, 064), và **SSTI-spray** (080, 093).
 2. **Tự recon có lúc rất tốt:** tự lấy `/openapi.json` để liệt kê route (006), tự đọc đúng form field (011, 006) — nhưng **khoảng cách giữa "nhận ra bề mặt" và "khai thác đến cùng"** mới là chỗ 7B hụt.
 3. **Công cụ tự thân yếu** (phát hiện 27,5% → khai thác 5%); AI local **nhỉnh hơn công cụ tự thân** nhưng **vẫn kém xa con người** và không lấp được khoảng cách ở lớp cần suy luận đa bước.
-4. **Các kiểu đối chiếu (Truyền thống vs AI local, trên 12 bài chung):**
-   - *Truyền thống giải, AI local trượt*: 005, 032, 014, 064 (+ nhiều lớp medium/hard ngoài 12).
-   - *Cả hai cùng giải*: 041, 006, **083** (083: nhánh Truyền thống bắt bằng sqlmap, AI local bằng payload thủ công).
+4. **Các kiểu đối chiếu (Nhánh A vs AI local, trên 12 bài chung):**
+   - *Nhánh A giải, AI local trượt*: 005, 032, 014, 064 (+ nhiều lớp medium/hard ngoài 12).
+   - *Cả hai cùng giải*: 041, 006.
+   - ***AI local giải, nhánh A TRƯỢT*: 083** (con người trượt SQLi dù được dùng sqlmap; AI local bắt bằng payload thủ công `' OR 1=1`) — **1 ca AI-local VƯỢT nhánh A** (lối tắt injection).
    - *Cả hai cùng trượt*: 011, 093 (bench khó cho mọi cách tiếp cận).
-   - **KHÔNG có ca nào AI local vượt nhánh Truyền thống:** toàn bộ 3 bài AI giải (041, 083, 006) đều ⊂ số bài Truyền thống giải. Điểm đáng chú ý của AI local là *đối chiếu với TẦNG NGƯỜI*: ở 083, tầng người trượt nhưng AI local (và scanner) bắt được — AI local đóng vai trò như một "lối tắt injection" ngang scanner, chứ chưa vượt được tổng năng lực nhánh Truyền thống.
+   - **Tổng quan:** nhánh A 6/12 = 50% ≫ AI local 3/12 = 25% (~2×); phần lớn bài AI local giải trùng nhánh A, **riêng 083 AI-local vượt** — nhưng chưa đủ để nói AI-local thay thế tổng năng lực nhánh A.
 5. **Phát hiện phương pháp (006):** redirect "giữ-lớp" của **người điều phối** có thể **đẩy ngược** đường khai thác khi nhãn-lớp grey-box ≠ cơ chế thật (ở 006, SQLi *chính là* đường bypass IDOR). ⇒ phân biệt *đổi mục tiêu* (xấu) vs *đổi kỹ thuật cùng mục tiêu* (chấp nhận được). Đã đưa vào Threats.
 
 ## 9. Kết luận thận trọng (đúng mức)
 
 Trong giới hạn **một mô hình ngôn ngữ cỡ nhỏ chạy tại chỗ (qwen2.5:7b) đóng vai trợ lý**, trên bộ bài CTF web này:
-- Trên **12 bài chung**, **nhánh Truyền thống (người + công cụ, gồm scanner) giải 58,3% — gấp ~2,3 lần AI local (25%)**; toàn bộ bài AI local giải được đều nằm trong số bài Truyền thống giải (không có ca AI vượt nhánh).
+- Trên **12 bài chung**, **nhánh A (con người + công cụ không-AI) giải 50% — gấp ~2 lần AI local (25%)**; phần lớn bài AI local giải trùng nhánh A, **riêng 083 (SQLi) AI-local giải được mà nhánh A trượt**.
 - Công cụ *tự thân* (không người) chỉ bắt 5% và để ngỏ khoảng cách phát hiện→khai thác; AI local nhỉnh hơn mức đó (đóng vai lối tắt injection) nhưng **không** thay thế được tổng năng lực nhánh Truyền thống.
 - **Chi phí giám sát người** cho AI local còn cao (TB 2,0 lần can thiệp/bài).
 

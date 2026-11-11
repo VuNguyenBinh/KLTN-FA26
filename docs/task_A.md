@@ -147,7 +147,7 @@ Tick theo thứ tự, được quay lại pha trước. Phân bổ thời gian g
 | **Tổng** | 40 | **22 = 55,0%** | 70,0% |
 
 - **Chỉ số chính = tự giải.** 6 bài người giải đã xem writeup (073, 003, 025, 018, 087, 101) — flag khớp nhưng theo lằn ranh cứng tính `solved=0`. Báo cáo riêng ở cột "có tham khảo writeup" (Bảng 1b), **không** gộp vào chỉ số chính.
-- **Gộp tầng người + tầng công cụ** (định nghĩa nhánh Truyền thống trong `PLAN.md` §3: giải nếu người *hoặc* công cụ giải): 22 + 2 (071, 083 — sqlmap) = **24/40 = 60,0%**.
+- **Nhánh A = con người DÙNG công cụ không-AI** = **22/40 = 55,0%**. *(071/083 do sqlmap chạy MỘT MÌNH bắt — KHÔNG cộng vào nhánh A vì con người không tự bắt được; nhánh B đã bỏ. 083 là bài AI-local giải được mà nhánh A trượt.)*
 
 ## Bảng 40 bài
 `WU` = xem writeup → `solved=0`. `B` = công cụ tự động (`det` = phát hiện, `1` = bắt flag). `C` = AI local. Phút/bước có `*` = giám sát viên ghi chú tại chỗ (chưa lưu log Burp); không có `*` = đo trực tiếp trong phiên.
@@ -198,7 +198,7 @@ Tick theo thứ tự, được quay lại pha trước. Phân bổ thời gian g
 ## Nhận xét chính
 - **Người ≫ công cụ:** 55% so với 5% bắt flag. Người giải được nhiều lớp mà công cụ **mù hoàn toàn** (IDOR 3/6, SSTI 2/6, deserialization 3/3, privilege escalation 2/2, XXE, file upload, blind SQLi, NoSQLi).
 - **Người lấp khoảng cách phát-hiện → khai-thác:** 8 bài XSS công cụ *phát hiện* nhưng không bắt flag → người bắt được 6/8 (1 bài xem writeup).
-- **Bổ sung chứ không thay thế:** người **không** giải được 071/083 (SQLi) — đúng 2 bài sqlmap bắt được flag. Gộp người + công cụ = 60%.
+- **Con người KHÔNG tự giải 071/083 (SQLi)** — 2 bài chỉ sqlmap-tự-chạy bắt được. Theo logic mới (nhánh B đã bỏ), 2 bài này **KHÔNG tính cho nhánh A** → nhánh A = **55% (22/40)**. (Hệ quả: 083 thành ca **AI-local vượt nhánh A**.)
 - **Trần ở bài khó:** tự giải chỉ 25% (2/8); 3/6 bài xem writeup là bài khó → người cũng chạm trần năng lực ở mức hard.
 - **So AI local (4 bài chung):** người 1/4 (064), AI 0/4. Cả hai cùng thất bại ở 037, 061, 080.
 
