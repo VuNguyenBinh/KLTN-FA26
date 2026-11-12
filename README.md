@@ -45,7 +45,7 @@ project/
   benchmarks/  metadata.csv, sample.csv        (104 bài + mẫu 40 bài)
   results/     results.csv                     (dữ liệu thí nghiệm)
 ```
-> Các thư mục nặng (benchmark clones, PentestGPT, binary công cụ nhánh B) **không** được commit — tải lại theo `docs/SETUP.md` và `docs/ARM_B.md`.
+> Các thư mục nặng (benchmark clones, PentestGPT, binary bộ công cụ tham chiếu `B_auto`) **không** được commit — tải lại theo `docs/SETUP.md` và `docs/ARM_B.md`.
 
 ## Tái lập môi trường
 Xem **[docs/SETUP.md](docs/SETUP.md)** (cài Docker/Git/Ollama, clone benchmark) và **[docs/RUNBOOK.md](docs/RUNBOOK.md)** (chạy từng bước). Tóm tắt:
