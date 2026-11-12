@@ -2,6 +2,9 @@
 
 Đồ án tốt nghiệp: **so sánh có kiểm soát** giữa kiểm thử xâm nhập ứng dụng web theo 3 cách — thủ công, tự động không-AI, và có AI hỗ trợ — trên cùng một bộ benchmark.
 
+## 🎥 Demo video
+Một phiên chạy nhánh AI (**C2 — PentestGPT + DeepSeek V4 Pro**) tự khai thác lỗ hổng **SSTI** tới khi bắt được flag: **https://youtu.be/sYW8kPi0vfQ**
+
 ## Câu hỏi nghiên cứu
 - **RQ1** AI thay đổi *tỷ lệ phát hiện/khai thác* so với thủ công & tự động-không-AI bao nhiêu?
 - **RQ2** AI thay đổi *thời gian* và *công sức* (số bước, số lần can thiệp tay) thế nào?

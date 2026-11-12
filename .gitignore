@@ -34,3 +34,7 @@ Thumbs.db
 
 # PowerPoint/Office lock/temp files
 ~$*
+
+# video demo (host tren YouTube, khong commit)
+/demo_pentestGPT_deepseekv4pro.mp4
+*.mp4
