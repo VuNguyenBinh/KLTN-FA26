@@ -42,7 +42,7 @@ MINISTRY OF EDUCATION AND TRAINING — FPT UNIVERSITY
 | **Supervisor** | [Tên GVHD] |
 | **Capstone Project code** | [mã CP] |
 
-*— Hanoi, [Month]/2026 —*
+*— Ho Chi Minh City, [Month]/2026 —*
 
 ---
 
