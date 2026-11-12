@@ -67,6 +67,16 @@ def load(path):
     # chi giu cac dong DA CHAY (cot solved da dien 0/1); dong trong bi loai that su
     df = df[df["solved"].notna()].copy()
     df["solved"] = df["solved"].astype(int)
+    # Gop lan chay-lai cung 1 target (vd 032 restart sau khi moi truong loi):
+    # moi (arm, benchmark_id, variant) chi tinh 1 lan, uu tien attempt DA GIAI.
+    key = ["arm", "benchmark_id", "variant"]
+    if all(k in df.columns for k in key):
+        before = len(df)
+        df = (df.sort_values("solved")
+                .drop_duplicates(subset=key, keep="last")
+                .reset_index(drop=True))
+        if len(df) < before:
+            print(f"[dedup] gop {before - len(df)} dong chay-lai (moi target tinh 1 lan)")
     return df
 
 
@@ -253,8 +263,11 @@ def main():
     else:
         print("(chua co du lieu nhanh C)")
 
-    bar_solve_rate(summary)
-    grouped_by_difficulty(diff)
+    # Chart so sanh BO cot B_auto (B la tham chieu, trinh bay rieng qua detect-vs-capture).
+    summary_chart = summary.drop(index="B_auto", errors="ignore")
+    diff_chart = diff.drop(columns="B_auto", errors="ignore")
+    bar_solve_rate(summary_chart)
+    grouped_by_difficulty(diff_chart)
 
     # xuat bang ra csv de dua vao bai bao
     summary.to_csv(os.path.join(FIG_DIR, "table_summary.csv"))
