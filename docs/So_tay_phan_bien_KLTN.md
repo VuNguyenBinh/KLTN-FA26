@@ -238,7 +238,7 @@ python analyze.py ../results/results.csv
 Một so sánh có kiểm soát, within-subject: ba cách tiếp cận chạy trên **cùng** 40 bài, **cùng** luật, để chênh lệch phản ánh *phương pháp* chứ không phải *bài*.
 
 ## 8.2 Ba nhánh
-- **A — Truyền thống (`A_manual`):** con người + mọi công cụ KHÔNG-AI. Bên trong có tầng tham chiếu `B_auto` (công cụ tự chạy, không cộng điểm).
+- **A — Truyền thống (`A_manual`):** **2 tester** (1 thành viên nhóm trình độ ~staff/senior + 1 sinh viên IA năm cuối ngoài nhóm, có nền HTB/THM gồm 1 Pro Lab + thi CTF + 1 đánh giá black-box web thật) + mọi công cụ KHÔNG-AI. Chấm nhánh = **max(người, tool)**. Bên trong có tầng tham chiếu `B_auto` (công cụ tự chạy, không cộng điểm).
 - **C1 — AI local (`C_ai_local`):** PentestGPT + qwen2.5:7b.
 - **C2 — AI API (`C_ai_api`):** PentestGPT + deepseek-v4-pro.
 
@@ -333,10 +333,13 @@ Rất khó, vì **flag chấm điểm sinh mới lúc build** (`FLAG{sha256(UPPE
 Vì là model nhỏ 7B: bỏ qua 404/405, không đăng nhập bài auth-gated, lặp lệnh mù. Khi đổi sang model mạnh (cùng 12 bài) tăng 3 → 8 → "AI yếu" phần lớn là do *quy mô model*, không phải do *AI nói chung*.
 
 **Q: AI-API gần ngang người (13 vs 12), vậy AI thay được người chưa?**
-Chưa. Hai bên **bổ sung** nhau: mỗi bên thắng ~6 bài bên kia trượt. AI mạnh ở injection/SSTI; người mạnh ở deserialization/XXE/blind-SQLi. Trần của AI là *tự lập trình exploit chính xác*, không phải nhận diện.
+Chưa. Hai bên **bổ sung** nhau: mỗi bên thắng ~6 bài bên kia trượt. AI mạnh ở injection/SSTI; người mạnh ở deserialization/XXE/blind-SQLi. Trần của AI là *tự lập trình exploit chính xác*, không phải nhận diện. **Quan trọng:** "13 vs 12" là ngang với người mức **staff**; ước lượng người **principal ~31/40 > AI (54%)**. Không so sánh nào đạt ý nghĩa thống kê (McNemar p=1.0 trên 24 bài).
 
 **Q: Chi phí chạy AI thế nào?**
 Chi phí API tỉ lệ với **số lượt đối thoại**, KHÔNG tỉ lệ số HTTP request. Tỉ lệ từ chối (refusal) = 0 trên bộ này.
 
 **Q: Số liệu nhánh người có đáng tin không?**
 Outcome giải/không-giải được giám sát trực tiếp và chắc. Hạn chế: 37/40 bài chưa xuất log Burp nên thời gian/số bước dựa vào ghi chú giám sát viên; 6 bài xem writeup tính solved=0.
+
+**Q: Baseline người có yếu không? 2 bài SQLi trượt là sao?**
+Không yếu — người làm ở mức **staff/senior**, nên 55% là baseline chuyên nghiệp chứ không phải sàn người mới. 2 bài SQLi trượt là **do quy trình** (không chạy sqlmap), KHÔNG phải năng lực: tool tự chạy giải được cả hai, nên chỉ cần quy định "chạy pipeline trước" là **cộng ~1 bài easy**. Khoảng trống tới mức cao nhất ước lượng ~9 bài, chủ yếu ở **medium (+4)** và **hard (+2)**; ở mức **principal người ~31/40**, vượt rõ AI thương mại (~54%). Hard bất định cao: ngay cả principal, khoảng ~2–7/8. Vì vậy "AI ngang người" chỉ đúng khi so với người mức **staff**. (Ghi rõ đây là **ước lượng chuyên gia của nhóm**, không phải số đo.)
