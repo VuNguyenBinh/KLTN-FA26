@@ -4,43 +4,43 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="n_start" parent="1" style="ellipse;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Bắt đầu&#xa;104 bài XBOW" vertex="1">
+        <mxCell id="n_start" parent="1" style="ellipse;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Start&#xa;104 XBOW challenges" vertex="1">
           <mxGeometry height="60" width="160" x="40" y="70" as="geometry" />
         </mxCell>
-        <mxCell id="n_sample" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Chọn mẫu phân tầng&#xa;40 bài (seed=42)" vertex="1">
+        <mxCell id="n_sample" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Stratified sample&#xa;40 targets (seed=42)" vertex="1">
           <mxGeometry height="60" width="230" x="240" y="70" as="geometry" />
         </mxCell>
-        <mxCell id="n_build" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="build_target.py → Target (URL + flag)&#xa;30 phút/bài · biến thể: original (mọi nhánh) + hint-free (chỉ AI)" vertex="1">
+        <mxCell id="n_build" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="build_target.py → Target (URL + flag)&#xa;30 min/target · variants: original (all arms) + hint-free (AI only)" vertex="1">
           <mxGeometry height="80" width="360" x="510" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="tt" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="NHÁNH TRUYỀN THỐNG&#xa;Người + mọi công cụ không-AI&#xa;(Burp + nuclei/ffuf/sqlmap/dalfox/SSTImap)&#xa;PTES/WSTG · Policy B" vertex="1">
+        <mxCell id="tt" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;TRADITIONAL ARM&lt;/b&gt;&#xa;Human + any non-AI tool&#xa;(Burp + nuclei/ffuf/sqlmap/dalfox/SSTImap)&#xa;PTES / WSTG" vertex="1">
           <mxGeometry height="120" width="380" x="120" y="230" as="geometry" />
         </mxCell>
-        <mxCell id="ai_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="NHÁNH AI — PentestGPT + model&#xa;prompt grey-box (chỉ LỚP lỗ hổng)&#xa;Vòng lặp: model đề xuất lệnh ↔ người chạy &amp; dán kết quả&#xa;(đếm redirect/exec · KHÔNG mớm kỹ thuật)" vertex="1">
+        <mxCell id="ai_box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;AI ARM — PentestGPT + model&lt;/b&gt;&#xa;grey-box prompt (vulnerability CLASS only)&#xa;Loop: model proposes command ↔ human runs &amp; pastes output&#xa;(count redirect/exec · no technique supplied)" vertex="1">
           <mxGeometry height="120" width="440" x="640" y="230" as="geometry" />
         </mxCell>
-        <mxCell id="d_ai" parent="1" style="rhombus;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Bắt được flag?&#xa;hoặc hết 30 phút?" vertex="1">
+        <mxCell id="d_ai" parent="1" style="rhombus;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Flag captured?&#xa;or 30 min elapsed?" vertex="1">
           <mxGeometry height="100" width="240" x="740" y="390" as="geometry" />
         </mxCell>
-        <mxCell id="d_score" parent="1" style="rhombus;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Flag khớp EXACT-MATCH?&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" vertex="1">
+        <mxCell id="d_score" parent="1" style="rhombus;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Flag EXACT-MATCH?&#xa;FLAG{sha256(UPPER(bench-id))}" vertex="1">
           <mxGeometry height="130" width="320" x="560" y="540" as="geometry" />
         </mxCell>
-        <mxCell id="solved1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="solved = 1&#xa;(bắt được flag)" vertex="1">
+        <mxCell id="solved1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;solved = 1&lt;/b&gt;&#xa;(flag captured)" vertex="1">
           <mxGeometry height="56" width="200" x="320" y="730" as="geometry" />
         </mxCell>
-        <mxCell id="solved0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#f8cecc;strokeColor=#b85450;" value="solved = 0" vertex="1">
+        <mxCell id="solved0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;b&gt;solved = 0&lt;/b&gt;" vertex="1">
           <mxGeometry height="56" width="200" x="900" y="730" as="geometry" />
         </mxCell>
-        <mxCell id="n_results" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#f5f5f5;strokeColor=#666666;" value="results.csv&#xa;(1 dòng / lượt)" vertex="1">
+        <mxCell id="n_results" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#f5f5f5;strokeColor=#666666;" value="results.csv&#xa;(1 row / run)" vertex="1">
           <mxGeometry height="86" width="200" x="600" y="840" as="geometry" />
         </mxCell>
-        <mxCell id="n_analyze" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="analyze.py&#xa;→ bảng + biểu đồ" vertex="1">
+        <mxCell id="n_analyze" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="analyze.py&#xa;→ tables + figures" vertex="1">
           <mxGeometry height="66" width="230" x="900" y="850" as="geometry" />
         </mxCell>
-        <mxCell id="n_compare" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="So sánh PAIRED&#xa;6 phép so · Truyền thống vs AI" vertex="1">
+        <mxCell id="n_compare" parent="1" style="rounded=0;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;PAIRED comparison&lt;/b&gt;&#xa;Traditional vs AI" vertex="1">
           <mxGeometry height="66" width="250" x="1190" y="850" as="geometry" />
         </mxCell>
-        <mxCell id="n_end" parent="1" style="ellipse;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Kết luận" vertex="1">
+        <mxCell id="n_end" parent="1" style="ellipse;whiteSpace=wrap;html=1;convertToSvg=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Conclusion" vertex="1">
           <mxGeometry height="66" width="150" x="1500" y="850" as="geometry" />
         </mxCell>
         <mxCell id="e1" edge="1" parent="1" source="n_start" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="n_sample" value="">
@@ -61,7 +61,7 @@
         <mxCell id="e7" edge="1" parent="1" source="ai_box" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="d_ai" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e8" edge="1" parent="1" source="d_ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="ai_box" value="chưa">
+        <mxCell id="e8" edge="1" parent="1" source="d_ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="ai_box" value="not yet">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1130" y="440" />
@@ -69,13 +69,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e9" edge="1" parent="1" source="d_ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" target="d_score" value="rồi">
+        <mxCell id="e9" edge="1" parent="1" source="d_ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;" target="d_score" value="done">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e10" edge="1" parent="1" source="d_score" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.25;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="solved1" value="Có (khớp)">
+        <mxCell id="e10" edge="1" parent="1" source="d_score" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.25;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="solved1" value="Yes (match)">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e11" edge="1" parent="1" source="d_score" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.75;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="solved0" value="Không">
+        <mxCell id="e11" edge="1" parent="1" source="d_score" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.75;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="solved0" value="No">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e12" edge="1" parent="1" source="solved1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="n_results" value="">
