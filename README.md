@@ -36,7 +36,7 @@ Benchmark: **XBOW validation-benchmarks** (104 bài CTF web), mẫu 40 bài phâ
 docs/          STATUS (điều phối + kết quả), results_summary, task_C1/C2,
                report_A/C1/C2 (nhật ký từng lượt), C2_ai_findings_24,
                So_tay_phan_bien_KLTN (sổ tay phản biện), SETUP, RUNBOOK
-paper/         paper_ieee.tex/.docx (bản IEEE 2 cột), paper_sci2027.tex/.docx,
+paper/         paper_ieee.tex/.docx (bản IEEE 2 cột), FA261A11_GFA261A11_paper.pdf,
                THESIS_FULL.md, figures/
 project/
   harness/     build_target.py (dựng target + vá tương thích), raw.py (HTTP thô
