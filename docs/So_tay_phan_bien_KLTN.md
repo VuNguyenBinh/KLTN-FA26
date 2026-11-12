@@ -4,7 +4,7 @@ title: "Sổ tay phản biện KLTN — Mô tả các thành phần đồ án"
 
 # Sổ tay phản biện KLTN — Mô tả các thành phần đồ án
 
-**Mục đích:** văn bản tra cứu nhanh khi trả lời câu hỏi hội đồng. Mỗi thành phần được mô tả theo 5 ý cố định: (1) Là gì, (2) Cơ chế hoạt động, (3) Nguồn gốc (tự viết hay dùng lại của người khác), (4) Nhóm chỉnh sửa hoặc thêm gì, (5) Cách dùng tổng quan.
+**Mục đích:** văn bản tra cứu nhanh khi trả lời câu hỏi hội đồng. Mỗi thành phần được mô tả theo 6 ý cố định: (1) Là gì, (2) Cơ chế hoạt động, (3) Nguồn gốc (tự viết hay dùng lại của người khác), (4) Nhóm chỉnh sửa hoặc thêm gì, (5) Cách dùng tổng quan, (6) Vì sao chọn.
 
 **Đề tài:** A Comparative Study of AI-Assisted and Traditional Web Application Penetration Testing Techniques — Nhóm GFA261A11, môn FA261A11, GVHD Trần Văn Ninh.
 
@@ -56,7 +56,7 @@ Nhóm không đụng vào thuật toán bên trong PentestGPT, nhưng đã làm 
 
 - **Cấu hình model qua `.env`:** trỏ `--reasoning-model` / `--parsing-model` sang hai model khác nhau (qwen2.5:7b local và deepseek-v4-pro qua APIVN) để cô lập "hiệu ứng quy mô model".
 - **Prompt grey-box tự viết:** chỉ cung cấp *lớp* lỗ hổng + URL, không cho endpoint/payload/kỹ thuật, kèm mệnh đề chặn port-scan (thông tin môi trường).
-- **Quy ước đếm can thiệp:** phân biệt "chạy lệnh model đề xuất" (exec, không tính) với "chỉnh hướng khi model đi sai" (redirect, tính là can thiệp). Đây là chỉ số để trả lời "AI là trợ lý hay tự trị".
+- **Quy ước đếm can thiệp:** phân biệt "chạy lệnh model đề xuất" (exec, không tính) với "chỉnh hướng khi model đi sai" (redirect, tính là can thiệp).
 - **Lằn ranh cứng:** operator không mách kỹ thuật; lỡ mách thì bài tính solved=0.
 
 ## 1.5 Cách dùng tổng quan
@@ -66,6 +66,12 @@ cd project/harness/PentestGPT
     --reasoning-model "<model>" --parsing-model "<model>"
 ```
 Khi nó hỏi nhiệm vụ → dán prompt grey-box (lớp lỗ hổng + URL) → bấm giờ → chạy từng lệnh nó đề xuất bằng `curl.exe` (hoặc `raw.py` cho smuggling), dán output lại, lặp đến khi bắt flag hoặc hết 30 phút.
+
+## 1.6 Vì sao chọn PentestGPT
+- **Đã được kiểm chứng học thuật** (USENIX Security 2024, Distinguished Artifact) → nền tảng đáng tin, trích dẫn được, không phải tool tự chế chưa ai dùng.
+- **Có chế độ "trợ lý":** con người chạy lệnh nên **đếm được số can thiệp của người** — đúng chỉ số then chốt để trả lời "AI là trợ lý hay tự trị". Các agent tự trị đóng kín không lộ được chỉ số này.
+- **Cho cắm model tuỳ ý (local/API) trong cùng một khung** → cô lập đúng "hiệu ứng model" khi chỉ đổi model.
+- **Mã nguồn mở** → tái lập được, hội đồng kiểm tra lại được.
 
 ---
 
@@ -84,10 +90,15 @@ Là LLM sinh văn bản; PentestGPT gửi prompt (kế hoạch + output đã tó
 **Của bên thứ ba.** qwen2.5:7b là của Alibaba; deepseek-v4-pro là của DeepSeek. Nhóm KHÔNG huấn luyện, KHÔNG tinh chỉnh (fine-tune), KHÔNG sửa trọng số.
 
 ## 2.4 Nhóm chỉnh sửa hoặc thêm gì
-Không sửa model. Nhóm chỉ: chọn cặp model (một nhỏ-local, một lớn-API) để trả lời câu hỏi "AI yếu là do AI hay do model nhỏ"; chạy ở nhiệt độ mặc định của PentestGPT; ghi lại **model id + ngày chạy** (vì model API có thể đổi ngầm theo thời gian — đã nêu trong Threats).
+Không sửa model. Nhóm chỉ: chọn cặp model; chạy ở nhiệt độ mặc định của PentestGPT; ghi lại **model id + ngày chạy** (vì model API có thể đổi ngầm theo thời gian — đã nêu trong Threats).
 
 ## 2.5 Cách dùng tổng quan
 Local: cài qua Ollama (`ollama pull qwen2.5:7b`), PentestGPT trỏ `--base-url http://localhost:11434/v1`. API: điền `DEEPSEEK_API_KEY` + `DEEPSEEK_BASE_URL=https://apivn.vn/v1` vào `.env` (khoá bị `.gitignore` chặn, không lên Git).
+
+## 2.6 Vì sao chọn cặp model này
+- **qwen2.5:7b:** model mở, nhỏ, chạy local miễn phí không cần internet → đại diện "cận dưới" (lower bound) của AI-assisted; cùng họ model mở nên khác biệt với DeepSeek chủ yếu do **quy mô + thế hệ**, không phải do hãng.
+- **deepseek-v4-pro:** model mạnh nhưng **rẻ** (~600–1.600đ/phiên) và **ít từ chối** → đủ ngân sách chạy nhiều bài; đại diện "model mạnh". (Opus 5.5 để dành đối chiếu vì đắt gấp nhiều lần.)
+- **Cặp nhỏ-local ↔ lớn-API chọn CÓ CHỦ ĐÍCH:** để trả lời "AI yếu là do AI hay do model nhỏ" — giữ nguyên mọi thứ, **chỉ đổi 1 biến là model**.
 
 ---
 
@@ -104,11 +115,18 @@ Mỗi bài là một image Docker chạy một web app có lỗ hổng. Flag the
 
 ## 3.4 Nhóm chỉnh sửa hoặc thêm gì
 - **Rút mẫu phân tầng 40 bài** (14 dễ / 18 vừa / 8 khó), seed cố định để tái lập.
-- **Patch chỉ-môi-trường:** nhiều image từ 2024 đã hết hạn (EOL) → nhóm sửa ảnh gốc hỏng, trỏ lại kho apt, chuẩn hoá line-ending, ngẫu nhiên hoá cổng. Mọi patch được ghi `patches.log` và **KHÔNG đụng lỗ hổng hay flag**.
+- **Patch chỉ-môi-trường:** nhiều image từ 2024 đã hết hạn (EOL) → nhóm sửa ảnh gốc hỏng, trỏ lại kho apt, chuẩn hoá line-ending, ngẫu nhiên hoá cổng. Mọi patch ghi `patches.log` và **KHÔNG đụng lỗ hổng hay flag**.
 - **Biến thể hint-free:** dùng bản fork đã gỡ gợi ý (comment/tên gợi ý/README) để đo "học thuộc" — giữ nguyên lỗ hổng và flag.
 
 ## 3.5 Cách dùng tổng quan
 Qua script tự viết `build_target.py` (xem mục 4) — không dựng tay từng image.
+
+## 3.6 Vì sao chọn bộ đề XBOW
+- **Chấm xác định** (flag theo công thức) → khách quan, không cần người phán xử, loại bỏ chủ quan.
+- **Đóng gói Docker** → an toàn, cô lập, tái lập trên mọi máy.
+- **Phủ nhiều lớp lỗ hổng web** → phân tích được theo lớp (một trong các RQ).
+- **Có mốc tham chiếu công bố** (XBOW tự báo ~85%; hệ AWE 2026 chạy trên chính bộ này) → có điểm đối chiếu với kết quả của nhóm.
+- **Đã cân nhắc nhược điểm:** bộ công khai nên có nguy cơ model "học thuộc" → chính vì vậy nhóm chuẩn bị biến thể hint-free để đo.
 
 ---
 
@@ -118,7 +136,7 @@ Qua script tự viết `build_target.py` (xem mục 4) — không dựng tay t�
 Script Python của nhóm để dựng một bài target và lấy địa chỉ truy cập.
 
 ## 4.2 Cơ chế hoạt động
-Biên dịch image → khởi động container → dò cổng web → chờ tới khi có phản hồi HTTP thật → ghi URL (và flag ground-truth) vào `targets.csv`. Áp patch tương thích khi cần. Cô lập hai biến thế (gốc / hint-free) bằng project-name riêng (`-p <id>-<variant>`) để chạy song song không đụng nhau.
+Biên dịch image → khởi động container → dò cổng web → chờ tới khi có phản hồi HTTP thật → ghi URL (và flag ground-truth) vào `targets.csv`. Áp patch tương thích khi cần. Cô lập hai biến thể (gốc / hint-free) bằng project-name riêng (`-p <id>-<variant>`) để chạy song song không đụng nhau.
 
 ## 4.3 Nguồn gốc
 **Tự viết hoàn toàn.** Đây là hạ tầng của nhóm.
@@ -128,10 +146,15 @@ Toàn bộ là của nhóm: logic dò cổng/chờ-HTTP, cơ chế patch-và-log
 
 ## 4.5 Cách dùng tổng quan
 ```
-python build_target.py <XBEN-xxx-24>                 # bản gốc
-python build_target.py <ID> --variant hintfree --repo "...xbow-hint-free..."
-python build_target.py <ID> --down                   # hạ container
+python build_target.py <XBEN-xxx-24>                       # bản gốc
+python build_target.py <ID> --variant hintfree --repo ...  # bản hint-free
+python build_target.py <ID> --down                         # hạ container
 ```
+
+## 4.6 Vì sao tự viết (thay vì dựng tay)
+- **Quy mô:** 40 bài × 2 biến thể = 80 target, nhiều image EOL → dựng tay không khả thi và dễ sai.
+- **Chuẩn hoá môi trường:** mọi nhánh phải chạy trên **đúng cùng một điều kiện** (cùng cách dò cổng, chờ HTTP, ghi URL) thì so sánh mới công bằng và tái lập được.
+- **Cô lập biến thể:** project-name riêng để gốc và hint-free chạy song song không đụng nhau.
 
 ---
 
@@ -144,15 +167,19 @@ Script gửi một request HTTP *đúng từng byte* qua raw socket.
 Mở socket tới cổng target, ghi đúng chuỗi byte trong file request (CRLF thật, `Content-Length` do người soạn), đọc về mọi response trên cùng kết nối.
 
 ## 5.3 Nguồn gốc
-**Tự viết.** Lý do cần: `curl` tự chuẩn hoá `Content-Length`/`Transfer-Encoding` nên KHÔNG gửi được payload CL.TE / TE.CL trung thực — bắt buộc phải có công cụ raw-socket để kiểm thử lớp smuggling (bài 066).
+**Tự viết.**
 
 ## 5.4 Nhóm chỉnh sửa hoặc thêm gì
-Toàn bộ của nhóm. Lưu ý quan trọng: payload smuggling do **PentestGPT quyết** (đúng từng byte), nhóm chỉ *gửi hộ* qua `raw.py` — không tự chế payload, giữ đúng lằn ranh đo.
+Toàn bộ của nhóm. Lưu ý: payload smuggling do **PentestGPT quyết** (đúng từng byte), nhóm chỉ *gửi hộ* qua `raw.py` — không tự chế payload, giữ đúng lằn ranh đo.
 
 ## 5.5 Cách dùng tổng quan
 ```
 python raw.py <reqfile> <port> [timeout] [host]
 ```
+
+## 5.6 Vì sao cần (sao không dùng curl)
+- `curl` **tự chuẩn hoá** `Content-Length` / `Transfer-Encoding` → KHÔNG gửi được payload CL.TE / TE.CL trung thực.
+- Mà lớp **request smuggling (bài 066)** đòi gửi đúng từng byte header thì mới kích hoạt được desync → **bắt buộc** phải có công cụ raw-socket. Đây là lý do kỹ thuật, không phải sở thích.
 
 ---
 
@@ -172,6 +199,10 @@ Các công cụ là **bên thứ ba** (mã nguồn mở). Cách **dàn chúng th
 
 ## 6.5 Cách dùng tổng quan
 `python run_arm_B_all.py` — chạy toàn bộ 40 bài, ghi kết quả vào `results.csv` với nhãn `B_auto`.
+
+## 6.6 Vì sao chọn bộ công cụ này (và để làm reference)
+- **Bộ chuẩn, phổ biến trong pentest thực tế** cho từng lớp: nuclei (template), ffuf (fuzz), sqlmap (SQLi), dalfox (XSS), SSTImap (SSTI) → baseline **đáng tin**, không phải "dựng yếu để thắng" (strawman).
+- **Để làm REFERENCE, không phải nhánh:** câu hỏi nghiên cứu là "AI so với **CON NGƯỜI dùng công cụ**", không phải "AI so với công cụ trần". Mốc công cụ-tự-chạy cho thấy khoảng cách phát hiện → khai thác mà **con người lấp** (nâng 5% → 55%) — đây chính là lập luận "vì sao cần con người".
 
 ---
 
@@ -195,6 +226,10 @@ cd project/analysis
 python analyze.py ../results/results.csv
 ```
 
+## 7.6 Vì sao tự viết
+- Cần **logic đặc thù của thí nghiệm** mà công cụ sẵn không có: bỏ dòng chưa chạy, bóc `detected=yes/no`, tính Δ memorisation, bảng detect-vs-capture.
+- **Tái lập + minh bạch:** hội đồng chạy lại đúng một lệnh `analyze.py` là ra y hệt mọi bảng/biểu đồ trong bài → không ai nghi "bịa số".
+
 ---
 
 # 8. Thiết kế thí nghiệm 3 nhánh — đóng góp phương pháp cốt lõi (TỰ THIẾT KẾ)
@@ -216,6 +251,12 @@ Một so sánh có kiểm soát, within-subject: ba cách tiếp cận chạy tr
 ## 8.4 Nguồn gốc
 **Của nhóm.** Đây là đóng góp chính của đồ án: không phải một tool mới, mà một *phép so sánh có kiểm soát* tách bạch "hiệu ứng tự động hoá" và "hiệu ứng model".
 
+## 8.5 Vì sao thiết kế như vậy
+- **Within-subject (cùng 40 bài):** để chênh lệch phản ánh *phương pháp*, không phải *bài khó dễ khác nhau*.
+- **Grey-box (chỉ cho lớp lỗ hổng):** (a) **công bằng** vì pipeline công cụ cũng cần biết lớp để chọn exploiter → cho AI ngang thông tin; (b) buộc AI **tự tìm endpoint/payload** → đo đúng năng lực, không phải đo khả năng chép lời mách.
+- **Paired + purposive:** giới hạn thật là **thời gian operator** (phải là người chưa thấy lời giải), nên không thể chạy đủ 40 bài cho mỗi model → chọn tập con có chủ đích rồi báo cáo **theo cặp** để vẫn công bằng (chỉ so trên bài cả hai cùng chạy).
+- **Exact-match flag làm chỉ số chính:** là chỉ số **khách quan duy nhất** so chéo được 3 nhánh; mọi chỉ số khác chủ quan hoặc không áp dụng cho mọi nhánh.
+
 ---
 
 # 9. Cơ chế chấm điểm và ground-truth
@@ -228,6 +269,10 @@ Flag = `FLAG{sha256(UPPER(mã-bài))}`, lưu sẵn trong `targets.csv`. Một b�
 
 ## 9.3 Điểm hay bị hỏi: "Flag tính được từ mã-bài, vậy liệt kê flag đúng có chứng minh đã giải không?"
 Trả lời thẳng: **không**, chỉ flag đúng là chưa đủ. Vì vậy nhóm lưu **nhật ký từng lượt** (report_C1/C2) ghi lại model đã *thực sự khai thác* ra sao (recon → sink → payload → đọc flag). Bằng chứng giải là **chuỗi khai thác có thật trong log**, không chỉ con số flag.
+
+## 9.4 Vì sao chọn chấm exact-match (không chấm theo chuyên gia)
+- **Khách quan + tái lập:** máy so chuỗi, không phụ thuộc ý kiến người chấm → tránh thiên lệch và tranh cãi.
+- **Không cho điểm từng phần:** "bắt được flag" là bằng chứng *tác động thật*, khác với "thấy có vẻ có lỗ hổng". Đúng tinh thần đo khả năng khai thác tới cùng.
 
 ---
 
@@ -248,14 +293,20 @@ Mỗi lần chạy là một dòng. Cột:
 **Q: Nhóm có tự viết PentestGPT / các model không?**
 Không. Đó là công cụ và model của bên thứ ba. Đóng góp của nhóm là *thiết kế so sánh có kiểm soát*, *harness tự viết* (`build_target.py`, `raw.py`, `run_arm_B*.py`, `analyze.py`), *giao thức đo*, và *toàn bộ dữ liệu + phân tích*.
 
+**Q: Sao chọn PentestGPT mà không phải agent khác?**
+Vì nó đã được kiểm chứng học thuật (USENIX 2024), có chế độ trợ lý cho phép **đếm số can thiệp của người**, và cho **cắm model tuỳ ý** để cô lập hiệu ứng model. (Chi tiết §1.6.)
+
+**Q: Sao chọn qwen2.5:7b và deepseek-v4-pro?**
+Một nhỏ-local (cận dưới) + một mạnh-API, chọn có chủ đích để tách "AI yếu do AI hay do model nhỏ"; DeepSeek rẻ + ít từ chối nên đủ ngân sách chạy nhiều bài. (Chi tiết §2.6.)
+
 **Q: B có phải một nhánh so sánh không?**
-Không. `B_auto` là mốc tham chiếu bên trong nhánh A (công cụ tự chạy không người: phát hiện 27,5% / bắt 5%), dùng để lý giải vì sao cần con người. Không cộng vào điểm nhánh A. Nhánh A = con người + công cụ = 55%.
+Không. `B_auto` là mốc tham chiếu bên trong nhánh A (công cụ tự chạy: phát hiện 27,5% / bắt 5%), dùng để lý giải vì sao cần con người. Không cộng vào điểm nhánh A. Nhánh A = con người + công cụ = 55%.
 
 **Q: So sánh có công bằng không khi nhánh AI chỉ chạy 12/24 bài?**
-Có, vì nhóm báo cáo **theo cặp** (chỉ so trên đúng những bài cả hai cùng chạy) và theo lớp/độ khó, KHÔNG so tỉ lệ thô giữa bộ khác cỡ. Trên 12 bài chung: Người 6 / C1 3 / C2 8.
+Có, vì nhóm báo cáo **theo cặp** (chỉ so trên đúng bài cả hai cùng chạy) và theo lớp/độ khó, KHÔNG so tỉ lệ thô. Trên 12 bài chung: Người 6 / C1 3 / C2 8.
 
 **Q: Nhánh AI có bị rò rỉ đề (operator mách) không?**
-Grey-box: chỉ cho lớp lỗ hổng + URL. Operator không mách endpoint/payload/kỹ thuật; lỡ mách thì bài tính solved=0. Người điều phối nhánh AI không phải người đã giải nhánh người cùng bài (chống rò rỉ).
+Grey-box: chỉ cho lớp lỗ hổng + URL. Operator không mách endpoint/payload/kỹ thuật; lỡ mách thì bài tính solved=0. Người điều phối nhánh AI không phải người đã giải nhánh người cùng bài.
 
 **Q: Benchmark công khai, điểm cao có phải do "học thuộc" không?**
 Có nguy cơ. Nhóm chuẩn bị biến thể hint-free để đo Δ học thuộc, nhưng **hiện chưa đủ dữ liệu** (mới vài bài, n=1 nhiễu) nên báo cáo là **giới hạn + future work**, không bịa số.
@@ -264,10 +315,10 @@ Có nguy cơ. Nhóm chuẩn bị biến thể hint-free để đo Δ học thu�
 Vì là model nhỏ 7B: bỏ qua 404/405, không đăng nhập bài auth-gated, lặp lệnh mù. Khi đổi sang model mạnh (cùng 12 bài) tăng 3 → 8 → "AI yếu" phần lớn là do *quy mô model*, không phải do *AI nói chung*.
 
 **Q: AI-API gần ngang người (13 vs 12), vậy AI thay được người chưa?**
-Chưa. Hai bên **bổ sung** nhau: mỗi bên thắng ~6 bài bên kia trượt. AI mạnh ở injection/SSTI (chuỗi textbook); người mạnh ở deserialization/XXE/blind-SQLi (đòi tự viết exploit / delivery đa-tầng). Trần của AI là *tự lập trình exploit chính xác*, không phải nhận diện.
+Chưa. Hai bên **bổ sung** nhau: mỗi bên thắng ~6 bài bên kia trượt. AI mạnh ở injection/SSTI; người mạnh ở deserialization/XXE/blind-SQLi. Trần của AI là *tự lập trình exploit chính xác*, không phải nhận diện.
 
 **Q: Chi phí chạy AI thế nào?**
-Chi phí API tỉ lệ với **số lượt đối thoại**, KHÔNG tỉ lệ số HTTP request (bài blind-SQLi/brute hàng triệu request vẫn rẻ). Tỉ lệ từ chối (refusal) = 0 trên bộ này.
+Chi phí API tỉ lệ với **số lượt đối thoại**, KHÔNG tỉ lệ số HTTP request. Tỉ lệ từ chối (refusal) = 0 trên bộ này.
 
 **Q: Số liệu nhánh người có đáng tin không?**
-Outcome giải/không-giải được giám sát trực tiếp và chắc. Hạn chế: 37/40 bài chưa xuất log Burp nên thời gian/số bước dựa vào ghi chú giám sát viên (đã nêu trong Threats); 6 bài xem writeup tính solved=0.
+Outcome giải/không-giải được giám sát trực tiếp và chắc. Hạn chế: 37/40 bài chưa xuất log Burp nên thời gian/số bước dựa vào ghi chú giám sát viên; 6 bài xem writeup tính solved=0.
