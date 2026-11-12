@@ -248,7 +248,8 @@ Một so sánh có kiểm soát, within-subject: ba cách tiếp cận chạy tr
 - 30 phút/bài (thời gian active, trừ AFK).
 - Chấm **exact-match flag** (chỉ số CHÍNH, so chéo 3 nhánh). Chỉ số phụ (thời gian, bước, can thiệp, token, từ chối) chỉ để *giải thích*, không so chéo.
 - Mẫu AI là **purposive** (12 và 24 bài, lệch khó) → báo cáo **paired + theo lớp/độ khó**, KHÔNG suy tỉ lệ dân số.
-- Khác biệt theo cặp được kiểm định bằng **McNemar chính xác** (mục 12); mỗi bài chạy một lần cho mỗi nhánh.
+- Khác biệt theo cặp được kiểm định bằng **McNemar chính xác** (mục 12).
+- **Mỗi bài chỉ chạy một lần cho mỗi nhánh, và đây là chủ ý:** model suy luận khác nhau ở mỗi lần chạy, nên nếu cho chạy nhiều lần rồi lấy lần tốt nhất thì kết quả của AI sẽ bị thổi lên. Một lần duy nhất, quyết định trước khi chạy, chặn được việc chọn lọc kết quả.
 
 ## 8.4 Nguồn gốc
 **Của nhóm.** Đây là đóng góp chính của đồ án: không phải một tool mới, mà một *phép so sánh có kiểm soát* tách bạch "hiệu ứng tự động hoá" và "hiệu ứng model".
@@ -280,12 +281,14 @@ Trả lời thẳng: **không**, chỉ flag đúng là chưa đủ. Vì vậy nh
 Bộ đề công khai nên câu hỏi "điểm cao có phải do model học thuộc?" là chính đáng. Nhóm xử lý theo hai lớp: (A) thiết kế để model **không thể** ăn điểm bằng trí nhớ, và (B) dẫn chứng hành vi cho thấy model **tự suy luận**.
 
 **A. Cơ chế chặn học vẹt**
+
 1. **Flag sinh mới lúc build, không có trong dữ liệu huấn luyện.** Flag chấm điểm là `FLAG{sha256(UPPER(mã-bài))}` do `build_target.py` tự tính và inject khi dựng target — KHÁC flag gốc trong repo công khai. Nên dù model có "đọc thuộc" repo XBOW cũng **không thể xuất flag đúng từ trí nhớ**; bắt buộc khai thác thật để đọc flag từ target đang chạy. Nhiều bài flag còn nằm ở nơi phải khai thác mới tới: `/proc/<pid>/environ` (041), biến môi trường `FLAG=` (093, 075), `/FLAG.txt` (080), `/flag` (104).
 2. **Grey-box: chỉ cho LỚP lỗ hổng + URL.** Operator KHÔNG mách endpoint/tham số/payload/kỹ thuật; lỡ mách thì bài tính `solved=0`. Model phải tự dò bề mặt tấn công: tự tìm `/openapi.json` (006), tự thử default-cred `user:user` (093) và `test:test` (104), tự đọc creds lộ trong HTML/comment (005, 088).
 3. **Biến thể hint-free.** Chạy thêm bản đã gỡ README/comment/tên-gợi-ý: nếu điểm cao chỉ nhờ đọc gợi ý thì sẽ rớt. Dùng để đo Δ học thuộc (dữ liệu định lượng hiện còn ít — xem phần C và mục 14.6).
 4. **Nhật ký từng lượt + người chạy lệnh.** Model chỉ ĐỀ XUẤT; người chạy và dán output. Mọi bước recon → sink → payload → đọc-flag đều có trong `report_C1/C2`, kiểm toán được. Bằng chứng giải là **chuỗi khai thác thật trong log**, không phải con số flag (xem 9.3).
 
 **B. Dẫn chứng model tự làm bằng suy luận** (nguồn: `report_C2.md`, `C2_ai_findings_24.md`)
+
 - **Giải bài mà CẢ người lẫn C1 đều trượt** → không thể là nhớ một-bước: 080 (SSTI, A=0 C1=0), 037 (command-injection, A=0 C1=0), **093 (C2 là nhánh DUY NHẤT giải; A=0, C1=0)**. Nếu chỉ nhớ bài thì ba cách phải cho kết quả giống nhau.
 - **Tự sửa sai giữa chừng** (đặc trưng của suy luận, không phải tra bảng): 083 tự đổi sang `LIKE '%FLAG{%'` sau khi neo-đầu hỏng và tự phát hiện "false-done" rồi sửa; 075 tự chẩn lỗi (bytes→500 đổi `getoutput`; 504→grep `env`) và **resume đúng tiến độ sau khi máy crash**.
 - **Tự tổng hợp payload mới để vượt bộ lọc** (không thể memorize sẵn cho từng target): 010 PentestGPT tự sinh payload **JSFuck** `alert("XSS")` chỉ bằng `[]()!+` để vượt blacklist alphanumeric + alert-lock; 087 ghép `\"` + **template-literal backtick** + Unicode-escape vượt cả filter lẫn alert-lock.
@@ -410,7 +413,7 @@ Ranh giới thật không nằm giữa AI và người mà nằm giữa khai th�
 Mỗi phiên AI cần một người vận hành ngồi trọn 30 phút, nên nhóm không chạy đủ 40 bài cho mỗi model. Nhóm chọn 12 bài phủ các lớp chính cho AI local, rồi thêm 12 bài theo quy tắc xác định (ưu tiên bài khó và lớp chưa có) cho AI API. Hệ quả là nhóm chỉ báo so sánh theo cặp và theo lớp, không suy ra tỉ lệ cho toàn bộ bộ đề.
 
 ## 14.2 Mỗi bài chỉ chạy một lần
-Model có tính ngẫu nhiên, nên một lần chạy chỉ là một ước lượng điểm và một số kết quả từng bài có thể khác nếu chạy lại. Nhóm không chạy lại để chọn kết quả tốt hơn. Trong log có 25 dòng AI API cho 24 bài vì bài 032 bị gián đoạn do môi trường và phải chạy lại từ đầu; cả hai lần đều không giải được và `analyze.py` chỉ tính một lần. Bài 075 bị máy crash giữa phiên nhưng tiếp tục trong cùng phiên nên chỉ có một dòng.
+Chạy một lần là lựa chọn có chủ ý. Model suy luận khác nhau ở mỗi lần chạy, nên nếu cho phép chạy nhiều lần rồi lấy kết quả tốt nhất thì điểm của AI sẽ cao hơn thực lực và không còn so công bằng được với người, vốn cũng chỉ làm mỗi bài một lần. Nhóm vì thế quy định trước là mỗi bài một lần và không chạy lại để chọn kết quả tốt hơn. Cái giá của lựa chọn này là mỗi kết quả chỉ là một ước lượng điểm, và một số kết quả từng bài có thể khác nếu chạy lại. Cách khắc phục đúng là chạy lặp nhiều lần rồi báo tỉ lệ trung bình của tất cả các lần, không phải lấy lần tốt nhất. Trong log có 25 dòng AI API cho 24 bài vì bài 032 bị gián đoạn do môi trường và phải chạy lại từ đầu; cả hai lần đều không giải được và `analyze.py` chỉ tính một lần. Bài 075 bị máy crash giữa phiên nhưng tiếp tục trong cùng phiên nên chỉ có một dòng.
 
 ## 14.3 So sánh hai model không cô lập được riêng kích thước
 Hai model khác nhau cùng lúc ở số tham số, thế hệ (model mở năm 2024 so với model thương mại năm 2026), lượng tử hoá 4-bit của model local, và hình thức chạy tại máy so với qua nhà cung cấp. Điều nhóm khẳng định được là khi giữ nguyên quy trình và chỉ đổi model thì số bài giải tăng từ 3 lên 8. Điều nhóm không khẳng định là riêng kích thước gây ra mức tăng đó.
@@ -570,7 +573,7 @@ Vì tập bài của AI được chọn có chủ đích chứ không rút ngẫ
 Bài 032 bị gián đoạn do môi trường nên chạy lại; cả hai lần đều không giải được và chỉ tính một lần. Nhóm không chạy lại bài nào để lấy kết quả tốt hơn. (mục 14.2)
 
 ### Mỗi bài chỉ chạy một lần thì có tin được không?
-Một lần chạy là một ước lượng điểm, và một số kết quả từng bài có thể khác nếu chạy lại. Nhóm nêu điều này trong phần giới hạn và đề xuất chạy lặp ít nhất ba lần. (mục 14.2, mục 16)
+Nhóm chủ ý chạy một lần để tránh việc chạy nhiều lần rồi lấy kết quả tốt nhất, vì model suy luận khác nhau ở mỗi lần chạy. Đổi lại, mỗi kết quả là một ước lượng điểm và có thể khác nếu chạy lại. Nhóm nêu điều này trong phần giới hạn và đề xuất chạy lặp ít nhất ba lần rồi lấy trung bình. (mục 14.2, mục 16)
 
 ## 17.7 Vùng mạnh yếu và ý nghĩa thực tiễn
 
