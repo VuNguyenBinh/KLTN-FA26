@@ -4,7 +4,7 @@ title: "Sổ tay phản biện KLTN — Mô tả các thành phần đồ án"
 
 # Sổ tay phản biện KLTN — Mô tả các thành phần đồ án
 
-**Mục đích:** văn bản tra cứu nhanh khi trả lời câu hỏi hội đồng. Mục 1 đến 10 mô tả từng thành phần theo 6 ý cố định: (1) Là gì, (2) Cơ chế hoạt động, (3) Nguồn gốc (tự viết hay dùng lại của người khác), (4) Nhóm chỉnh sửa hoặc thêm gì, (5) Cách dùng tổng quan, (6) Vì sao chọn. Mục 11 đến 16 gom kết quả, thống kê, vùng mạnh yếu, giới hạn, công trình liên quan và hướng phát triển. Mục 17 là các câu hỏi hay gặp kèm câu trả lời ngắn.
+**Mục đích:** văn bản tra cứu nhanh khi trả lời câu hỏi hội đồng. Mục 1 đến 10 mô tả từng thành phần theo 6 ý cố định: (1) Là gì, (2) Cơ chế hoạt động, (3) Nguồn gốc (tự viết hay dùng lại của người khác), (4) Nhóm chỉnh sửa hoặc thêm gì, (5) Cách dùng tổng quan, (6) Vì sao chọn. Mục 11 đến 16 gom kết quả, thống kê, vùng mạnh yếu, giới hạn, công trình liên quan và hướng phát triển. Mục 17 là các câu hỏi phản biện xếp theo chủ đề, kèm câu trả lời ngắn.
 
 **Đề tài:** A Comparative Study of AI-Assisted and Traditional Web Application Penetration Testing Techniques — Nhóm GFA261A11, môn FA261A11, GVHD Trần Văn Ninh.
 
@@ -454,64 +454,151 @@ Việc đầu tiên nên làm là chạy lặp, ít nhất ba lần cho mỗi b�
 
 ---
 
-# 17. Câu hỏi phản biện hay gặp
+# 17. Câu hỏi phản biện theo chủ đề
 
-**Nhóm có tự viết PentestGPT hay các model không?**
-Không. Đó là công cụ và model của bên thứ ba. Phần của nhóm là thiết kế so sánh có kiểm soát, các script tự viết (`build_target.py`, `raw.py`, `run_arm_B*.py`, `analyze.py`), giao thức đo, và toàn bộ dữ liệu cùng phân tích.
+Mỗi câu trả lời dưới đây đủ ngắn để nói trong khoảng nửa phút. Số mục trong ngoặc chỉ chỗ có chi tiết.
 
-**Vì sao chọn PentestGPT mà không phải agent khác?**
-Vì nó đã được kiểm chứng học thuật, có chế độ trợ lý cho phép đếm số lần người can thiệp, và cho cắm model tuỳ ý nên chỉ cần đổi model là so được. Chi tiết ở mục 1.6.
+## 17.1 Đóng góp và phạm vi của đồ án
 
-**Vì sao chọn qwen2.5:7b và deepseek-v4-pro?**
-Nhóm cần một model nhỏ chạy tại máy làm mốc dưới và một model mạnh qua API, để xem kết quả thay đổi thế nào khi chỉ đổi model. DeepSeek rẻ và không từ chối trên bộ đề này nên đủ ngân sách chạy 24 bài. Chi tiết ở mục 2.6.
+### Đóng góp chính của nhóm là gì?
+Một phép so sánh có kiểm soát đặt ba cách tiếp cận (người dùng công cụ, AI với model nhỏ, AI với model mạnh) lên cùng 40 bài, cùng ngân sách 30 phút và cùng luật chấm, kèm hạ tầng tự viết để dựng bài, chạy và phân tích. Đồ án không đề xuất công cụ AI mới. (mục 0, mục 8)
 
-**B có phải một nhánh so sánh không?**
-Không. `B_auto` là tầng công cụ tự chạy nằm trong nhánh truyền thống, dùng làm mốc tham chiếu: nó phát hiện 27,5% nhưng chỉ bắt flag 5%, cho thấy vì sao cần con người. Điểm nhánh A là số bài tester bắt được flag, tức 22 trên 40.
+### Phần nào nhóm tự làm, phần nào dùng lại?
+PentestGPT, hai model, bộ đề XBOW và các công cụ quét là của bên thứ ba. Nhóm tự viết `build_target.py`, `raw.py`, `run_arm_B*.py`, `analyze.py`, tự thiết kế giao thức đo và tự thu toàn bộ dữ liệu. (mục 0)
 
-**Nếu cộng cả công cụ thì nhánh A được bao nhiêu?**
-Sẽ là 24 trên 40, vì công cụ bắt thêm hai bài SQL injection dễ (071 và 083) mà tester trượt. Nhóm giữ con số chặt hơn là 22 và nêu rõ con số 24 trong bài báo.
+### Đã có nghiên cứu so AI với chuyên gia rồi, đồ án khác gì?
+Nghiên cứu của Stanford (Lin và cộng sự) đánh giá agent tự trị trên một mạng thật. Đồ án đánh giá AI ở vai trợ lý trên bộ đề chấm tự động, có thêm tầng công cụ không AI làm mốc, và chỉ đổi model để thấy ảnh hưởng của model. (mục 15.2)
 
-**Baseline người có yếu không, và hai bài SQL injection trượt là sao?**
-Không yếu. Tester của nhóm ở mức staff đến senior, và nhánh còn có một tester ngoài nhóm. Hai bài SQL injection trượt là do quy trình, vì tester không chạy sqlmap trong khi công cụ tự chạy bắt được cả hai; chỉ cần quy định chạy pipeline trước là lấy lại được hai bài đó. Theo ước lượng của nhóm, một người mức principal sẽ đạt khoảng 31 trên 40, chủ yếu nhờ thêm bài vừa và khó, và ngay ở mức đó nhóm bài khó vẫn dao động khoảng 2 đến 7 trên 8. Đây là ước lượng, không phải số đo.
+### Kết quả có áp dụng cho hệ thống thật không?
+Chưa nên suy rộng. Bốn mươi bài là ứng dụng CTF đóng gói, mỗi bài một lỗ hổng. Nhóm nêu điều này trong phần giới hạn. (mục 14.9)
 
-**So sánh có công bằng không khi nhánh AI chỉ chạy 12 và 24 bài?**
-Có, vì nhóm chỉ so trên đúng những bài hai bên cùng chạy và không so tỉ lệ thô. Trên 12 bài chung người giải 6, AI local 3, AI API 8; trên 24 bài người giải 12 và AI API giải 13.
+## 17.2 Thiết kế thí nghiệm và tính công bằng
 
-**Người và AI có được cho cùng thông tin không?**
-Có. Cả tester lẫn model chỉ được biết lớp lỗ hổng và URL. Endpoint, tham số, payload và kỹ thuật đều phải tự tìm.
+### Vì sao gọi là so sánh có kiểm soát?
+Vì các nhánh chạy trên cùng bài, cùng thời gian tối đa, cùng thông tin đầu vào và cùng cách chấm. Khi đó khác biệt về kết quả đến từ phương pháp, không đến từ bài dễ hay khó khác nhau. (mục 8)
 
-**Nhánh AI có bị rò rỉ đề không?**
-Người vận hành nhánh AI là người khác với hai tester, và làm phiên AI trước khi đọc log công cụ của cùng bài. Trong phiên, người vận hành không cung cấp endpoint, payload hay kỹ thuật; nếu lỡ cung cấp thì bài đó tính là không giải.
+### Người và AI có được cho cùng thông tin không?
+Có. Cả tester lẫn model chỉ được biết lớp lỗ hổng và URL. Endpoint, tham số, payload và kỹ thuật đều phải tự tìm. (mục 8.3)
 
-**Kết quả có ý nghĩa thống kê không?**
-Chưa. Kiểm định McNemar chính xác cho p bằng 0,06 giữa hai model trên 12 bài, 0,69 giữa AI API và người trên 12 bài, và 1,0 trên 24 bài. Nhóm vì thế trình bày kết quả như chỉ dấu và nói rõ điều này trong tóm tắt, phần kết quả và kết luận. Chi tiết ở mục 12.
+### Vì sao cho biết trước lớp lỗ hổng?
+Pipeline công cụ cũng cần biết lớp để chọn đúng công cụ khai thác, nên cho các nhánh cùng mức thông tin đó là công bằng. Phần khó là tìm đúng chỗ và khai thác tới flag thì vẫn phải tự làm. (mục 8.5)
 
-**Benchmark công khai, điểm cao có phải do học thuộc không?**
-Model không thể lấy điểm bằng cách nhớ flag, vì flag chấm điểm được sinh và cài lúc dựng bài, khác với flag trong repo gốc. Log còn cho thấy model tự suy luận: giải cả bài mà người và AI local đều trượt (080, 037, 093), tự sửa sai giữa chừng (083, 075), tự tạo payload vượt bộ lọc (010, 087), và có bài nhận diện đúng nhưng không viết nổi exploit (101, 057). Phần đo định lượng bằng bản hint-free thì chưa đủ dữ liệu nên nhóm báo là giới hạn. Chi tiết ở mục 9.5.
+### Nhánh AI chỉ chạy 12 và 24 bài, so với 40 bài của người có công bằng không?
+Nhóm không so tỉ lệ thô giữa các tập khác cỡ. Nhóm chỉ so trên đúng những bài hai bên cùng chạy: 12 bài chung cho cả ba, và 24 bài cho người với AI API. (mục 11.2)
 
-**Vì sao AI local chỉ giải 3 trên 12?**
-Model nhỏ bỏ qua các phản hồi 404 và 405, không đăng nhập ở những bài có rào xác thực, và lặp lại lệnh sai. Khi giữ nguyên quy trình và đổi sang model mạnh, số bài giải tăng lên 8. Nhóm không khẳng định riêng kích thước là nguyên nhân, vì hai model còn khác nhau về thế hệ, lượng tử hoá và hình thức chạy.
+### Vì sao không chạy AI đủ 40 bài?
+Mỗi phiên AI cần một người vận hành ngồi trọn 30 phút và người đó phải chưa biết lời giải, nên thời gian người vận hành là giới hạn thật. Nhóm chọn tập con theo quy tắc xác định và nêu rõ đây là giới hạn. (mục 14.1)
 
-**AI API gần ngang người, vậy AI thay được người chưa?**
-Chưa. Hai bên giải những bài khác nhau: mỗi bên có khoảng sáu bài bên kia trượt. AI mạnh ở injection và SSTI, người mạnh ở deserialization, XXE và blind SQL injection. Mức ngang nhau này là so với người mức staff, và giới hạn rõ nhất của model là tự viết exploit chính xác. Chi tiết ở mục 13.
+### Tầng công cụ tự chạy (B) có phải một nhánh so sánh không?
+Không. Đó là mốc tham chiếu nằm trong nhánh truyền thống. Nó phát hiện lỗ hổng ở 27,5% số bài nhưng chỉ bắt flag 5%, cho thấy vì sao cần con người. (mục 6.4)
 
-**AI có nhanh hơn người không?**
-Không. Một phiên của người trung bình 21 phút, còn phiên AI 25 đến 26 phút. Lợi ích nằm ở chỗ model mạnh cần ít giám sát hơn, từ 2,0 xuống 0,6 lần can thiệp mỗi bài.
+### Người vận hành có mách nước cho AI không?
+Không. Người vận hành chỉ chạy lệnh model đề xuất và dán kết quả lại. Nếu lỡ cung cấp endpoint, payload hay kỹ thuật thì bài đó tính là không giải. Người vận hành nhánh AI cũng khác với hai tester của nhánh người. (mục 1.4, mục 8.3)
 
-**Cặp cô lập 075 và 057 nghĩa là gì?**
-Hai bài cùng ứng dụng, cùng lỗ hổng, model nhận diện đúng cả hai, chỉ khác định dạng payload. Bài cần một dòng khai báo thì model giải được, bài cần viết một đoạn code thì model trượt. Chi tiết ở mục 13.3.
+## 17.3 Nhánh người
 
-**Chi phí chạy AI thế nào?**
-Chi phí bám theo số lượt đối thoại với model, không theo số request gửi vào target. Nhóm chưa ghi token đủ đều để lập bảng nên chỉ báo định tính. Không có lần từ chối nào trên bộ đề này.
+### Ai là người kiểm thử trong nhánh người?
+Hai tester: một thành viên nhóm ở mức staff đến senior, và một sinh viên an toàn thông tin năm cuối ngoài nhóm có kinh nghiệm Hack The Box, TryHackMe, thi CTF và một lần đánh giá black-box trên website thật. (mục 14.4)
 
-**Vì sao log có 25 dòng AI API mà bài báo ghi 24 bài?**
-Bài 032 bị gián đoạn do môi trường nên chạy lại, cả hai lần đều không giải được và chỉ tính một lần. Nhóm không chạy lại bài nào để lấy kết quả tốt hơn.
+### Baseline người có yếu không?
+Không. Mức 55% đến từ tester ở mức staff đến senior. Hai bài SQL injection trượt là do quy trình, vì tester không chạy sqlmap trong khi công cụ tự chạy bắt được cả hai. (mục 14.4)
 
-**Số liệu nhánh người có đáng tin không?**
-Kết quả giải hay không giải được giám sát trực tiếp nên chắc. Thời gian và số bước thì dựa vào ghi chú của người giám sát vì 37 trên 40 bài chưa xuất log Burp. Sáu bài có xem writeup được tính là không giải.
+### Nếu tính cả công cụ thì nhánh người được bao nhiêu?
+Được 24 trên 40, vì công cụ bắt thêm hai bài SQL injection dễ (071 và 083). Nhóm giữ con số chặt hơn là 22 và ghi rõ con số 24 trong bài báo. (mục 8.2)
 
-**Đã có nghiên cứu so AI với chuyên gia, đồ án khác gì?**
-Nghiên cứu của Stanford đánh giá agent tự trị trên một mạng thật. Đồ án đánh giá AI ở vai trợ lý trên bộ đề chấm tự động, có thêm tầng công cụ không AI làm mốc, và chỉ đổi model để thấy ảnh hưởng của model. Chi tiết ở mục 15.2.
+### Một người giỏi hơn thì kết quả ra sao?
+Theo ước lượng của nhóm, một người mức principal đạt khoảng 31 trên 40, cao hơn rõ so với AI API. Đây là ước lượng, không phải số đo, và nhóm bài khó vẫn dao động khoảng 2 đến 7 trên 8 ngay cả ở mức đó. (mục 14.4)
 
-**Kết quả có áp dụng cho hệ thống thật không?**
-Chưa nên suy rộng. Bốn mươi bài là ứng dụng CTF đóng gói, mỗi bài một lỗ hổng. Nhóm nêu điều này trong phần giới hạn và đề xuất thử trên mục tiêu thật có uỷ quyền.
+### Thời gian và số bước của nhánh người có đáng tin không?
+Kết quả giải hay không giải được giám sát trực tiếp nên chắc. Thời gian và số bước dựa vào ghi chú của người giám sát, vì 37 trên 40 bài chưa xuất log Burp. Sáu bài có xem writeup được tính là không giải. (mục 14.5)
+
+## 17.4 Nhánh AI và model
+
+### Vì sao chọn PentestGPT?
+Vì nó đã được công bố ở USENIX Security 2024, có chế độ trợ lý cho phép đếm số lần người can thiệp, và cho cắm model tuỳ ý nên chỉ cần đổi model là so được. (mục 1.6)
+
+### Vì sao chọn qwen2.5:7b và deepseek-v4-pro?
+Nhóm cần một model nhỏ chạy tại máy làm mốc dưới và một model mạnh qua API. DeepSeek rẻ và không từ chối trên bộ đề này nên đủ ngân sách chạy 24 bài. (mục 2.6)
+
+### Vì sao AI local chỉ giải 3 trên 12?
+Model nhỏ bỏ qua các phản hồi 404 và 405, không đăng nhập ở những bài có rào xác thực, và lặp lại lệnh sai. Nó chỉ giải được bài dễ cần một payload trực tiếp. (mục 11)
+
+### Có thể nói AI yếu là do model nhỏ không?
+Chỉ nói được rằng dữ liệu nhất quán với điều đó. Khi giữ nguyên quy trình và đổi model, số bài giải tăng từ 3 lên 8. Nhưng hai model còn khác nhau về thế hệ, lượng tử hoá và hình thức chạy, nên nhóm không khẳng định riêng kích thước là nguyên nhân. (mục 14.3)
+
+### Can thiệp của người được đếm thế nào?
+Chạy lệnh model đề xuất không tính là can thiệp. Chỉ tính khi người vận hành phải chỉnh hướng, ví dụ kéo model về đúng nhiệm vụ. Con số là 2,0 lần mỗi bài với model nhỏ và 0,6 với model mạnh. (mục 1.4, mục 11.1)
+
+### AI có từ chối làm không, và chi phí thế nào?
+Không có lần từ chối nào trên bộ đề này. Chi phí bám theo số lượt đối thoại với model, không theo số request gửi vào target. Nhóm chưa ghi token đủ đều nên chỉ báo định tính. (mục 14.7)
+
+## 17.5 Bộ đề, chấm điểm và học thuộc
+
+### Vì sao chọn bộ đề XBOW?
+Vì chấm được bằng so khớp flag nên khách quan, đóng gói Docker nên an toàn và tái lập được, và phủ nhiều lớp lỗ hổng web. (mục 3.6)
+
+### Một bài được tính là giải khi nào?
+Khi flag bắt được khớp chính xác với flag đã cài lúc dựng bài và không ai cung cấp kỹ thuật cho bên giải. Không có điểm từng phần. (mục 9.2)
+
+### Flag tính được từ mã bài, vậy có flag đúng đã đủ chứng minh là giải chưa?
+Chưa. Vì vậy nhóm lưu nhật ký từng lượt cho mỗi phiên, ghi lại chuỗi khai thác từ dò tìm đến đọc flag. Bằng chứng giải là chuỗi đó trong log. (mục 9.3)
+
+### Bộ đề công khai, điểm cao có phải do model học thuộc không?
+Model không lấy điểm được bằng cách nhớ flag, vì flag chấm điểm được sinh lúc dựng bài và khác flag trong repo gốc. Log cũng cho thấy model tự suy luận: tự sửa sai giữa chừng, tự tạo payload vượt bộ lọc, và có bài nhận diện đúng nhưng không viết nổi exploit. (mục 9.5)
+
+### Vậy nhóm đã đo được mức học thuộc chưa?
+Chưa đo định lượng. Nhóm mới có vài lần chạy bản hint-free, một lần cho mỗi biến thể, nên chưa tách được học thuộc khỏi dao động ngẫu nhiên. Phần này được báo là giới hạn. (mục 14.6)
+
+### Nhóm có sửa bài không?
+Chỉ sửa môi trường để các image cũ từ 2024 còn chạy được, ví dụ đổi image nền hết hạn. Mọi thay đổi được ghi log và không đụng tới lỗ hổng hay flag. (mục 3.4)
+
+## 17.6 Kết quả và thống kê
+
+### Kết quả chính là gì?
+Công cụ tự chạy bắt flag 5%. Người bắt 22 trên 40. Trên 12 bài chung người giải 6, AI local 3, AI API 8. Trên 24 bài người giải 12 và AI API giải 13. (mục 11)
+
+### Các khác biệt đó có ý nghĩa thống kê không?
+Chưa. Kiểm định McNemar chính xác cho p bằng 0,06 giữa hai model, 0,69 giữa AI API và người trên 12 bài, và 1,0 trên 24 bài. Nhóm trình bày kết quả như chỉ dấu. (mục 12)
+
+### Vì sao dùng McNemar?
+Vì dữ liệu ghép cặp trên cùng bài và kết quả chỉ có giải hoặc không giải. Mẫu nhỏ nên nhóm dùng bản chính xác. (mục 12.1, 12.2)
+
+### Vì sao không báo khoảng tin cậy cho tỉ lệ của AI?
+Vì tập bài của AI được chọn có chủ đích chứ không rút ngẫu nhiên, nên khoảng tin cậy không có nghĩa. (mục 12.5)
+
+### Vì sao log có 25 dòng AI API mà bài báo ghi 24 bài?
+Bài 032 bị gián đoạn do môi trường nên chạy lại; cả hai lần đều không giải được và chỉ tính một lần. Nhóm không chạy lại bài nào để lấy kết quả tốt hơn. (mục 14.2)
+
+### Mỗi bài chỉ chạy một lần thì có tin được không?
+Một lần chạy là một ước lượng điểm, và một số kết quả từng bài có thể khác nếu chạy lại. Nhóm nêu điều này trong phần giới hạn và đề xuất chạy lặp ít nhất ba lần. (mục 14.2, mục 16)
+
+## 17.7 Vùng mạnh yếu và ý nghĩa thực tiễn
+
+### AI mạnh ở đâu và yếu ở đâu?
+Mạnh ở lỗ hổng khai thác được một mạch theo cách chuẩn sách như SSTI, SQL injection, command injection. Yếu khi phải tự viết đoạn mã khai thác nhiều bước chính xác, như padding oracle ở bài 101 và pickle ở bài 057. (mục 13.1)
+
+### Con người mạnh ở đâu và yếu ở đâu?
+Mạnh ở ca lệch chuẩn, nhiều bước, phải tự viết exploit, như deserialization, XXE sau rào đăng nhập và blind SQL injection. Yếu về khả năng nhân rộng và tụt ở nhóm bài khó trong 30 phút. (mục 13.1)
+
+### Cặp cô lập 075 và 057 cho thấy điều gì?
+Hai bài cùng ứng dụng và cùng lỗ hổng, model nhận diện đúng cả hai. Bài chỉ cần một dòng payload thì giải được, bài cần viết một đoạn code thì trượt. Điểm nghẽn vì thế nằm ở khâu viết exploit. (mục 13.3)
+
+### AI ngang người rồi, vậy thay được người chưa?
+Chưa. Hai bên giải những bài khác nhau, mỗi bên có khoảng sáu bài bên kia trượt, và mức ngang nhau chỉ đúng với người mức staff. (mục 13.4)
+
+### AI có nhanh hơn người không?
+Không. Phiên của người trung bình 21 phút, phiên AI 25 đến 26 phút. Lợi ích là model mạnh cần ít giám sát hơn. (mục 11.1)
+
+### Một đội pentest nên dùng kết quả này thế nào?
+Dùng model mạnh làm trợ lý cho các lỗ hổng chuẩn sách để giảm công giám sát, và để người lo các ca nhiều bước lệch chuẩn. Không nên rút kết luận về AI từ một model nhỏ chạy tại máy. (mục 13.4)
+
+## 17.8 Giới hạn và hướng phát triển
+
+### Giới hạn lớn nhất của nghiên cứu là gì?
+Mẫu nhỏ và mỗi bài chỉ chạy một lần, nên chưa có khác biệt nào đạt ý nghĩa thống kê. Kế đó là baseline người chỉ có hai tester và học thuộc chưa đo định lượng. (mục 14)
+
+### Nếu có thêm thời gian nhóm sẽ làm gì?
+Chạy lặp ít nhất ba lần mỗi bài, chạy AI đủ 40 bài, thêm tester ở mức cao hơn, thêm model để tách ảnh hưởng của kích thước, và ghi token đều để có bảng chi phí. (mục 16)
+
+### Thí nghiệm có an toàn và hợp lệ không?
+Mọi mục tiêu là container Docker chạy trên máy của nhóm, không có hệ thống thật nào bị tác động. Khoá API nằm trong file `.env` không đưa lên Git.
