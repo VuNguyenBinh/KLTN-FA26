@@ -73,6 +73,20 @@ Khi nó hỏi nhiệm vụ → dán prompt grey-box (lớp lỗ hổng + URL) �
 - **Cho cắm model tuỳ ý (local/API) trong cùng một khung** → cô lập đúng "hiệu ứng model" khi chỉ đổi model.
 - **Mã nguồn mở** → tái lập được, hội đồng kiểm tra lại được.
 
+## 1.7 Dùng công cụ mã nguồn mở của người khác trong nghiên cứu có hợp lệ không
+
+Hợp lệ, và đây là cách làm thông thường của nghiên cứu thực nghiệm. Một nghiên cứu so sánh cần một dụng cụ đo đứng yên, giống như phòng thí nghiệm dùng thiết bị có sẵn thay vì tự chế. Trong đồ án, PentestGPT đóng vai dụng cụ đó: nó là thứ được giữ nguyên để nhóm thay model và quan sát kết quả. Đối tượng nghiên cứu của nhóm là phép so sánh giữa ba cách tiếp cận, không phải bản thân PentestGPT.
+
+Có bốn lý do khiến việc dùng lại công cụ đã công bố là lựa chọn tốt hơn tự viết. Thứ nhất là độ tin cậy: PentestGPT đã qua bình duyệt tại USENIX Security 2024, nên hội đồng không phải đặt câu hỏi liệu công cụ có chạy đúng không. Thứ hai là khả năng tái lập: mã nguồn công khai nên bất kỳ ai cũng dựng lại được đúng thí nghiệm của nhóm. Thứ ba là khả năng đối chiếu: nhiều nghiên cứu sau đó dùng PentestGPT làm mốc, nên kết quả của nhóm đặt được cạnh các nghiên cứu khác. Thứ tư là tránh thiên lệch: nếu nhóm tự viết một agent rồi tự đánh giá nó thì khó tránh việc tinh chỉnh cho hợp với bộ đề, còn một công cụ của bên thứ ba không được thiết kế riêng cho thí nghiệm này.
+
+Điều kiện để việc dùng lại là đúng đắn về học thuật gồm ba điểm, và nhóm đáp ứng cả ba. Nhóm trích dẫn nguồn và nói rõ PentestGPT không phải do nhóm viết (mục 0 và tài liệu tham khảo [1] trong bài báo). Nhóm không sửa mã lõi, chỉ cấu hình model và viết prompt, nên kết quả vẫn là kết quả của PentestGPT nguyên bản. Nhóm dùng công cụ theo đúng giấy phép của tác giả: PentestGPT phát hành theo giấy phép MIT, cho phép dùng, sao chép và sửa đổi tự do miễn là giữ thông tin bản quyền.
+
+Các công cụ khác trong đồ án cũng theo đúng nguyên tắc này: sqlmap, nuclei, ffuf, dalfox, SSTImap và Burp Suite đều là công cụ của bên thứ ba mà người làm kiểm thử nào cũng dùng. Không ai coi việc dùng sqlmap là thiếu đóng góp, và với PentestGPT cũng vậy.
+
+Có hai giới hạn cần nói thẳng khi được hỏi. Kết quả của nhánh AI là kết quả của tổ hợp PentestGPT cộng với một model cụ thể, nên không suy rộng cho mọi công cụ AI. Và nhóm dùng chế độ trợ lý của bản PentestGPT đã công bố, nên các bản mới hơn hoặc các agent tự trị có thể cho kết quả khác.
+
+Một câu để trả lời hội đồng: "PentestGPT là dụng cụ đo đã được bình duyệt mà chúng em dùng lại và trích dẫn đầy đủ; đóng góp của chúng em là phép so sánh có kiểm soát, hạ tầng tự viết và dữ liệu."
+
 ---
 
 # 2. Mô hình ngôn ngữ (qwen2.5:7b và deepseek-v4-pro)
@@ -480,6 +494,9 @@ Một phép so sánh có kiểm soát đặt ba cách tiếp cận (người dù
 
 ### Phần nào nhóm tự làm, phần nào dùng lại?
 PentestGPT, hai model, bộ đề XBOW và các công cụ quét là của bên thứ ba. Nhóm tự viết `build_target.py`, `raw.py`, `run_arm_B*.py`, `analyze.py`, tự thiết kế giao thức đo và tự thu toàn bộ dữ liệu. (mục 0)
+
+### Dùng PentestGPT của người khác thì có còn là nghiên cứu của nhóm không?
+Có. PentestGPT là dụng cụ đo đã được bình duyệt, nhóm dùng lại nguyên bản và trích dẫn đầy đủ, giống như dùng sqlmap hay Burp. Thứ nhóm nghiên cứu là phép so sánh giữa ba cách tiếp cận, và phần nhóm tự làm là thiết kế, hạ tầng và dữ liệu. Dùng công cụ bên thứ ba còn tránh được việc tự viết agent rồi tự chấm. (mục 1.7)
 
 ### Đã có nghiên cứu so AI với chuyên gia rồi, đồ án khác gì?
 Nghiên cứu của Stanford (Lin và cộng sự) đánh giá agent tự trị trên một mạng thật. Đồ án đánh giá AI ở vai trợ lý trên bộ đề chấm tự động, có thêm tầng công cụ không AI làm mốc, và chỉ đổi model để thấy ảnh hưởng của model. (mục 15.2)
