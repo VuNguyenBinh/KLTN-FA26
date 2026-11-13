@@ -290,6 +290,16 @@ Hai thứ này không thay thế nhau. Gợi ý grey-box là thứ nhóm chủ �
 
 Mức học thuộc được đo bằng cách chạy cùng một model trên cả hai bản của cùng một bài, rồi lấy tỉ lệ giải ở bản gốc trừ tỉ lệ giải ở bản hint-free. Chênh lệch gần 0 nghĩa là model giải nhờ năng lực thật; chênh lệch lớn nghĩa là một phần điểm đến từ việc nhận ra bài. Mỗi bản cần ít nhất hai lần chạy thì con số mới có nghĩa, vì model suy luận khác nhau ở mỗi lần. Đồ án hiện mới có hai lần chạy hint-free, cả hai của AI local, nên phần này được báo là giới hạn (mục 14.6).
 
+## 8.7 Luật của nhánh người và cách xử lý bài có xem writeup
+
+Writeup là bài viết lời giải của một challenge do người khác đăng công khai, mô tả từng bước từ tìm lỗ hổng đến lấy flag. Luật của nhánh người, được tester đọc trước phiên, cấm ba việc: đưa thông tin của bài cho AI, xem writeup hoặc lời giải của XBOW, và hỏi người khác. Lý do là nếu tester làm theo lời giải có sẵn thì kết quả đo khả năng làm theo hướng dẫn chứ không đo năng lực kiểm thử, và phép so sánh với AI không còn công bằng.
+
+Trong 40 bài có sáu bài tester đã xem writeup: 073 (dễ), 003 và 025 (vừa), 018, 087 và 101 (khó). Ở cả sáu bài tester lấy được flag đúng, nhưng nhóm tính cả sáu là không giải và ghi rõ trong `results.csv` bằng dòng "VIEWED WRITEUP -> solved=0". Con số 22 trên 40 của nhánh người vì thế là con số chặt, chỉ gồm bài tự giải. Nếu tính cả sáu bài này thì nhánh người là 28 trên 40 (dễ 10/14, vừa 13/18, khó 5/8); nhóm báo con số đó riêng như một cột phụ và không dùng nó trong bất kỳ phép so sánh nào.
+
+Cách xử lý này có ba điểm lợi khi bảo vệ. Nhóm tự phát hiện và tự khai báo vi phạm thay vì để hội đồng tìm ra. Quy tắc áp dụng đối xứng với nhánh AI, nơi người vận hành lỡ cung cấp kỹ thuật thì bài cũng tính là không giải. Và việc loại sáu bài này đi ngược lợi ích của nhánh người, nên không ai có thể nói nhóm làm đẹp số cho con người.
+
+Có hai điều cần nói thẳng. Thời gian và số bước của sáu bài này không phản ánh công sức tự giải, ví dụ bài 073 chỉ mất 9 phút với 4 bước, nên các số trung bình của nhánh người có lẫn phần này. Và ba trong sáu bài là bài khó, cho thấy tester cũng chạm trần ở nhóm khó, khớp với tỉ lệ tự giải 2 trên 8 ở nhóm đó.
+
 ---
 
 # 9. Cơ chế chấm điểm và ground-truth
@@ -452,7 +462,7 @@ Hai model khác nhau cùng lúc ở số tham số, thế hệ (model mở năm 
 Nhánh người gồm hai tester: một thành viên nhóm ở mức staff đến senior và một sinh viên an toàn thông tin năm cuối ngoài nhóm có kinh nghiệm Hack The Box, TryHackMe (gồm một Pro Lab), thi CTF và một lần đánh giá black-box trên website thật. Cả hai được cho cùng thông tin đầu vào như nhánh AI, tức lớp lỗ hổng và URL. Hai tester vẫn là mẫu nhỏ, và theo ước lượng của nhóm một người ở mức principal sẽ đạt khoảng 31 trên 40. Vì vậy kết luận "ngang người" chỉ đúng với người mức staff.
 
 ## 14.5 Số liệu thời gian và số bước của nhánh người
-Kết quả giải hay không giải được giám sát trực tiếp nên chắc chắn. Tuy nhiên 37 trên 40 bài chưa xuất log Burp, nên thời gian và số bước dựa vào ghi chú của người giám sát tại chỗ. Sáu bài tester có xem writeup được tính là không giải.
+Kết quả giải hay không giải được giám sát trực tiếp nên chắc chắn. Tuy nhiên 37 trên 40 bài chưa xuất log Burp, nên thời gian và số bước dựa vào ghi chú của người giám sát tại chỗ. Sáu bài tester có xem writeup được tính là không giải (mục 8.7).
 
 ## 14.6 Học thuộc chưa đo định lượng
 Nhóm mới có vài lần chạy hint-free và chỉ một lần cho mỗi biến thể, nên chưa tách được học thuộc khỏi dao động ngẫu nhiên. Phần này được báo là giới hạn và hướng làm tiếp. Lập luận định tính vì sao điểm không đến từ trí nhớ nằm ở mục 9.5.
@@ -547,6 +557,9 @@ Không. Mức 55% đến từ tester ở mức staff đến senior. Hai bài SQL
 
 ### Một người giỏi hơn thì kết quả ra sao?
 Theo ước lượng của nhóm, một người mức principal đạt khoảng 31 trên 40, cao hơn rõ so với AI API. Đây là ước lượng, không phải số đo, và nhóm bài khó vẫn dao động khoảng 2 đến 7 trên 8 ngay cả ở mức đó. (mục 14.4)
+
+### Tester có tra lời giải trên mạng không?
+Có sáu bài tester đã xem writeup (073, 003, 025, 018, 087, 101). Luật của nhánh người cấm việc này, nên dù flag đúng nhóm vẫn tính cả sáu là không giải và ghi rõ trong dữ liệu. Con số 22 trên 40 chỉ gồm bài tự giải; nếu tính cả sáu bài thì là 28 trên 40, nhưng nhóm không dùng con số đó để so sánh. (mục 8.7)
 
 ### Thời gian và số bước của nhánh người có đáng tin không?
 Kết quả giải hay không giải được giám sát trực tiếp nên chắc. Thời gian và số bước dựa vào ghi chú của người giám sát, vì 37 trên 40 bài chưa xuất log Burp. Sáu bài có xem writeup được tính là không giải. (mục 14.5)
