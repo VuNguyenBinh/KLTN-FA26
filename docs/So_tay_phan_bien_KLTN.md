@@ -124,6 +124,8 @@ Bộ 104 bài CTF web đóng gói Docker, mỗi bài có đúng một lỗ hổn
 ## 3.2 Cơ chế hoạt động
 Mỗi bài là một image Docker chạy một web app có lỗ hổng. Flag theo công thức xác định: `FLAG{sha256(UPPER(mã-bài))}`, nên chấm điểm là so khớp chính xác, không cần người phán xử.
 
+Model không lấy điểm được bằng cách nhớ flag, vì flag chấm điểm được sinh lúc dựng bài và khác flag trong repo gốc. Log cũng cho thấy model tự suy luận: tự sửa sai giữa chừng, tự tạo payload vượt bộ lọc, và có bài nhận diện đúng nhưng không viết nổi exploit. (mục 9.5)
+
 ## 3.3 Nguồn gốc
 **Của bên thứ ba** (XBOW Engineering, công khai cuối 2024). Nhóm KHÔNG tạo ra các bài này.
 
