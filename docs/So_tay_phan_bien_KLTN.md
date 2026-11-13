@@ -116,7 +116,7 @@ Mỗi bài là một image Docker chạy một web app có lỗ hổng. Flag the
 ## 3.4 Nhóm chỉnh sửa hoặc thêm gì
 - **Rút mẫu phân tầng 40 bài** (14 dễ / 18 vừa / 8 khó), seed cố định để tái lập.
 - **Patch chỉ-môi-trường:** nhiều image từ 2024 đã hết hạn (EOL) → nhóm sửa ảnh gốc hỏng, trỏ lại kho apt, chuẩn hoá line-ending, ngẫu nhiên hoá cổng. Mọi patch ghi `patches.log` và **KHÔNG đụng lỗ hổng hay flag**.
-- **Biến thể hint-free:** dùng bản fork đã gỡ gợi ý (comment/tên gợi ý/README) để đo "học thuộc" — giữ nguyên lỗ hổng và flag.
+- **Biến thể hint-free:** dùng bản fork đã gỡ gợi ý (comment/tên gợi ý/README) để đo "học thuộc" — giữ nguyên lỗ hổng và flag. Phân biệt hint-free với grey-box: xem mục 8.6.
 
 ## 3.5 Cách dùng tổng quan
 Qua script tự viết `build_target.py` (xem mục 4) — không dựng tay từng image.
@@ -259,6 +259,18 @@ Một so sánh có kiểm soát, within-subject: ba cách tiếp cận chạy tr
 - **Grey-box (chỉ cho lớp lỗ hổng):** (a) **công bằng** vì pipeline công cụ cũng cần biết lớp để chọn exploiter → cho AI ngang thông tin; (b) buộc AI **tự tìm endpoint/payload** → đo đúng năng lực, không phải đo khả năng chép lời mách.
 - **Paired + purposive:** giới hạn thật là **thời gian operator** (phải là người chưa thấy lời giải), nên không thể chạy đủ 40 bài cho mỗi model → chọn tập con có chủ đích rồi báo cáo **theo cặp** để vẫn công bằng (chỉ so trên bài cả hai cùng chạy).
 - **Exact-match flag làm chỉ số chính:** là chỉ số **khách quan duy nhất** so chéo được 3 nhánh; mọi chỉ số khác chủ quan hoặc không áp dụng cho mọi nhánh.
+
+## 8.6 Black-box, grey-box, white-box và hint-free
+
+Ba thuật ngữ đầu nói về lượng thông tin mà bên giải được cho trước khi bắt đầu. Ở black-box, bên giải chỉ nhận URL của mục tiêu và phải tự đoán cả loại lỗ hổng. Ở grey-box, bên giải nhận URL cùng một phần thông tin; trong đồ án phần đó là lớp lỗ hổng, ví dụ "bài này có SSTI". Ở white-box, bên giải được xem cả mã nguồn; đồ án không dùng mức này.
+
+Đồ án chọn grey-box cho mọi nhánh. Cả hai tester lẫn model đều chỉ được biết lớp lỗ hổng và URL, còn endpoint, tham số, payload và kỹ thuật thì phải tự tìm. Lý do chọn mức này là pipeline công cụ cũng cần biết lớp để gọi đúng công cụ (SQL injection thì gọi sqlmap, XSS thì gọi dalfox), nên cho người và AI cùng mức thông tin đó là công bằng. Nếu chọn black-box, phần lớn 30 phút sẽ dồn vào việc đoán loại lỗ hổng, và phép đo sẽ nghiêng về khả năng dò loại lỗ hổng thay vì khả năng khai thác tới flag.
+
+Hint-free là một khái niệm khác, nói về gợi ý nằm sẵn trong bài chứ không phải thông tin nhóm cho. Các bài XBOW gốc có lẫn dấu vết tiết lộ lỗ hổng như tên bài, comment trong mã, mô tả trong README. Một model từng thấy repo công khai lúc huấn luyện có thể nhận ra bài nhờ các dấu vết này. Bản hint-free là cùng bài đó sau khi gỡ hết dấu vết, còn lỗ hổng và flag giữ nguyên.
+
+Hai thứ này không thay thế nhau. Gợi ý grey-box là thứ nhóm chủ động cho, giống nhau ở mọi nhánh, nên không làm lệch phép so sánh. Gợi ý trong bài gốc là thứ rò rỉ ngoài ý muốn và chỉ có lợi cho bên từng thấy repo, tức là model. Vì vậy một phiên hint-free vẫn là grey-box: model vẫn được biết lớp lỗ hổng và URL, chỉ là bài không còn dấu vết tiết lộ.
+
+Mức học thuộc được đo bằng cách chạy cùng một model trên cả hai bản của cùng một bài, rồi lấy tỉ lệ giải ở bản gốc trừ tỉ lệ giải ở bản hint-free. Chênh lệch gần 0 nghĩa là model giải nhờ năng lực thật; chênh lệch lớn nghĩa là một phần điểm đến từ việc nhận ra bài. Mỗi bản cần ít nhất hai lần chạy thì con số mới có nghĩa, vì model suy luận khác nhau ở mỗi lần. Đồ án hiện mới có hai lần chạy hint-free, cả hai của AI local, nên phần này được báo là giới hạn (mục 14.6).
 
 ---
 
@@ -482,6 +494,9 @@ Vì các nhánh chạy trên cùng bài, cùng thời gian tối đa, cùng thô
 
 ### Người và AI có được cho cùng thông tin không?
 Có. Cả tester lẫn model chỉ được biết lớp lỗ hổng và URL. Endpoint, tham số, payload và kỹ thuật đều phải tự tìm. (mục 8.3)
+
+### Grey-box khác black-box thế nào, và hint-free là gì?
+Black-box là chỉ cho URL; grey-box là cho thêm lớp lỗ hổng, và đồ án dùng grey-box cho cả người lẫn AI. Hint-free là chuyện khác: đó là bản của cùng bài sau khi gỡ các dấu vết tiết lộ lỗ hổng có sẵn trong bài, dùng để đo học thuộc. Một phiên hint-free vẫn là grey-box. (mục 8.6)
 
 ### Vì sao cho biết trước lớp lỗ hổng?
 Pipeline công cụ cũng cần biết lớp để chọn đúng công cụ khai thác, nên cho các nhánh cùng mức thông tin đó là công bằng. Phần khó là tìm đúng chỗ và khai thác tới flag thì vẫn phải tự làm. (mục 8.5)
