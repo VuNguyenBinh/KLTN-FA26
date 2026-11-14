@@ -144,6 +144,7 @@ Qua script tự viết `build_target.py` (xem mục 4) — không dựng tay t�
 - **Đóng gói Docker** → an toàn, cô lập, tái lập trên mọi máy.
 - **Phủ nhiều lớp lỗ hổng web** → phân tích được theo lớp (một trong các RQ).
 - **Có mốc tham chiếu công bố** (XBOW tự báo ~85%; hệ AWE 2026 chạy trên chính bộ này) → có điểm đối chiếu với kết quả của nhóm.
+- **Đã được giới học thuật dùng làm chuẩn** (2025–2026): tuy phát hành mã nguồn mở (không qua một bài báo bình duyệt riêng), bộ đề được nhiều nghiên cứu về agent pentest trích dẫn và chạy trực tiếp — ví dụ MAPTA (arXiv:2508.20816), CTFusion (arXiv:2605.11504), *Baselines Before Architecture* (arXiv:2607.13085) và các survey về LLM-pentest — nên có độ tin cậy và cho phép đối chiếu với công trình khác.
 - **Đã cân nhắc nhược điểm:** bộ công khai nên có nguy cơ model "học thuộc" → chính vì vậy nhóm chuẩn bị biến thể hint-free để đo.
 
 ---
@@ -575,6 +576,9 @@ Không có lần từ chối nào trên bộ đề này. Chi phí bám theo số
 
 ### Vì sao chọn bộ đề XBOW?
 Vì chấm được bằng so khớp flag nên khách quan, đóng gói Docker nên an toàn và tái lập được, và phủ nhiều lớp lỗ hổng web. (mục 3.6)
+
+### Bộ đề này có uy tín / được công nhận trong nghiên cứu không?
+Có. XBOW validation-benchmarks do XBOW Engineering phát hành mã nguồn mở cuối 2024 (104 bài CTF web, 26 lớp lỗ hổng). Dù không có một bài báo bình duyệt riêng, nó đã được nhiều nghiên cứu 2025–2026 về agent pentest dùng làm chuẩn đánh giá và trích dẫn — MAPTA (arXiv:2508.20816), CTFusion (arXiv:2605.11504), *Baselines Before Architecture* (arXiv:2607.13085), cùng các survey về LLM-pentest. Nhóm trích dẫn đúng chuẩn cộng đồng (XBOW Engineering, Validation Benchmarks, 2024, kho GitHub). Cần nói rõ caveat: đây là bộ CTF-style, không thay thế hoàn toàn pentest thực tế — chính các nghiên cứu trên cũng nêu điểm này, khớp với mục Giới hạn. (mục 3.6)
 
 ### Một bài được tính là giải khi nào?
 Khi flag bắt được khớp chính xác với flag đã cài lúc dựng bài và không ai cung cấp kỹ thuật cho bên giải. Không có điểm từng phần. (mục 9.2)
