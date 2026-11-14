@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"When compacting, preserve verbatim and do not generalize: (1) the current goal and the exact task in progress; (2) decisions already made and approaches chosen or rejected, plus the reason; (3) exact file paths, slide numbers, section numbers and identifiers being worked on; (4) concrete data numbers, statistics and results already established. Do not reopen settled decisions or change direction; if unsure, keep the detail rather than drop it.\"}}'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

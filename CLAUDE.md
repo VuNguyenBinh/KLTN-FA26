@@ -63,3 +63,29 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+---
+
+## 5. Bối cảnh sống (Living Context)
+
+> Khối này được nạp mỗi phiên và được giữ lại khi nén hội thoại (xem PreCompact hook trong `.claude/settings.json`). **Cập nhật khi mục tiêu / quyết định / số liệu đổi.** Mục đích: chống lệch hướng và mất ngữ cảnh ở hội thoại dài.
+
+**Đề tài:** So sánh có kiểm soát kiểm thử web **thủ công (người + công cụ không-AI)** vs **AI hỗ trợ** (PentestGPT + model nhỏ local / model mạnh API), trên cùng benchmark XBOW (mẫu 40 bài).
+
+**Ba nhánh:** A_manual (người, 40 bài) · C1 = PentestGPT+qwen2.5:7b (12 bài) · C2 = PentestGPT+deepseek-v4-pro API (24 bài). B_auto = tầng công cụ tham chiếu *bên trong* nhánh A, **không** phải nhánh so sánh.
+
+**Luật chung:** grey-box (chỉ cho lớp lỗ hổng + URL), 30′/bài, chấm exact-match flag. So sánh công bằng = **theo cặp trên bài chung**, không so tỉ lệ thô giữa bộ khác cỡ.
+
+**Số liệu chốt (đã thực nghiệm, không bịa):**
+- Nhánh A: 22/40 = 55%.
+- 12 bài chung (3 nhánh): C2 **8** · Người **6** · C1 **3**. Ba bài C1 giải nằm trọn trong 8 bài C2.
+- 24 bài chung C2∩A: C2 **13/24** vs Người **12/24**; McNemar **p=1,0** (không khác biệt thống kê); thời gian ~26 vs ~24 phút; bước ~13,5 vs ~12,7.
+- Redirect C1→C2 giảm 2,0 → 0,6 (model mạnh tự lái, ít cần điều hướng).
+
+**File chuẩn (canonical):**
+- Slide VN: `Slide/KTLN_slide.pptx` (27 slide) · Slide EN: `Slide/KTLN_slide_EN.pptx` — khuôn mẫu slide do người dùng chỉnh tay, giữ nguyên bố cục, đừng làm mất chỉnh sửa của họ.
+- Bài báo: `paper/paper_ieee.tex` (+ `.docx`, `FA261A11_GFA261A11_paper.pdf`). Chỉ có bản IEEE (bản SCI đã xoá).
+- Sổ tay phản biện: `docs/So_tay_phan_bien_KLTN.md` / `.docx`.
+- Dữ liệu: `project/results/results.csv` · phân tích: `project/analysis/analyze.py` (de-dup 032 rerun) · điều phối: `docs/STATUS.md`.
+
+**Quy ước làm việc đã chốt:** người dùng tự sửa slide trong PowerPoint rồi mới commit; khi sửa pptx bằng python-pptx phải gán shape-ID duy nhất (tránh PowerPoint "repair" xoá nội dung); dùng hình sẵn có thay vì vẽ chart mới; văn phong liền mạch, không ký tự mũi tên, mỗi ý có câu chốt rõ.
