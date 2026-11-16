@@ -30,7 +30,7 @@
 ### Vai trò
 | Vai | Ai | Được làm | KHÔNG được làm |
 |---|---|---|---|
-| **Người giải** | Người **ngoài nhóm**, chưa thấy bài | P1–P5 theo worklist, kể cả chạy scanner không-AI | Đưa thông tin bài cho AI/LLM; writeup; hỏi người khác |
+| **Người giải** | **Hai tester**: 1 thành viên nhóm (amateur) + 1 người ngoài nhóm (giỏi), chưa thấy bài | P1–P5 theo worklist, kể cả chạy scanner không-AI | Đưa thông tin bài cho AI/LLM; writeup; hỏi người khác |
 | **Giám sát** | Thành viên nhóm | P0, bấm giờ, ghi mốc pha, đếm request, P6 | Gợi ý, phản ứng, trả lời câu hỏi kỹ thuật |
 | **Claude** | — | Dựng target, chấm flag, ghi dữ liệu + docs, commit | Giải bài; mách endpoint/tham số/payload/kỹ thuật |
 

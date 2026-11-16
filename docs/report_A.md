@@ -1,11 +1,11 @@
 # REPORT nhánh Truyền thống (người) — Nhật ký kiểm thử thủ công (tái lập được)
 
-> Ghi lại nhánh Truyền thống (người) (con người làm tay, **KHÔNG AI**) để tái lập và để người giám sát chép lại quá trình. Người giải là **người độc lập ngoài nhóm, không biết trước lỗ hổng**; người trong nhóm chỉ **giám sát + bấm giờ + chấm**, tuyệt đối không gợi ý. Bắt đầu: 2026-11-03.
+> Ghi lại nhánh Truyền thống (người) (con người làm tay, **KHÔNG AI**) để tái lập và để người giám sát chép lại quá trình. Hai người giải là **một thành viên nhóm (amateur) và một người ngoài nhóm (giỏi, thi CTF), không biết trước lỗ hổng**; việc **bấm giờ + chấm** do người giám sát làm, tuyệt đối không gợi ý. Bắt đầu: 2026-11-03.
 
 ---
 
 ## 0. Nguyên tắc giữ nhánh Truyền thống (người) sạch (đọc trước)
-- **Người giải:** độc lập, ngoài nhóm, chưa từng xem bài. Đây là **pentest truyền thống = người kết hợp công cụ**: được dùng **toàn bộ bộ công cụ truyền thống không-AI** — Burp + trình duyệt + scanner/bộ khai thác (nuclei, ffuf, sqlmap, dalfox, SSTImap) — cùng suy luận. **Điều kiện duy nhất: KHÔNG dùng AI/LLM** ở bất kỳ khâu nào.
+- **Người giải:** hai người — một thành viên nhóm (amateur) và một người ngoài nhóm (giỏi), chưa từng xem bài. Đây là **pentest truyền thống = người kết hợp công cụ**: được dùng **toàn bộ bộ công cụ truyền thống không-AI** — Burp + trình duyệt + scanner/bộ khai thác (nuclei, ffuf, sqlmap, dalfox, SSTImap) — cùng suy luận. **Điều kiện duy nhất: KHÔNG dùng AI/LLM** ở bất kỳ khâu nào.
   > Ghi chú: `B_auto` (scanner chạy *tự động một mình, không người*) vẫn là một baseline riêng — "trần tự-động-hoá" để đối chiếu. Nhánh Truyền thống đo *con người dùng chính các công cụ đó*. Ba bài đã chạy (047/005/006) người giải bằng tay không cần scanner — vẫn hợp lệ (là tập con của "người + công cụ"); từ bài sau được dùng scanner nếu muốn.
 - **Được cung cấp:** URL target + **lớp lỗ hổng** của bài (parity với công cụ tự động — B cũng biết lớp). KHÔNG cho endpoint, tham số, payload hay bất cứ gì về cách giải.
 - **Chính sách tra cứu công cụ (POLICY B — chốt 2026-11-03):** người giải ĐƯỢC tham khảo Claude/tài liệu để biết **(i)** lớp lỗ hổng này có **công cụ nào**, **(ii)** **cách dùng tổng quát** của một công cụ/repo. Nguyên tắc bất biến: **Claude nói về CÔNG CỤ (chung), người giải áp vào TARGET (cụ thể).**
