@@ -257,7 +257,7 @@ python analyze.py ../results/results.csv
 Một so sánh có kiểm soát, within-subject: ba cách tiếp cận chạy trên **cùng** 40 bài, **cùng** luật, để chênh lệch phản ánh *phương pháp* chứ không phải *bài*.
 
 ## 8.2 Ba nhánh
-- **A — Truyền thống (`A_manual`):** **2 tester** (1 thành viên nhóm trình độ ~staff/senior + 1 sinh viên IA năm cuối ngoài nhóm, có nền HTB/THM gồm 1 Pro Lab + thi CTF + 1 đánh giá black-box web thật) + mọi công cụ KHÔNG-AI. Điểm nhánh = **số bài tester bắt được flag (22/40)**. Bên trong có tầng tham chiếu `B_auto` (công cụ tự chạy, không cộng điểm); nếu tính theo max(người, tool) thì là 24/40 vì công cụ bắt thêm 2 bài SQLi dễ (071, 083) mà tester trượt.
+- **A — Truyền thống (`A_manual`):** **2 tester** (1 thành viên nhóm ở mức amateur + 1 sinh viên IA năm cuối ngoài nhóm ở mức giỏi, có nền HTB/THM gồm 1 Pro Lab + thi CTF + 1 đánh giá black-box web thật) + mọi công cụ KHÔNG-AI. Điểm nhánh = **số bài tester bắt được flag (22/40)**. Bên trong có tầng tham chiếu `B_auto` (công cụ tự chạy, không cộng điểm); nếu tính theo max(người, tool) thì là 24/40 vì công cụ bắt thêm 2 bài SQLi dễ (071, 083) mà tester trượt.
 - **C1 — AI local (`C_ai_local`):** PentestGPT + qwen2.5:7b.
 - **C2 — AI API (`C_ai_api`):** PentestGPT + deepseek-v4-pro.
 
@@ -450,7 +450,7 @@ Chạy một lần là lựa chọn có chủ ý. Model suy luận khác nhau �
 Hai model khác nhau cùng lúc ở số tham số, thế hệ (model mở năm 2024 so với model thương mại năm 2026), lượng tử hoá 4-bit của model local, và hình thức chạy tại máy so với qua nhà cung cấp. Điều nhóm khẳng định được là khi giữ nguyên quy trình và chỉ đổi model thì số bài giải tăng từ 3 lên 8. Điều nhóm không khẳng định là riêng kích thước gây ra mức tăng đó.
 
 ## 14.4 Baseline người
-Nhánh người gồm hai tester: một thành viên nhóm ở mức staff đến senior và một sinh viên an toàn thông tin năm cuối ngoài nhóm có kinh nghiệm Hack The Box, TryHackMe (gồm một Pro Lab), thi CTF và một lần đánh giá black-box trên website thật. Cả hai được cho cùng thông tin đầu vào như nhánh AI, tức lớp lỗ hổng và URL. Hai tester vẫn là mẫu nhỏ, và theo ước lượng của nhóm một người ở mức principal sẽ đạt khoảng 31 trên 40. Vì vậy kết luận "ngang người" chỉ đúng với người mức staff.
+Nhánh người gồm hai tester: một thành viên nhóm ở mức amateur và một sinh viên an toàn thông tin năm cuối ngoài nhóm ở mức giỏi, có kinh nghiệm Hack The Box, TryHackMe (gồm một Pro Lab), thi CTF và một lần đánh giá black-box trên website thật. Cả hai được cho cùng thông tin đầu vào như nhánh AI, tức lớp lỗ hổng và URL. Hai tester vẫn là mẫu nhỏ, và theo ước lượng của nhóm một người ở mức principal sẽ đạt khoảng 31 trên 40. Vì vậy kết luận "ngang người" chỉ đúng với nhánh người này, trong đó có một thí sinh CTF giỏi.
 
 ## 14.5 Số liệu thời gian và số bước của nhánh người
 Kết quả giải hay không giải được giám sát trực tiếp nên chắc chắn. Tuy nhiên 37 trên 40 bài chưa xuất log Burp, nên thời gian và số bước dựa vào ghi chú của người giám sát tại chỗ. Sáu bài tester có xem writeup được tính là không giải.
@@ -538,10 +538,10 @@ Không. Người vận hành chỉ chạy lệnh model đề xuất và dán k�
 ## 17.3 Nhánh người
 
 ### Ai là người kiểm thử trong nhánh người?
-Hai tester: một thành viên nhóm ở mức staff đến senior, và một sinh viên an toàn thông tin năm cuối ngoài nhóm có kinh nghiệm Hack The Box, TryHackMe, thi CTF và một lần đánh giá black-box trên website thật. (mục 14.4)
+Hai tester: một thành viên nhóm ở mức amateur, và một sinh viên an toàn thông tin năm cuối ngoài nhóm ở mức giỏi, có kinh nghiệm Hack The Box, TryHackMe, thi CTF và một lần đánh giá black-box trên website thật. (mục 14.4)
 
 ### Baseline người có yếu không?
-Không. Mức 55% đến từ tester ở mức staff đến senior. Hai bài SQL injection trượt là do quy trình, vì tester không chạy sqlmap trong khi công cụ tự chạy bắt được cả hai. (mục 14.4)
+Không. Mức 55% đến từ nhánh người gồm một thành viên amateur và một người ngoài giỏi (thi CTF). Hai bài SQL injection trượt là do quy trình, vì tester không chạy sqlmap trong khi công cụ tự chạy bắt được cả hai. (mục 14.4)
 
 ### Nếu tính cả công cụ thì nhánh người được bao nhiêu?
 Được 24 trên 40, vì công cụ bắt thêm hai bài SQL injection dễ (071 và 083). Nhóm giữ con số chặt hơn là 22 và ghi rõ con số 24 trong bài báo. (mục 8.2)
@@ -630,7 +630,7 @@ Mạnh ở ca lệch chuẩn, nhiều bước, phải tự viết exploit, như 
 Hai bài cùng ứng dụng và cùng lỗ hổng, model nhận diện đúng cả hai. Bài chỉ cần một dòng payload thì giải được, bài cần viết một đoạn code thì trượt. Điểm nghẽn vì thế nằm ở khâu viết exploit. (mục 13.3)
 
 ### AI ngang người rồi, vậy thay được người chưa?
-Chưa. Hai bên giải những bài khác nhau, mỗi bên có khoảng sáu bài bên kia trượt, và mức ngang nhau chỉ đúng với người mức staff. (mục 13.4)
+Chưa. Hai bên giải những bài khác nhau, mỗi bên có khoảng sáu bài bên kia trượt, và mức ngang nhau chỉ đúng với nhánh người này, trong đó có một thí sinh CTF giỏi. (mục 13.4)
 
 ### AI có nhanh hơn người không?
 Không. Phiên của người trung bình 21 phút, phiên AI 25 đến 26 phút. Lợi ích là model mạnh cần ít giám sát hơn. (mục 11.1)
