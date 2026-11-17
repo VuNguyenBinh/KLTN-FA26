@@ -21,6 +21,8 @@ ARM_LABEL = {
     "C_ai_local": "C1: AI (local)",
     "C_ai_api": "C2: AI (API)",
 }
+ARM_SHORT = {"A_manual": "A", "C_ai_local": "C1", "C_ai_api": "C2"}
+ARM_COLOR = {"A_manual": "#4E8FC7", "C_ai_local": "#E0A33C", "C_ai_api": "#58B97E"}
 
 
 def load(path):
@@ -219,6 +221,150 @@ def bar_memorization(mem):
     print(f"[fig] {p}")
 
 
+# ===================== SO SANH THEO CAP (paired on shared) =====================
+# Cac nhanh chay so bai khac nhau, nen so cong bang = so tren DUNG nhung bai
+# ca hai (hoac ca ba) nhanh cung chay. Day la cac bieu do tuong ung slide ket qua.
+
+def shared_sets(df):
+    d = df[df["variant"] == "original"]
+    by = {a: set(d[d["arm"] == a]["benchmark_id"]) for a in d["arm"].unique()}
+    A = by.get("A_manual", set())
+    C1 = by.get("C_ai_local", set())
+    C2 = by.get("C_ai_api", set())
+    return (A & C1 & C2), (A & C2)
+
+
+def paired_agg(df, ids, arms):
+    d = df[(df["variant"] == "original") & (df["benchmark_id"].isin(ids))]
+    res = {}
+    for a in arms:
+        da = d[d["arm"] == a]
+        res[a] = {
+            "solved": int(da["solved"].sum()),
+            "n": len(da),
+            "steps": round(da["num_steps"].mean(), 1),
+            "time": round(da["time_minutes"].mean(), 1),
+            "interv": round(da["manual_interventions"].mean(), 1),
+        }
+    return res
+
+
+def mcnemar_exact(b, c):
+    """p hai phia chinh xac (binomial) tren cac cap LECH nhau b vs c."""
+    from math import comb
+    n = b + c
+    if n == 0:
+        return 1.0
+    k = min(b, c)
+    return min(1.0, 2 * sum(comb(n, i) for i in range(k + 1)) * (0.5 ** n))
+
+
+def discordant(df, ids, a1, a2):
+    d = df[(df["variant"] == "original") & (df["benchmark_id"].isin(ids))]
+    s1 = dict(zip(d[d["arm"] == a1]["benchmark_id"], d[d["arm"] == a1]["solved"]))
+    s2 = dict(zip(d[d["arm"] == a2]["benchmark_id"], d[d["arm"] == a2]["solved"]))
+    b = c = 0
+    for i in ids:
+        if i in s1 and i in s2:
+            if s1[i] == 1 and s2[i] == 0:
+                b += 1
+            elif s1[i] == 0 and s2[i] == 1:
+                c += 1
+    return b, c
+
+
+def paired_panels(path, suptitle, arms, panels):
+    fig, axs = plt.subplots(1, len(panels), figsize=(3.6 * len(panels), 3.8))
+    if len(panels) == 1:
+        axs = [axs]
+    for ax, (ptitle, vals, ylab) in zip(axs, panels):
+        xs = range(len(arms))
+        ax.bar(xs, [vals[a] for a in arms], width=0.6,
+               color=[ARM_COLOR[a] for a in arms])
+        for i, a in enumerate(arms):
+            v = vals[a]
+            if v is not None and v == v:  # khong NaN
+                ax.text(i, v, f"{v:g}", ha="center", va="bottom",
+                        fontsize=10, fontweight="bold")
+        ax.set_xticks(list(xs))
+        ax.set_xticklabels([ARM_SHORT[a] for a in arms])
+        ax.set_title(ptitle, fontsize=11)
+        ax.set_ylabel(ylab)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+    fig.suptitle(suptitle, fontsize=12)
+    fig.tight_layout()
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    print(f"[fig] {path}")
+
+
+def fig_paired(df):
+    sh12, sh24 = shared_sets(df)
+    arms3 = ["A_manual", "C_ai_local", "C_ai_api"]
+    a12 = paired_agg(df, sh12, arms3)
+    paired_panels(
+        os.path.join(FIG_DIR, "fig_paired_12.png"),
+        f"Paired on the {len(sh12)} shared tasks (all three arms)",
+        arms3,
+        [("Tasks solved", {a: a12[a]["solved"] for a in arms3}, "tasks"),
+         ("Mean steps / task", {a: a12[a]["steps"] for a in arms3}, "steps"),
+         ("Mean redirects / task",
+          {a: (float("nan") if a == "A_manual" else a12[a]["interv"]) for a in arms3},
+          "per task")],
+    )
+    arms2 = ["A_manual", "C_ai_api"]
+    a24 = paired_agg(df, sh24, arms2)
+    paired_panels(
+        os.path.join(FIG_DIR, "fig_paired_24.png"),
+        f"Human vs AI API on the {len(sh24)} shared tasks",
+        arms2,
+        [("Tasks solved", {a: a24[a]["solved"] for a in arms2}, "tasks"),
+         ("Mean time / task (min)", {a: a24[a]["time"] for a in arms2}, "minutes"),
+         ("Mean steps / task", {a: a24[a]["steps"] for a in arms2}, "steps")],
+    )
+    print("\n=== McNemar (exact, paired on shared targets) ===")
+    for lab, ids, a1, a2 in [
+        ("C1 vs C2 (12 shared)", sh12, "C_ai_local", "C_ai_api"),
+        ("C2 vs Human (12 shared)", sh12, "C_ai_api", "A_manual"),
+        ("C2 vs Human (24 shared)", sh24, "C_ai_api", "A_manual"),
+    ]:
+        b, c = discordant(df, ids, a1, a2)
+        print(f"  {lab}: discordant {b} vs {c}, p = {mcnemar_exact(b, c):.2f}")
+
+
+def fig_difficulty_counts(df):
+    """3 'the' (moi nhanh 1 panel): so bai GIAI tren so bai DA LAM, theo do kho."""
+    d = df[df["variant"] == "original"]
+    arms = ["A_manual", "C_ai_local", "C_ai_api"]
+    tiers = ["easy", "medium", "hard"]
+    fig, axs = plt.subplots(len(arms), 1, figsize=(7, 5))
+    for ax, a in zip(axs, arms):
+        da = d[d["arm"] == a]
+        tot = [len(da[da["difficulty"] == t]) for t in tiers]
+        sol = [int(da[da["difficulty"] == t]["solved"].sum()) for t in tiers]
+        tmax = max(tot) if tot else 1
+        ys = list(range(len(tiers)))[::-1]
+        for yy, t, s, tt in zip(ys, tiers, sol, tot):
+            ax.barh(yy, tt, color="#D9DEE2", height=0.6)
+            ax.barh(yy, s, color=ARM_COLOR[a], height=0.6)
+            ax.text(tmax * 1.02, yy, f"{s}/{tt}", va="center", fontsize=9, fontweight="bold")
+            ax.text(-tmax * 0.03, yy, t, va="center", ha="right", fontsize=9)
+        ax.set_xlim(0, tmax * 1.15)
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.set_title(f"{ARM_LABEL[a]}   ({int(da['solved'].sum())}/{len(da)})",
+                     fontsize=10, loc="left")
+        for sp in ("top", "right", "bottom", "left"):
+            ax.spines[sp].set_visible(False)
+    fig.suptitle("Tasks solved / attempted by difficulty", fontsize=12)
+    fig.tight_layout()
+    p = os.path.join(FIG_DIR, "fig_difficulty_counts.png")
+    fig.savefig(p, dpi=150)
+    plt.close(fig)
+    print(f"[fig] {p}")
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python analyze.py <results.csv>")
@@ -269,6 +415,11 @@ def main():
     diff_chart = diff.drop(columns="B_auto", errors="ignore")
     bar_solve_rate(summary_chart)
     grouped_by_difficulty(diff_chart)
+
+    # So sanh theo cap tren bai chung (12 & 24) + McNemar + the theo do kho
+    print("\n=== BIEU DO SO CAP (paired on shared) ===")
+    fig_paired(df)
+    fig_difficulty_counts(df)
 
     # xuat bang ra csv de dua vao bai bao
     summary.to_csv(os.path.join(FIG_DIR, "table_summary.csv"))
