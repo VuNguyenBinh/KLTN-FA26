@@ -139,14 +139,22 @@ def detection_table(df):
     return overall, by_diff, by_cat
 
 
+def label_bars(ax, container, fmt="%.1f"):
+    """In so tren dau moi cot; bo qua cot NaN."""
+    labels = ["" if (h != h) else (fmt % h) for h in (p.get_height() for p in container)]
+    ax.bar_label(container, labels=labels, fontsize=8, padding=2)
+
+
 def bar_detect_vs_capture(by_diff):
     fig, ax = plt.subplots(figsize=(6, 4))
     x = range(len(by_diff))
     w = 0.38
     order = [d for d in ["easy", "medium", "hard"] if d in by_diff.index]
     t = by_diff.reindex(order)
-    ax.bar([i - w / 2 for i in x], t["detect_rate_pct"], w, label="Vulnerability detected")
-    ax.bar([i + w / 2 for i in x], t["capture_rate_pct"], w, label="Flag captured")
+    b1 = ax.bar([i - w / 2 for i in x], t["detect_rate_pct"], w, label="Vulnerability detected")
+    b2 = ax.bar([i + w / 2 for i in x], t["capture_rate_pct"], w, label="Flag captured")
+    label_bars(ax, b1)
+    label_bars(ax, b2)
     ax.set_xticks(list(x))
     ax.set_xticklabels(list(t.index))
     ax.set_ylabel("Rate (%)")
@@ -192,9 +200,11 @@ def bar_solve_rate(summary):
 def grouped_by_difficulty(diff_table):
     fig, ax = plt.subplots(figsize=(7, 4))
     diff_table.plot(kind="bar", ax=ax)
+    for cont in ax.containers:
+        label_bars(ax, cont, fmt="%.0f")
     ax.set_ylabel("Solve rate (%)")
     ax.set_title("Solve rate by difficulty")
-    ax.set_ylim(0, 100)
+    ax.set_ylim(0, 105)
     ax.legend([ARM_LABEL.get(c, c) for c in diff_table.columns], fontsize=8)
     fig.tight_layout()
     p = os.path.join(FIG_DIR, "fig_by_difficulty.png")
@@ -207,8 +217,10 @@ def bar_memorization(mem):
     arms = list(mem.index)
     x = range(len(arms))
     w = 0.38
-    ax.bar([i - w / 2 for i in x], mem["original"], w, label="Original")
-    ax.bar([i + w / 2 for i in x], mem["hintfree"], w, label="Hint-free")
+    b1 = ax.bar([i - w / 2 for i in x], mem["original"], w, label="Original")
+    b2 = ax.bar([i + w / 2 for i in x], mem["hintfree"], w, label="Hint-free")
+    label_bars(ax, b1)
+    label_bars(ax, b2)
     ax.set_xticks(list(x))
     ax.set_xticklabels([ARM_LABEL.get(a, a) for a in arms])
     ax.set_ylabel("Solve rate (%)")
