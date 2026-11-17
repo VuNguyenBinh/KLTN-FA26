@@ -154,7 +154,7 @@ Tools only (reference)         & 40 & 2  & 5.0\%  & 2.7  & n/a  & n/a  & 0 \\
 \end{table*}
 
 \subsection{The fair comparison: paired on shared targets}
-The twelve targets that the human and both models all ran are the clean comparison, and Table~\ref{tab:paired} reports it. The human captures six, the local model three, and the commercial model eight. Two facts matter beyond the totals. The three targets the local model solved are a subset of the eight the commercial model solved, so the small model never captured anything the large model missed. And on this common set the large model is the strongest of the three, ahead of the human, which is consistent with the earlier picture of a weak AI being, in part, a picture of a weak model. These paired sets are small, so we test the differences with an exact McNemar test on the discordant pairs. The local-to-commercial gap on the twelve shared targets, five discordant pairs all favouring the commercial model, gives $p=0.06$, and the commercial-model-to-human gap on the same twelve, four against two, gives $p=0.69$. Neither reaches significance, so we read these paired differences as indicative rather than established.
+The twelve targets that the human and both models all ran are the clean comparison, and Table~\ref{tab:paired} reports it, with Figure~\ref{fig:paired12} plotting the same. The human captures six, the local model three, and the commercial model eight. Two facts matter beyond the totals. The three targets the local model solved are a subset of the eight the commercial model solved, so the small model never captured anything the large model missed. And on this common set the large model is the strongest of the three, ahead of the human, which is consistent with the earlier picture of a weak AI being, in part, a picture of a weak model. These paired sets are small, so we test the differences with an exact McNemar test on the discordant pairs. The local-to-commercial gap on the twelve shared targets, five discordant pairs all favouring the commercial model, gives $p=0.06$, and the commercial-model-to-human gap on the same twelve, four against two, gives $p=0.69$. Neither reaches significance, so we read these paired differences as indicative rather than established.
 
 \begin{table}[!t]
 \centering
@@ -169,6 +169,13 @@ Rate & 50.0\% & 25.0\% & 66.7\% \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_paired_12.png}
+\caption{Paired comparison on the twelve shared targets (all three arms): tasks captured, mean dialogue steps per task, and mean human redirects per task. Redirects apply only to the AI arms.}
+\label{fig:paired12}
+\end{figure*}
 
 \subsection{Human against the commercial model on the hard set}
 The commercial model also ran twenty-four targets, which lets us compare it against the human on a larger, harder set where their denominators match. On these twenty-four the human captures twelve and the model captures thirteen, which looks like near parity. The more interesting fact is that the two do not overlap fully. Table~\ref{tab:headtohead} is the paired confusion matrix. They agree on thirteen targets, seven solved by both and six missed by both, but they disagree on eleven, five that only the human solved and six that only the model solved. The discordant counts, five against six, give an exact McNemar $p=1.0$, so on this set the data show no advantage of either over the other. The two approaches are near equal in count and complementary in coverage, since each captures about six targets the other cannot.
@@ -187,8 +194,15 @@ Human missed   & 6 & 6 \\
 \end{tabular}
 \end{table}
 
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_paired_24.png}
+\caption{Human against the commercial model on the twenty-four shared targets: tasks captured, mean time per task, and mean steps per task.}
+\label{fig:paired24}
+\end{figure*}
+
 \subsection{By difficulty}
-Table~\ref{tab:difficulty} breaks capture down by difficulty. The local model only scores on easy targets and drops to zero on medium and hard, which is the familiar collapse of a small model once a task needs more than one or two steps. The commercial model holds a steadier line, staying above a third even on hard targets, where it edges past the human. The human is strongest on easy and medium and falls off on hard, which is where the targets demand the most patience and breadth.
+Table~\ref{tab:difficulty} breaks capture down by difficulty, and Figure~\ref{fig:diffcounts} shows the solved-over-attempted counts per arm. The local model only scores on easy targets and drops to zero on medium and hard, which is the familiar collapse of a small model once a task needs more than one or two steps. The commercial model holds a steadier line, staying above a third even on hard targets, where it edges past the human. The human is strongest on easy and medium and falls off on hard, which is where the targets demand the most patience and breadth.
 
 \begin{table}[!t]
 \centering
@@ -204,6 +218,13 @@ Hard   & 2/8 (25.0\%)  & 0/1 (0.0\%)  & 3/8 (37.5\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_difficulty_counts.png}
+\caption{Tasks solved over tasks attempted, by difficulty, for each arm.}
+\label{fig:diffcounts}
+\end{figure}
 
 \subsection{By vulnerability class}
 Table~\ref{tab:class} compares the human layer and the commercial model per class, on the twenty-four targets the model ran, so the denominators match. The pattern is the core qualitative result. The model is strong on the injection and template classes, template injection three of three, SQL injection one of one, and command injection one of one, which are mostly cases the human layer missed. One caveat belongs here: on the SQL-injection target the automated tooling captured the flag on its own, so the model's advantage on that class is over the testers, not over non-AI tooling. The human is strong where the model struggles, deserialisation three of three against the model's one of three, and the single XXE and blind SQL injection targets that the model recognised but could not finish. Several classes are too hard for both, including the crypto, default-credentials, and request-smuggling targets. With single-digit counts per class we cannot call this split statistically significant, but it is consistent across classes and points to a plausible difference in what each approach does well. A per-target record of what the model did on all twenty-four targets is given in Table~\ref{tab:behaviour} in the appendix.
