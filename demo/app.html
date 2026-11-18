@@ -33,6 +33,8 @@
   button.primary{background:var(--green);color:#06221a;font-weight:700;border-color:var(--green)}
   button:disabled{opacity:.45;cursor:not-allowed}
   button.mini{padding:2px 9px;font-size:15px;line-height:1}
+  #redirBtn{background:#33301d;border-color:var(--amber);color:var(--amber);font-weight:700}
+  #redirBtn:hover{background:#45401f;border-color:var(--amber)}
   .row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
   .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:12px}
   .badge.run{background:#1d3a2f;color:var(--green)}.badge.build{background:#33301d;color:var(--amber)}
@@ -176,6 +178,7 @@
     <div class="statusbar">
       <div class="stat g"><span class="k">Bước</span><b id="steps">0</b></div>
       <div class="stat a"><span class="k">Redirect</span><b id="redirects">0</b></div>
+      <button id="redirBtn" onclick="quickRedirect()" title="Đánh dấu 1 lần điều hướng + copy prompt điều hướng để dán vào PentestGPT">⟲ Điều hướng +1</button>
       <div class="stat"><span class="k">Giờ (30′)</span><b id="timer">30:00</b></div>
       <button class="primary" onclick="timerStart()">▶ Bắt đầu</button>
       <button onclick="timerPause()">⏸ Dừng</button>
@@ -377,6 +380,14 @@ function sendMsg(){
   $('composer').value='';render();
 }
 function logCmd(){const c=$('cmdIn').value.trim();if(!c)return;cmds.push({c,t:Date.now()});$('cmdIn').value='';renderTerm();}
+function quickRedirect(){
+  redirects++;
+  addEntry('redir','Điều hướng — kéo model về đúng lớp lỗ hổng.');
+  render();
+  const v=$('pgRedirect').value;
+  if(v&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).catch(()=>{});}
+  const b=$('redirBtn');if(b){const o=b.textContent;b.textContent='✓ +1 · đã copy prompt';b.disabled=true;setTimeout(()=>{b.textContent=o;b.disabled=false;},1300);}
+}
 function renderChat(){
   const el=$('chat');
   if(!log.length){el.innerHTML='<div class="empty">Chọn bài → Dựng target → Gửi prompt khởi đầu cho PentestGPT.</div>';return;}
@@ -419,20 +430,22 @@ function fxSize(cv){cv.width=window.innerWidth;cv.height=window.innerHeight;}
 function runSuccessFx(flag){
   const ov=$('fxOverlay'),cv=$('fxCanvas'),ctx=cv.getContext('2d');
   fxStop();ov.classList.add('show');fxSize(cv);
-  const CW=16,cols=Math.ceil(cv.width/CW);
-  const drops=Array.from({length:cols},()=>Math.random()*-40);
-  const chars='アイウエオカキクケコサシスセソﾀﾁﾂﾃﾅﾆ0123456789ABCDEF<>[]{}$#*+=/'.split('');
-  const t0=performance.now(),MATRIX_MS=1900;let fw=[],bannerShown=false,lastBurst=0;
+  const CW=15,cols=Math.ceil(cv.width/CW);
+  const drops=Array.from({length:cols},()=>Math.random()*cv.height/CW);
+  const spd=Array.from({length:cols},()=>0.55+Math.random());
+  const chars='ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾅﾆ0123456789ABCDEF@#$%&*<>=/+'.split('');
+  const t0=performance.now(),MATRIX_MS=2600;let fw=[],bannerShown=false,lastBurst=0;
   function burst(){const x=Math.random()*cv.width,y=cv.height*(0.12+Math.random()*0.5),hue=Math.random()*360,n=55+Math.random()*35|0;
     for(let i=0;i<n;i++){const a=Math.random()*6.2832,sp=Math.random()*5+1.8;fw.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,hue:hue+Math.random()*30});}}
   function frame(now){const el=now-t0;
     if(el<MATRIX_MS){
-      ctx.fillStyle='rgba(0,0,0,0.12)';ctx.fillRect(0,0,cv.width,cv.height);
-      ctx.font='15px Consolas,monospace';
-      for(let i=0;i<cols;i++){const ch=chars[Math.random()*chars.length|0],y=drops[i]*CW;
-        ctx.fillStyle=Math.random()<0.03?'#eafff0':(Math.random()<0.12?'#58C27D':'#7ED957');
-        ctx.fillText(ch,i*CW,y);
-        if(y>cv.height&&Math.random()>0.975)drops[i]=0;drops[i]+=0.85;}
+      ctx.fillStyle='rgba(2,10,6,0.065)';ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.font=CW+'px Consolas,monospace';ctx.textBaseline='top';
+      for(let i=0;i<cols;i++){const px=i*CW,py=drops[i]*CW;
+        ctx.fillStyle='#2fbf52';ctx.fillText(chars[Math.random()*chars.length|0],px,py-CW);
+        ctx.fillStyle=Math.random()<0.5?'#eafff0':'#9dff86';ctx.fillText(chars[Math.random()*chars.length|0],px,py);
+        drops[i]+=spd[i];
+        if(py>cv.height&&Math.random()>0.965){drops[i]=0;spd[i]=0.55+Math.random();}}
     }else{
       if(!bannerShown){bannerShown=true;fxBanner(true,flag);$('fxClose').classList.add('show');}
       ctx.fillStyle='rgba(0,0,0,0.17)';ctx.fillRect(0,0,cv.width,cv.height);
