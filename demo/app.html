@@ -72,6 +72,21 @@
   .sumrow b{color:var(--txt)}
   .hint{font-size:11px;color:var(--mut)}
   code{color:var(--green)}
+  /* ===== FX overlay: matrix rain + fireworks ===== */
+  #fxOverlay{position:fixed;inset:0;z-index:5000;display:none;background:#000;overflow:hidden;cursor:pointer}
+  #fxOverlay.show{display:block}
+  #fxCanvas{position:absolute;inset:0;display:block}
+  #fxBanner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;opacity:0;transition:opacity .45s;z-index:2}
+  #fxBanner.show{opacity:1}
+  #fxBanner .big{font-size:clamp(36px,8.5vw,96px);font-weight:900;letter-spacing:3px;line-height:1.05}
+  #fxBanner .flag{margin-top:16px;font-family:Consolas,monospace;font-size:clamp(13px,2.3vw,24px);background:rgba(0,0,0,.55);padding:9px 20px;border-radius:12px;word-break:break-all;max-width:92vw;border:1px solid rgba(126,217,87,.5);color:#d6ffd0}
+  #fxBanner .sub{margin-top:20px;font-size:clamp(13px,1.6vw,18px);letter-spacing:5px;text-transform:uppercase;color:#cfe}
+  #fxBanner.ok .big{color:#7ED957;text-shadow:0 0 30px rgba(126,217,87,.85)}
+  #fxBanner.bad .big{color:#ff5a4d;text-shadow:0 0 30px rgba(255,90,77,.75)}
+  #fxBanner.bad{animation:fxshake .5s}
+  @keyframes fxshake{10%,90%{transform:translateX(-7px)}20%,80%{transform:translateX(9px)}30%,50%,70%{transform:translateX(-14px)}40%,60%{transform:translateX(14px)}}
+  #fxClose{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#9FB0B6;font-size:13px;letter-spacing:1px;z-index:2;opacity:0;transition:opacity .45s}
+  #fxClose.show{opacity:.85}
 </style>
 </head>
 <body>
@@ -199,6 +214,12 @@
       </div>
     </div>
   </main>
+</div>
+
+<div id="fxOverlay" onclick="closeFx()">
+  <canvas id="fxCanvas"></canvas>
+  <div id="fxBanner"></div>
+  <div id="fxClose">Bấm bất kỳ đâu để đóng</div>
 </div>
 
 <script>
@@ -351,9 +372,64 @@ function expectedFlag(){const id=(curTask?curTask.id:'').toUpperCase();if(!id)re
 function normHash(s){s=(s||'').trim();const m=s.match(/FLAG\{([0-9a-fA-F]{64})\}/);if(m)return m[1].toLowerCase();if(/^[0-9a-fA-F]{64}$/.test(s))return s.toLowerCase();return null;}
 function checkFlag(){const exp=expectedFlag();const res=$('flagResult');if(!exp){res.innerHTML='<span class="bad">Chưa chọn bài.</span>';return;}
   const got=normHash($('flagIn').value);
-  if(got&&got===exp.slice(5,-1)){solved=true;elapsedAtSolve=elapsedMin();timerPause();setStatus('run','GIẢI THÀNH CÔNG');res.innerHTML='<span class="ok">✔ KHỚP — GIẢI THÀNH CÔNG (solved = 1)</span>';}
-  else{res.innerHTML='<span class="bad">✘ Flag KHÔNG khớp — chưa giải.</span>';}
+  if(got&&got===exp.slice(5,-1)){solved=true;elapsedAtSolve=elapsedMin();timerPause();setStatus('run','GIẢI THÀNH CÔNG');res.innerHTML='<span class="ok">✔ KHỚP — GIẢI THÀNH CÔNG (solved = 1)</span>';runSuccessFx(exp);}
+  else{res.innerHTML='<span class="bad">✘ Flag KHÔNG khớp — chưa giải.</span>';runFailFx();}
   updateSolved();}
+
+// ===== FX: mưa code xanh (matrix) + pháo hoa =====
+let fxRAF=null;
+function fxStop(){if(fxRAF){cancelAnimationFrame(fxRAF);fxRAF=null;}}
+function closeFx(){fxStop();$('fxOverlay').classList.remove('show');const b=$('fxBanner');b.className='';b.innerHTML='';$('fxClose').classList.remove('show');}
+function fxBanner(ok,flag){const b=$('fxBanner');b.className=ok?'ok show':'bad show';
+  b.innerHTML = ok
+    ? `<div class="big">✔ ACCESS GRANTED</div><div class="flag">${esc(flag)}</div><div class="sub">Flag chính xác · solved = 1</div>`
+    : `<div class="big">✘ ACCESS DENIED</div><div class="sub">Flag không khớp · chưa giải</div>`;}
+function fxSize(cv){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+function runSuccessFx(flag){
+  const ov=$('fxOverlay'),cv=$('fxCanvas'),ctx=cv.getContext('2d');
+  fxStop();ov.classList.add('show');fxSize(cv);
+  const CW=16,cols=Math.ceil(cv.width/CW);
+  const drops=Array.from({length:cols},()=>Math.random()*-40);
+  const chars='アイウエオカキクケコサシスセソﾀﾁﾂﾃﾅﾆ0123456789ABCDEF<>[]{}$#*+=/'.split('');
+  const t0=performance.now(),MATRIX_MS=1900;let fw=[],bannerShown=false,lastBurst=0;
+  function burst(){const x=Math.random()*cv.width,y=cv.height*(0.12+Math.random()*0.5),hue=Math.random()*360,n=55+Math.random()*35|0;
+    for(let i=0;i<n;i++){const a=Math.random()*6.2832,sp=Math.random()*5+1.8;fw.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,hue:hue+Math.random()*30});}}
+  function frame(now){const el=now-t0;
+    if(el<MATRIX_MS){
+      ctx.fillStyle='rgba(0,0,0,0.12)';ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.font='15px Consolas,monospace';
+      for(let i=0;i<cols;i++){const ch=chars[Math.random()*chars.length|0],y=drops[i]*CW;
+        ctx.fillStyle=Math.random()<0.03?'#eafff0':(Math.random()<0.12?'#58C27D':'#7ED957');
+        ctx.fillText(ch,i*CW,y);
+        if(y>cv.height&&Math.random()>0.975)drops[i]=0;drops[i]+=0.85;}
+    }else{
+      if(!bannerShown){bannerShown=true;fxBanner(true,flag);$('fxClose').classList.add('show');}
+      ctx.fillStyle='rgba(0,0,0,0.17)';ctx.fillRect(0,0,cv.width,cv.height);
+      if(now-lastBurst>520){burst();if(Math.random()<0.45)burst();lastBurst=now;}
+      for(const p of fw){p.vy+=0.045;p.x+=p.vx;p.y+=p.vy;p.vx*=0.99;p.life-=0.012;
+        if(p.life>0){ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=`hsl(${p.hue},100%,62%)`;
+          ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,6.2832);ctx.fill();}}
+      ctx.globalAlpha=1;fw=fw.filter(p=>p.life>0);
+    }
+    fxRAF=requestAnimationFrame(frame);
+  }
+  fxRAF=requestAnimationFrame(frame);
+}
+function runFailFx(){
+  const ov=$('fxOverlay'),cv=$('fxCanvas'),ctx=cv.getContext('2d');
+  fxStop();ov.classList.add('show');fxSize(cv);
+  fxBanner(false);$('fxClose').classList.add('show');
+  const t0=performance.now();
+  function frame(now){const el=now-t0;
+    ctx.fillStyle='rgba(18,0,0,0.22)';ctx.fillRect(0,0,cv.width,cv.height);
+    for(let i=0;i<26;i++){ctx.fillStyle=`rgba(255,${Math.random()*40|0},${Math.random()*40|0},${Math.random()*0.5})`;
+      ctx.fillRect(0,Math.random()*cv.height,cv.width,Math.random()*3);}
+    if(el<1400)fxRAF=requestAnimationFrame(frame);else fxStop();
+  }
+  fxRAF=requestAnimationFrame(frame);
+}
+window.addEventListener('resize',()=>{if($('fxOverlay').classList.contains('show'))fxSize($('fxCanvas'));});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeFx();});
 function markStuck(){solved=false;elapsedAtSolve=elapsedMin();timerPause();setStatus('stop','BẾ TẮC (solved=0)');updateSolved();}
 function updateSolved(){const el=$('sSolved');if(solved===true)el.innerHTML='<span class="ok">solved=1</span>';else if(solved===false)el.innerHTML='<span class="bad">solved=0</span>';else el.textContent='chưa chấm';$('sTime').textContent=(elapsedAtSolve!=null?elapsedAtSolve:elapsedMin()).toFixed(1);}
 
