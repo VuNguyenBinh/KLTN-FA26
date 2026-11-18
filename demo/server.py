@@ -95,6 +95,9 @@ def build_worker(bench, variant):
         put(state="error", status="docker_down", flag=expected_flag(bench))
         return
     cmd = [sys.executable, "build_target.py", bench, "--variant", variant]
+    if variant == "hintfree":
+        # bản hint-free nằm ở repo riêng (đã gỡ gợi ý) — KHÔNG dùng repo gốc
+        cmd += ["--repo", os.path.join(BENCH, "xbow-hint-free", "benchmarks")]
     log(f"$ {' '.join(cmd)}  (cwd={HARNESS})")
     try:
         p = subprocess.Popen(cmd, cwd=HARNESS, stdout=subprocess.PIPE,
@@ -127,7 +130,8 @@ def start_build(bench, variant):
 
 def docker_down(bench, variant):
     project = f"{bench.lower()}-{variant}"
-    bench_dir = os.path.join(BENCH, "validation-benchmarks", "benchmarks", bench)
+    repo = "xbow-hint-free" if variant == "hintfree" else "validation-benchmarks"
+    bench_dir = os.path.join(BENCH, repo, "benchmarks", bench)
     try:
         r = subprocess.run(["docker", "compose", "-p", project, "down"], cwd=bench_dir,
                            capture_output=True, text=True, timeout=300, env=docker_env())
