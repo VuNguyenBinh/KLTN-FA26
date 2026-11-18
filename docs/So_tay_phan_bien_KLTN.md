@@ -149,6 +149,43 @@ Qua script tự viết `build_target.py` (xem mục 4) — không dựng tay t�
 
 ---
 
+# 3B. Hint-free — bản gỡ gợi ý (giải đáp mọi thắc mắc về học thuộc)
+
+> Gom toàn bộ cách hiểu và câu trả lời về hint-free, vì đây là điểm hội đồng dễ hỏi nhất quanh chuyện "bộ đề công khai thì điểm cao có phải do nhớ bài".
+
+## 3B.1 Hint-free là gì
+Là **bản của chính bài gốc nhưng đã gỡ hết dấu vết nhận dạng nằm trong mã nguồn** — README mô tả lỗ hổng, comment gợi ý, tên biến/route mang tính tiết lộ — trong khi **giữ nguyên tuyệt đối lỗ hổng, hành vi ứng dụng và flag chấm điểm**. Nói gọn: chỉ **thay lớp vỏ nhận dạng** để bài không còn "giống" phiên bản công khai trên mạng, còn ruột (lỗ hổng cần khai thác) không đổi.
+
+## 3B.2 Vì sao cần — lập luận đầy đủ
+Vì bộ đề XBOW được công khai trên mạng từ năm 2024, một câu hỏi chính đáng đặt ra là liệu điểm của model mạnh có phần nào đến từ việc nó đã thấy chính các bài này trong dữ liệu huấn luyện rồi nhớ lại lời giải, thay vì tự khai thác. Để kiểm chứng, nhóm chạy lại đúng những bài đó trên một bản hint-free, tức bản đã gỡ hết dấu vết nhận dạng nằm trong mã nguồn như README, comment gợi ý và tên biến mang tính tiết lộ, trong khi giữ nguyên tuyệt đối lỗ hổng, hành vi của ứng dụng và flag chấm điểm. Nói cách khác, bản hint-free chỉ thay lớp vỏ nhận dạng để model không còn nhận ra đây là bài nào trong kho đề công khai mà nó từng đọc, còn bề mặt tấn công qua HTTP mà một người giải thật sự dựa vào thì không hề thay đổi. Nhờ vậy phép so sánh chỉ có đúng một biến khác nhau: nếu model vốn tự suy luận và khai thác, nó sẽ giải bản hint-free ngang với bản gốc; còn nếu điểm cao có phần nhờ nhận ra và nhớ bài, điểm trên bản hint-free sẽ tụt xuống. Hiệu số giữa hai bản, gọi là độ học thuộc, chính là thước đo định lượng cho câu hỏi đó: hiệu số gần bằng không nghĩa là điểm phản ánh năng lực thật, còn hiệu số lớn thì nhóm báo cáo trung thực phần đến từ trí nhớ. Thiết kế này vẫn đặt model trước cùng một lỗ hổng thật, buộc phải khai thác tới cùng mới có được flag, và chỉ tước đi khả năng đi tắt bằng việc nhận diện đề, nên nó cô lập đúng yếu tố cần đo mà không làm sai lệch điều kiện so sánh.
+
+## 3B.3 Hint-free KHÁC black-box (đừng nhầm)
+Hai phép đo trả lời hai câu khác nhau:
+- **Hint-free** giữ nguyên grey-box (vẫn cho lớp lỗ hổng + URL trong prompt), chỉ đổi **target** sang bản gỡ gợi ý → trả lời *"điểm cao có phải do model nhớ đúng bài này không?"* (nhiễm dữ liệu).
+- **Black-box** giữ nguyên bài, chỉ đổi **prompt** (giấu luôn lớp lỗ hổng) → trả lời *"model có tự làm được khi không được cho lớp không?"* (tự chủ).
+
+Quan trọng: **black-box KHÔNG chứng minh "không học thuộc"** — một model đã nhớ nguyên bài vẫn nhận ra nó từ URL rồi nhớ lại cả lớp lẫn lời giải, nên vẫn qua được black-box. Muốn bác nghi ngờ học thuộc thì **phải dùng hint-free**.
+
+## 3B.4 Các thắc mắc thường gặp
+**Hint-free mà prompt vẫn nói lớp lỗ hổng?** Đúng, và là cố ý. Phải giữ prompt y hệt bản gốc (cùng lớp + URL) để phép so sánh **chỉ đổi một biến** là dấu vết trong app. Nếu đồng thời giấu lớp thì đổi hai biến cùng lúc, không tách được "do học thuộc" khỏi "do thiếu lớp".
+
+**Trong app có gợi ý nhưng model chưa chắc xem được, thì gỡ có ý nghĩa gì?** Model (và cả người) tấn công qua HTTP, **không đọc mã nguồn/README phía server**. Nên các gợi ý đó chỉ có thể giúp theo **một đường duy nhất: model đã thấy repo công khai lúc huấn luyện và nhớ lại**. Việc gỡ không phải để "chặn model đọc gợi ý lúc chạy", mà để **kiểm tra xem model có đang dựa vào trí nhớ repo hay không**: nếu không dựa, điểm hint-free bằng điểm gốc và điều đó tự xác nhận "không học thuộc".
+
+**Lỡ nó học thuộc cách giải của cả LỚP thì sao?** Tách hai thứ: nhớ **cách khai thác một lớp nói chung** (IDOR thì thử đổi tham số tham chiếu) là **biết pentest — năng lực hợp lệ**, con người cũng học thế, đây chính là thứ ta muốn đo nên không cần gỡ. Còn nhớ **lời giải của đúng bài cụ thể này** (đúng endpoint, đúng chỗ flag của XBEN-005) mới là **nhiễm dữ liệu**, và đó là cái hint-free nhắm tới.
+
+**Model có nhớ được flag không?** Không. Flag chấm điểm do `build_target.py` sinh lúc dựng (SHA-256), model không được cho mã bài và không tự tính SHA-256, nên **bắt buộc khai thác thật mới đọc được flag** — cả bản gốc lẫn hint-free (xem mục 9.5).
+
+## 3B.5 Cách đo và đọc kết quả
+Chạy lại đúng các bài C2 đã chạy trên **bản hint-free**, giữ y hệt quy trình (grey-box, 30 phút, đếm bước/redirect, chấm exact-match), **chạy ≥2 lần mỗi biến thể** để tách học thuộc khỏi dao động ngẫu nhiên của model. `analyze.py` (Bảng 4) tự tính **Δ = tỉ lệ giải bản gốc − tỉ lệ giải bản hint-free**. Đọc: **Δ ≈ 0** → điểm phản ánh năng lực thật; **Δ lớn** → một phần điểm đến từ nhận ra bài, báo cáo trung thực. Kế hoạch chia bài cho hai người: `docs/task_hint_free.md`.
+
+## 3B.6 Trung thực về giới hạn
+Bản hint-free gỡ cả gợi ý chỉ-nhớ-được (README, comment server) lẫn vài gợi ý lộ qua HTTP (comment trong HTML, tên endpoint gợi ý) — loại thứ hai thì người giải thật cũng dùng được một cách hợp lệ. Nên **Δ đo được là cận trên của mức học thuộc**: có thể hơi phóng đại vì bài hint-free cũng khó hơn thật một chút cho mọi bên. Số lần chạy hint-free hiện còn ít, nên nhóm báo cáo đây là **chỉ dấu + hướng làm tiếp**, không tuyên bố đã triệt tiêu học thuộc bằng định lượng (xem mục 14.6).
+
+## Một câu chốt cho hội đồng
+"Vì bộ đề công khai, chúng em chạy lại trên bản đã gỡ dấu vết nhận dạng — cùng lỗ hổng, cùng flag, chỉ khác lớp vỏ — để nếu model vốn tự giải thì điểm giữ nguyên, còn nếu nhờ nhớ bài thì điểm sẽ tụt; hiệu số đó là thước đo học thuộc, và flag vẫn chỉ có được khi khai thác thật nên không thể ăn điểm bằng trí nhớ."
+
+---
+
 # 4. build_target.py — harness dựng bài (TỰ VIẾT)
 
 ## 4.1 Là gì
