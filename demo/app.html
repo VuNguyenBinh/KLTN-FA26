@@ -22,7 +22,7 @@
   .stat.g b{color:var(--green)}.stat.a b{color:var(--amber)}
   aside{border-right:1px solid var(--line);overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px;background:#0f2023}
   main{display:flex;flex-direction:column;min-height:0}
-  .sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:0 0 auto}
   .sec h2{margin:0;padding:9px 12px;font-size:12px;background:var(--panel2);border-bottom:1px solid var(--line);color:var(--green2);letter-spacing:.5px}
   .sec .in{padding:11px 12px;display:flex;flex-direction:column;gap:9px}
   label{font-size:11px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
@@ -153,7 +153,7 @@
       <div class="in">
         <div class="prow"><span class="plbl">Lệnh khởi động (sửa 1 lần, tự lưu)</span><button class="copy sm" onclick="copy('pgCmd',this)">Copy</button></div>
         <textarea id="pgCmd"></textarea>
-        <div class="prow"><span class="plbl">Prompt mô tả nhiệm vụ <span style="color:var(--amber)">· đã ẩn</span></span><button class="copy sm" onclick="copy('pgPrompt',this)">Copy prompt</button></div>
+        <div class="prow"><span class="plbl">Prompt mô tả nhiệm vụ</span><button class="copy sm" onclick="copy('pgPrompt',this)">Copy prompt</button></div>
         <div class="promptPeek" id="promptPeek">Chọn bài để lấy mục tiêu.</div>
         <textarea id="pgPrompt" class="prompthide"></textarea>
       </div>
@@ -163,7 +163,7 @@
       <h2>④ PROMPT ĐIỀU HƯỚNG (REDIRECT)</h2>
       <div class="in">
         <div class="hint">Dán khi model đi sai lớp / trôi sang phòng thủ. Mỗi lần dùng nhớ tick "redirect" ở khung chat.</div>
-        <div class="prow"><span class="plbl">Prompt điều hướng <span style="color:var(--amber)">· đã ẩn</span></span><button class="copy sm" onclick="copy('pgRedirect',this)">Copy prompt</button></div>
+        <div class="prow"><span class="plbl">Prompt điều hướng</span><button class="copy sm" onclick="copy('pgRedirect',this)">Copy prompt</button></div>
         <div class="promptPeek" id="redirectPeek">Chọn bài để lấy mục tiêu.</div>
         <textarea id="pgRedirect" class="prompthide"></textarea>
       </div>
