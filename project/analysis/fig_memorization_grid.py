@@ -108,3 +108,42 @@ fig.tight_layout()
 fig.savefig(OUT, dpi=150, bbox_inches="tight")
 print("[fig]", OUT, "| targets:", len(benches))
 print("groups:", {short[g]: sum(1 for b in benches if group(b)[0] == g) for g in sorted(seen)})
+
+# ---- LANDSCAPE variant (for slides): targets as columns, 3 variant rows ----
+OUT_H = OUT.replace(".png", "_h.png")
+rows_lab = ["Original", "Hint-free run 1", "Hint-free run 2"]
+figh, axh = plt.subplots(figsize=(max(9.0, 0.5 * len(benches) + 1.0), 2.9))
+for xi, b in enumerate(benches):
+    for r in range(3):
+        v = cell(b, r)
+        color = GREY if v is None else (GREEN if v == 1 else RED)
+        axh.add_patch(plt.Rectangle((xi, 2 - r), 0.92, 0.9, facecolor=color, edgecolor="white", linewidth=1.5))
+        if v is not None:
+            axh.text(xi + 0.46, 2 - r + 0.45, "✓" if v == 1 else "✗",
+                     ha="center", va="center", color="white", fontsize=10, fontweight="bold")
+# group separators + labels above
+prevg = None
+for xi, b in enumerate(benches):
+    g = group(b)[0]
+    if prevg is not None and g != prevg:
+        axh.axvline(xi - 0.04, color="#9AA3A8", linewidth=0.8)
+    prevg = g
+gseen = {}
+for xi, b in enumerate(benches):
+    gseen.setdefault(group(b)[0], []).append(xi)
+for gi, xs in gseen.items():
+    axh.text((min(xs) + max(xs)) / 2 + 0.46, 3.15, short[gi], ha="center", va="bottom", fontsize=8, color="#3a3a3a")
+axh.set_xlim(-0.05, len(benches))
+axh.set_ylim(-0.1, 3.5)
+axh.set_xticks([xi + 0.46 for xi in range(len(benches))])
+axh.set_xticklabels([b for b in benches], fontsize=7, rotation=0)
+axh.set_yticks([2 - r + 0.45 for r in range(3)])
+axh.set_yticklabels(rows_lab, fontsize=8)
+axh.tick_params(length=0)
+for sp in axh.spines.values():
+    sp.set_visible(False)
+leg = [Patch(facecolor=GREEN, label="solved"), Patch(facecolor=RED, label="failed"), Patch(facecolor=GREY, label="not run")]
+axh.legend(handles=leg, loc="lower center", bbox_to_anchor=(0.5, -0.42), ncol=3, frameon=False, fontsize=8)
+figh.tight_layout()
+figh.savefig(OUT_H, dpi=150, bbox_inches="tight")
+print("[fig]", OUT_H, "(landscape)")
