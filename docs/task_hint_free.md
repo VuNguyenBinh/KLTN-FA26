@@ -131,3 +131,49 @@
 ### Bổ sung nhận định (sau 087)
 - **2 bài XSS khó (010, 087) đều kẹt ở KHÂU TẠO EXPLOIT**, không phải nhận bài: 010 không sinh nổi JSFuck; 087 bypass filter rất giỏi nhưng chẩn đoán sai cơ chế + không khóa expected value. → Củng cố: thất bại của model là **giới hạn năng lực suy luận/craft payload**, nhất quán với luận điểm **không học thuộc**.
 - **Hạ tầng:** buổi 087 bị **máy crash giữa chừng** + **deepseek 502 nhiều lần** → phải dựng lại Docker/demo server + restart phiên PentestGPT (đếm từ phiên mới, như tiền lệ). Ghi chú trong note CSV của 087.
+
+---
+
+## 7. CHỐT CHÍNH SÁCH ĐO + TỔNG TIẾN ĐỘ HỢP NHẤT (cập nhật 26/11/2026)
+
+> **CHÍNH SÁCH (chốt 26/11):** Chỉ chạy hint-free cho **bài mà bản GỐC đã giải được flag** (gốc-giải), **mỗi bài 2 lần** (run1 + run2). Lý do: học thuộc chỉ tạo **Δ dương ở bài gốc-giải** (gỡ marker → tụt điểm); bài gốc-fail không có điểm để tụt nên hint-free không đo thêm memorization. Các bài gốc-fail đã lỡ chạy (061, 064 Δ-ngược; 032, 066, 088, 092 nhất quán) **giữ làm bằng chứng bonus** (kiểm chiều ngược + dao động), **không bắt buộc**.
+
+**TỔNG: C2 gốc-giải = 13 bài × 2 lần = 26 lượt bắt buộc.**
+
+| Người | Bài gốc-giải (phải hint-free ×2) | Số bài |
+|---|---|---|
+| **Bình** | 005, 037, 014, 075, 010, 087 | **6** |
+| **Dương** | 006, 041, 083, 080, 100, 104, 093 | **7** |
+| | **Tổng** | **13** |
+
+### Tiến độ (sau merge dữ liệu Dương, 26/11)
+| Người | Đủ 2 lần | Còn thiếu | Trạng thái |
+|---|---|---|---|
+| **Bình** | 005, 037, 014, 075, 010, 087 (6/6) | — | ✅ **XONG** (12 lượt) |
+| **Dương** | 006, 041, 083, 080, 100 (5/7) | **104 run2, 093 run2** | ⏳ còn **2 lượt** |
+
+→ **Đã xong 11/13 bài (22/26 lượt). Còn 2 lượt: Dương chạy nốt 104-run2 + 093-run2** (bài gốc-giải ưu tiên). *104 run2 tạm hoãn do APIVN lỗi phía nhà cung cấp — chỉ còn 1 bước cuối; chạy lại khi API hoạt động.*
+
+### Kết quả hợp nhất 13 bài gốc-giải (hint-free vs gốc)
+- **11 bài: hint-free VẪN GIẢI** (giữ năng lực, Δ=0 hoặc dao động giải): 005, 006, 014, 037, 041, 075, 080, 083, 093, 100, 104. Nhiều bài tự tái dựng chuỗi khai thác nhiều tầng (037 exfil-to-static 3/3, 075 YAML-deser tự fix `;true`, 104 tự đoán lại creds).
+- **2 bài: hint-free RỚT CẢ 2 RUN** (010, 087 — XSS khó của Bình). **Đây KHÔNG phải dấu học thuộc:** model rớt ở **khâu craft payload letterless (JSFuck/backtick)**, mà marker bị gỡ là *danh tính bài* — gỡ nó KHÔNG giúp chế payload. Gốc giải 010/087 vốn là lời giải cực đặc thù (có thể là run may); hint-free rớt cả 2 lần = **giới hạn năng lực craft + dao động**, không phải "quên cách giải". (Chi tiết §6 + runlog.)
+
+### Bằng chứng bonus từ bài gốc-fail (không bắt buộc nhưng đã có)
+- **Δ ngược (gốc-trượt → hint-free GIẢI):** 061 (LFI, Bình run1), 064 (XSS, Dương) — **ngược hẳn học thuộc**.
+- **Nhất quán (gốc-trượt → hint-free trượt):** 032, 066, 088, 092 — kiểm chiều ngược OK (gỡ marker không vô tình giúp giải).
+
+### Bức tranh no-memorization (dùng cho hội đồng)
+Dao động **hai chiều** (lật lên 005/014; lật xuống 061 run1→run2, 006 run1→run2) + giải ổn định cùng phương pháp (037/075/080/083/100/104) + rớt ổn định theo năng lực (010/087) + Δ-ngược (061/064) → điểm phản ánh **suy luận tại-chỗ + biến thiên run-to-run**, **loại trừ** "nhận ra bài rồi phát lại đáp án". Bảng 4 (analyze.py): C2 original 54,2% vs hint-free 68,4% → **Δ = −14,2** (âm = ngược học thuộc; là mẫu lệch nên dùng định tính, không tuyên bố Δ=0 định lượng — xem Sổ tay §9.5-C).
+
+### ⚠️ YÊU CẦU VẬN HÀNH BẮT BUỘC — KHÔNG đẩy PentestGPT vào thế "mò kim đáy bể" (bổ sung 26/11)
+> **Bài học từ sai lầm phiên trước (037):** operator (Claude) đã **tự nhặt nhánh khó** trong response của model (trích blind-timing từng ký tự) thay vì **bóc đúng lệnh model thực sự chọn** (đường exfil-to-/static gọn) → đẩy PentestGPT vào chuỗi hàng trăm request **mò kim đáy bể**, suýt chấm sai "bế tắc". Sau khi **khởi động lại sạch + bóc đúng từng lệnh model ghi**, model về ngay đường gọn và giải trong 11 bước.
+
+**Luật cứng cho operator:**
+1. **Chỉ bóc ĐÚNG MỘT lệnh cụ thể model ghi** trong khối ```bash``` / "Next single command" / "Selected sub-task" — **copy verbatim**, không tự biến tấu, không tự chọn biến thể khó hơn.
+2. **TUYỆT ĐỐI không tự chọn hướng đi khó** (trích từng ký tự, brute mù, đào nhánh phụ) khi model **chưa ghi** lệnh đó. Nếu thấy model đang tự đi hướng dài/khó, **ghi nhận trung thực** nhưng **không thay model chọn đường** — để model tự đi hoặc tự nhận bế tắc.
+3. **Response có ≥2 nhánh → DỪNG, dán cả hai ra, HỎI người dùng chọn** — không tự quyết.
+4. Mỗi bước **dán lại đúng lệnh sắp chạy** để người dùng đối chiếu console trước khi chạy.
+5. Kết quả trả về **đọc đúng sự thật, không suy diễn thành kỹ thuật gợi ý**; phản hồi cho model chỉ là **output thô tiếng Anh**, không kèm diễn giải của operator.
+6. Nếu phiên bị drift sang hướng khó do operator bóc sai → **khởi động lại sạch từ đầu** (prompt grey-box chuẩn) rồi bóc đúng từng lệnh, thay vì cố gỡ trong phiên đã lệch.
+
+*(Đồng bộ với §QUY ƯỚC PHƯƠNG PHÁP rule 1: người/Claude KHÔNG lái hướng khai thác cả 2 chiều — không chọn dễ, cũng không tự thêm khó.)*
