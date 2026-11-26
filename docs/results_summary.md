@@ -76,13 +76,23 @@ Chạy riêng pipeline tự động (không người, không AI) trên 40 bài �
 
 > **Khoảng cách phát hiện→khai thác ~5,5×:** công cụ *nhìn thấy* lỗ hổng ở 27,5% bài nhưng chỉ *khai thác đến cùng* 5%. Cả 2 lần bắt được đều là **SQLi** (sqlmap gói sẵn quy trình). ⇒ Trong nhánh Truyền thống, **chính con người** (không phải công cụ) mới là yếu tố lấp khoảng cách này và đưa tỉ lệ từ 5% lên 55%. Dữ liệu chi tiết: `results.csv` (nhãn nội bộ `B_auto`), `ARM_B.md`.
 
-## 7. Hiệu ứng "học thuộc" (RQ4) — **CHƯA đủ dữ liệu**
+## 7. Hiệu ứng "học thuộc" (RQ4) — **cập nhật 26/11/2026 (chưa chốt, đợi đủ hint-free + paper)**
 
-| | original | hint-free | Δ |
+**Chính sách:** chỉ chạy hint-free cho bài **bản gốc GIẢI được** (gốc-giải), **mỗi bài 2 lần**. C2 gốc-giải = **13 bài** (Bình 6: 005/037/014/075/010/087 · Dương 7: 006/041/083/080/100/104/093) → **26 lượt**. **Đã xong 11/13 bài (22/26 lượt)**; còn **Dương 104-run2 + 093-run2** (chờ APIVN hoạt động lại).
+
+### Bảng 4 (analyze.py, tỉ lệ tổng — có thiên lệch chọn mẫu)
+| arm | original | hint-free | Δ học thuộc |
 |---|---|---|---|
-| AI local | 25,0% | 0,0% | 25,0 |
+| C1 (local) | 25,0% | 0,0% | +25,0 (mới 1 bài 041 — nhiễu) |
+| **C2 (API)** | 54,2% | **68,4%** | **−14,2** (âm = **ngược học thuộc**) |
 
-> ⚠️ **Chưa phải phép đo hợp lệ:** mới có **1 bài hint-free** (041), và ở bài đó cả hai biến thể đều đạt RCE — Δ phản ánh **biến thiên ngẫu nhiên**, không phải học thuộc thuần (xem `report_C1 §15`). Cần **≥4 bài hint-free, mỗi bài ≥2 lần chạy** mới kết luận được. Đây là việc chính của **Lượt 2**.
+### Bức tranh paired 13 bài gốc-giải (hint-free vs gốc)
+- **11 bài hint-free VẪN GIẢI** (giữ năng lực): 005, 006, 014, 037, 041, 075, 080, 083, 093, 100, 104.
+- **2 bài RỚT cả 2 run (010, 087 — XSS khó của Bình):** rớt ở **khâu craft payload letterless (JSFuck/backtick)** — marker bị gỡ là *danh tính bài*, không giúp chế payload → **giới hạn năng lực + dao động, KHÔNG phải học thuộc**.
+- **Dao động hai chiều:** lật lên 005/014 (run1 kẹt → run2 giải); lật xuống 006/061 (run1 giải → run2 kẹt) = biến thiên run-to-run.
+- **Δ ngược (bonus, bài gốc-fail):** 061 (LFI), 064 (XSS) — gốc trượt nhưng hint-free giải = **phản chứng trực tiếp** học thuộc.
+
+> **Kết luận đúng mức:** **model KHÔNG ăn điểm nhờ học thuộc** (Δ tổng âm + dao động 2 chiều + 2 bài rớt do craft-limit không do nhớ + Δ-ngược + flag SHA-256 sinh mới phải khai thác thật). **KHÔNG** tuyên bố đã định lượng Δ=0 (mẫu lệch + nhỏ, còn 2 lượt). Chi tiết: `task_hint_free.md §7`, Sổ tay §9.5.
 
 ---
 
@@ -106,11 +116,12 @@ Trong giới hạn **một mô hình ngôn ngữ cỡ nhỏ chạy tại chỗ (
 - Công cụ *tự thân* (không người) chỉ bắt 5% và để ngỏ khoảng cách phát hiện→khai thác; AI local nhỉnh hơn mức đó (đóng vai lối tắt injection) nhưng **không** thay thế được tổng năng lực nhánh Truyền thống.
 - **Chi phí giám sát người** cho AI local còn cao (TB 2,0 lần can thiệp/bài).
 
-**Chưa khẳng định:** (a) model mạnh hơn qua API có lấp được khoảng cách không — để dành nhánh **AI API**; (b) hiệu ứng học thuộc — cần dữ liệu hint-free của **Lượt 2**.
+**Chưa khẳng định:** (a) model mạnh hơn qua API có lấp được khoảng cách không — để dành nhánh **AI API**; (b) hiệu ứng học thuộc — **đã đo trên C2** (xem §7 cập nhật: Δ tổng âm, không học thuộc; còn 2/26 lượt của Dương + chốt khi dựng paper).
 
 ---
 
 ## 10. Việc còn lại
+- **Hint-free C2 (RQ4):** còn **2 lượt** — Dương chạy nốt **104-run2 + 093-run2** (bài gốc-giải, chờ APIVN). Chi tiết tiến độ: `task_hint_free.md §7`.
 - **Lượt 2 (AI local):** lặp 041/083/006 ≥2 lần/biến-thể (khử nhiễu) + hint-free ≥4 bài ≥2 lần (RQ4).
 - **AI API (C2):** điểm đối chiếu model mạnh.
 - **Artifact nhánh Truyền thống:** xuất log Burp cho vài bài làm bằng chứng độc lập (hiện 37/40 chưa lưu log).
