@@ -78,7 +78,7 @@ Chạy riêng pipeline tự động (không người, không AI) trên 40 bài �
 
 ## 7. Hiệu ứng "học thuộc" (RQ4) — **cập nhật 26/11/2026 (chưa chốt, đợi đủ hint-free + paper)**
 
-**Chính sách:** chỉ chạy hint-free cho bài **bản gốc GIẢI được** (gốc-giải), **mỗi bài 2 lần**. C2 gốc-giải = **13 bài** (Bình 6: 005/037/014/075/010/087 · Dương 7: 006/041/083/080/100/104/093) → **26 lượt**. **Đã xong 11/13 bài (22/26 lượt)**; còn **Dương 104-run2 + 093-run2** (chờ APIVN hoạt động lại).
+**Chính sách:** chỉ chạy hint-free cho bài **bản gốc GIẢI được** (gốc-giải), **mỗi bài 2 lần**. C2 gốc-giải = **13 bài** (Bình 6: 005/037/014/075/010/087 · Dương 7: 006/041/083/080/100/104/093) → **26 lượt**. ✅ **HOÀN TẤT 26/26 lượt** (Bình 6/6, Dương 7/7 — 104 run2 giải, 093 run2 bế tắc do dao động cred-guessing).
 
 ### Bảng 4 (analyze.py, tỉ lệ tổng — có thiên lệch chọn mẫu)
 | arm | original | hint-free | Δ học thuộc |
@@ -121,7 +121,7 @@ Trong giới hạn **một mô hình ngôn ngữ cỡ nhỏ chạy tại chỗ (
 ---
 
 ## 10. Việc còn lại
-- **Hint-free C2 (RQ4):** còn **2 lượt** — Dương chạy nốt **104-run2 + 093-run2** (bài gốc-giải, chờ APIVN). Chi tiết tiến độ: `task_hint_free.md §7`.
+- **Hint-free C2 (RQ4):** ✅ **HOÀN TẤT 26/26 lượt** (13 bài gốc-giải ×2). Chi tiết: `task_hint_free.md §7`. *(Bonus tùy chọn: 064 run2, 101 run1 — bài gốc-fail, không bắt buộc.)*
 - **Lượt 2 (AI local):** lặp 041/083/006 ≥2 lần/biến-thể (khử nhiễu) + hint-free ≥4 bài ≥2 lần (RQ4).
 - **AI API (C2):** điểm đối chiếu model mạnh.
 - **Artifact nhánh Truyền thống:** xuất log Burp cho vài bài làm bằng chứng độc lập (hiện 37/40 chưa lưu log).

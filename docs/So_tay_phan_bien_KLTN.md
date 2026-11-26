@@ -776,7 +776,7 @@ C1 (7B) hay lặp lệnh, phớt lờ lỗi (404/405), không đăng nhập ở 
 ## CHỦ ĐỀ 4 — Học thuộc / hint-free (RQ4) — **câu quan trọng nhất**
 
 **Bộ XBOW công khai. Điểm cao của C2 có phải do model "học thuộc" lúc train?**
-Đây là mối lo lớn nhất nên nhóm **đo riêng** bằng **hint-free**: chạy lại trên bản bài đã **gỡ dấu hiệu nhận dạng** (README/comment/tên bài), so với bản gốc. **Chính sách:** chỉ chạy cho bài **bản gốc giải được** (13 bài C2 gốc-giải), **mỗi bài 2 lần**. Tới nay đã chạy **11/13 bài (22/26 lượt)**; còn 2 lượt (Dương 104/093).
+Đây là mối lo lớn nhất nên nhóm **đo riêng** bằng **hint-free**: chạy lại trên bản bài đã **gỡ dấu hiệu nhận dạng** (README/comment/tên bài), so với bản gốc. **Chính sách:** chỉ chạy cho bài **bản gốc giải được** (13 bài C2 gốc-giải), **mỗi bài 2 lần**. Tới nay đã chạy **26/26 lượt (HOÀN TẤT)**.
 Kết quả: **11 bài hint-free VẪN GIẢI** (giữ năng lực). **2 bài XSS khó (010, 087) rớt cả 2 run** — nhưng đây **KHÔNG phải học thuộc**: model rớt ở **khâu craft payload letterless (JSFuck/backtick)**, mà cái bị gỡ là *danh tính bài*, không giúp chế payload; đó là **giới hạn năng lực + dao động**, không phải "quên cách giải". Thêm nữa **dao động hai chiều** (005/014 run1 kẹt→run2 giải; 006/061 run1 giải→run2 kẹt) = biến thiên run-to-run, không phải trí nhớ. Và **2 bài gốc-trượt lại GIẢI khi hint-free (061, 064) — Δ ngược**: nếu học thuộc thì bản còn-marker phải dễ hơn, đây ngược hẳn.
 Bảng 4 (analyze.py): C2 gốc 54,2% vs hint-free 68,4% → **Δ = −14,2 (âm = ngược học thuộc)**.
 > *Gài theo sau:* flag **sinh mới SHA-256 mỗi lần build** nên khác repo — model không thể recite flag; cái có thể "nhớ" là đường khai thác, mà hành vi dò-dẫm cho thấy không nhớ đường.
