@@ -418,7 +418,8 @@ def main():
     if mem is not None:
         print(mem.to_string())
         mem.to_csv(os.path.join(FIG_DIR, "table_memorization.csv"))
-        bar_memorization(mem)
+        # Figure: chi ve C2 (C_ai_api). C1 chi co 1 lan chay hint-free (n=1) nen khong dua vao bieu do do hoc thuoc.
+        bar_memorization(mem[mem.index == "C_ai_api"])
     else:
         print("(chua co du lieu nhanh C)")
 
